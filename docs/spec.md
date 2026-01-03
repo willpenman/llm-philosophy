@@ -43,7 +43,7 @@
 - `responses/<provider>/<model>/texts/` for raw response text files (one per response).
 - `run_id` is a correlation ID stored inside each JSONL record; use it for batch lookup.
 - Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
-- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-completion{n}.txt`.
+- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC timestamp).
 - Text file contents should be standalone:
   `{full_puzzle_name}`
   `{model} ({provider}), {special_settings}`
@@ -59,7 +59,7 @@
 - `special_settings` covers non-default parameters (e.g., temperature sweeps) and may be provider-specific.
 
 ## JSONL schema sketch (draft)
-- Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`, `puzzle_version`, `completion_number`, `special_settings`.
+- Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`, `puzzle_version`, `special_settings`.
 - `request` holds the full provider request payload as sent.
 - `response` holds the full provider response payload as received.
 - Optional: `derived` for normalized conveniences (tokens, cost) if computed.
@@ -69,6 +69,8 @@
 - Keep per-provider quirks isolated to their adapter.
 - Avoid hardcoding credentials; use environment variables.
 - Provide a dry-run mode that writes the request payloads without sending them.
+- Always use snapshot model names (e.g., `o3-2025-04-16`) to keep runs reproducible.
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
+- OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
 - TODO: include links to each provider's dev docs.
 - Future: enable synchronous calls to support fast "run all models for this puzzle" and "run all puzzles for this model."
