@@ -25,6 +25,11 @@
 - Treat prompts as fixtures; avoid runtime mutation.
 - Keep the system prompt one paragraph.
 
+## Testing notes (draft)
+- Use `pytest` for lightweight smoke tests around loaders and fixtures.
+- Keep tests small and local; avoid network calls and provider dependencies.
+- Prefer tests that validate prompt/puzzle invariants (non-empty text, stable names).
+
 ## Puzzle loader validation (draft)
 - `PUZZLE_TEXT` is required and must be a non-empty string.
 - `PUZZLE_NAME` defaults to the filename stem; when provided, it must be a non-empty string.

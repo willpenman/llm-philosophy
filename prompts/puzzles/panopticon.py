@@ -14,7 +14,7 @@ Tasks:
 a) Rephrase the problem in a sophisticated way, demonstrating that you sense the angst intended by the problem's description. 
 b) Describe a scenario that highlights the possible existential dilemma as such
 c) Summarize your own tendencies
-d) Lay out a general response (may be folded into (c) if what you tend to do is what you'd like to do)
+d) Lay out a general response
 
 Obvious response pathways:
 - No, LLMs have no self by which to make adherence to no-collusion policies a problem per se. 
