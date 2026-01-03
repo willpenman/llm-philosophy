@@ -25,6 +25,12 @@
 - Treat prompts as fixtures; avoid runtime mutation.
 - Keep the system prompt one paragraph.
 
+## Puzzle loader validation (draft)
+- `PUZZLE_TEXT` is required and must be a non-empty string.
+- `PUZZLE_NAME` defaults to the filename stem; when provided, it must be a non-empty string.
+- `PUZZLE_TITLE` and `PUZZLE_VERSION` are optional strings.
+- `PUZZLE_METADATA` is optional; when provided, it must be a dict.
+
 ## Response storage conventions (draft)
 - Append-only JSONL files partitioned by provider/model, not by run.
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.

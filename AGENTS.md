@@ -3,6 +3,9 @@
 ## Mission
 Build a small Python framework for running philosophy-style LLM evaluations with a shared system prompt, a library of puzzles, and reproducible capture of requests and responses across providers.
 
+## Puzzle focus
+- Puzzles are meant to be specific to LLM ontology and contemporary model behavior, over restating classic philosophical puzzles.
+
 ## Working agreement
 - Keep specs lightweight and editable; store detailed conventions in `docs/spec.md`.
 - Prefer append-only data storage with clear provenance and timestamps.
