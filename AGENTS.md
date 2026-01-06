@@ -6,7 +6,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 ## Development
 - Use python (3.13) through the venv: `source .venv/bin/activate`
 - Task wrap-up: 
-  - Document any long-term insights about agent abilities and directions here, e.g. access
+  - Document any long-term insights about agent abilities and directions here
   - Document progress and todos in spec.md
   - Reserve README for public-facing notes, e.g. model support, features, etc.
 
