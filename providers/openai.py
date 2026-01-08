@@ -31,7 +31,7 @@ def require_api_key(env_var: str = "OPENAI_API_KEY") -> str:
 
 
 def _content_item(text: str) -> dict[str, str]:
-    return {"type": "text", "text": text}
+    return {"type": "input_text", "text": text}
 
 
 def build_response_request(
@@ -115,6 +115,8 @@ def extract_output_text(payload: dict[str, Any]) -> str:
                 continue
             for part in content:
                 if not isinstance(part, dict):
+                    continue
+                if part.get("type") != "output_text":
                     continue
                 text = part.get("text")
                 if isinstance(text, str):

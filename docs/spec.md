@@ -74,3 +74,9 @@
 - OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
 - TODO: include links to each provider's dev docs.
 - Future: enable synchronous calls to support fast "run all models for this puzzle" and "run all puzzles for this model."
+
+## Progress
+- Added a script to run a single puzzle against one OpenAI model and capture responses.
+
+## TODO
+- Wire up additional provider adapters after validating the OpenAI run script end-to-end.

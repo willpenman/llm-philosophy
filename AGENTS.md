@@ -5,9 +5,11 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Development
 - Use python (3.13) through the venv: `source .venv/bin/activate`
+- For API reference, do not trust your intuition. Consult local docs in provider-specific file (e.g. `providers/openai.md`) and/or use web search to identify current api syntax. When unsure, highlight to user and wait to finish the task until given confirmation.
 - Task wrap-up: 
   - Document any long-term insights about agent abilities and directions here
   - Document progress and todos in spec.md
+  - Document model-specific parameter availability in the provider-speicfic file.
   - Reserve README for public-facing notes, e.g. model support, features, etc.
 
 ## Puzzle focus
@@ -15,7 +17,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Testing guidance
 - Prefer minimal, local tests that validate core invariants and avoid external dependencies.
-- Keep tests offline and deterministic; avoid provider calls until adapters exist.
+- When adding new provider/model functionality, create tests that verify the parameters most relevant to this eval suite: system prompt, temperature, max output length, level of reasoning/thinking, tool use. These differ per model and some models may not have these available!
 
 ## Working agreement
 - Keep specs lightweight and editable; store detailed conventions in `docs/spec.md`.
@@ -31,3 +33,6 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Pointers
 - Detailed storage conventions, JSONL schema sketch, and provider notes live in `docs/spec.md`.
+
+## Agent insights
+- Keep the first live-run script minimal and focused to reduce moving pieces while validating provider calls.
