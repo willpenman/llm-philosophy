@@ -3,6 +3,18 @@
 - API: Responses (`POST https://api.openai.com/v1/responses`)
 - Auth: `OPENAI_API_KEY`
 - Docs: https://platform.openai.com/docs/api-reference/responses (blocked in this environment by Cloudflare)
+
+## Model parameter availability
+- Source: pasted Responses API docs below plus live call results.
+- o3-2025-04-16:
+  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`.
+  - Not supported: `temperature`, `top_p` (live call returns 400 unsupported parameter).
+  - Constraints: `max_output_tokens` must be >= 16. Upper bound not yet confirmed; a live call with 100001 succeeded.
+  - Reasoning effort values:
+    - Live: `low`, `medium`, `high` accepted; others (e.g. `ultra`) rejected - 400 unsupported.
+  - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
+- TODO: find the true `max_output_tokens` upper bound.
+
 Docs pasted in lieu of direct access:
 Request body
 background

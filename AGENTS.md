@@ -17,7 +17,8 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Testing guidance
 - Prefer minimal, local tests that validate core invariants and avoid external dependencies.
-- When adding new provider/model functionality, create tests that verify the parameters most relevant to this eval suite: system prompt, temperature, max output length, level of reasoning/thinking, tool use. These differ per model and some models may not have these available!
+- When adding new provider/model functionality, create tests that verify the parameters and values most relevant to this eval suite: system prompt, temperature, max output length, level of reasoning/thinking, tool use. These differ per model and some models may not have these available!
+- Paid/live provider tests must be opt-in and clearly labeled with cost and env requirements (e.g., `@pytest.mark.live`, `RUN_LIVE_OPENAI=1`, `OPENAI_API_KEY`). Default runs should skip them.
 
 ## Working agreement
 - Keep specs lightweight and editable; store detailed conventions in `docs/spec.md`.
@@ -36,3 +37,4 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Agent insights
 - Keep the first live-run script minimal and focused to reduce moving pieces while validating provider calls.
+- Maintain a per-model parameter matrix so request assembly and tests stay aligned with provider capabilities.

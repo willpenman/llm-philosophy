@@ -77,6 +77,19 @@
 
 ## Progress
 - Added a script to run a single puzzle against one OpenAI model and capture responses.
+- Added OpenAI request builder support and tests for o3 reasoning/tool parameters.
+- Added opt-in live OpenAI tests (marked `live`) for o3 parameter acceptance and error handling.
+- Live OpenAI call confirmed o3 rejects `temperature`.
+- Live OpenAI call confirmed `max_output_tokens` minimum is 16 for o3.
+- Added live tests for o3 `top_p` rejection and `max_output_tokens` upper bound.
+- Live OpenAI call accepted `max_output_tokens=100001`, upper bound still unknown.
+- Added live tests for o3 reasoning effort values and invalid `max_output_tokens`.
+- Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and rejects `none`/`minimal`/`xhigh`.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
+- Validate o3 parameter support (reasoning/tool settings) with a live OpenAI call.
+- Confirm live test expectations (success + invalid reasoning effort) against actual API behavior.
+- Run a live call to verify `reasoning` fields are accepted and inspect returned output.
+- Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
+- Confirm o3 `max_output_tokens` upper bound via higher values.

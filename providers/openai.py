@@ -41,6 +41,10 @@ def build_response_request(
     model: str,
     max_output_tokens: int | None,
     temperature: float | None = None,
+    top_p: float | None = None,
+    reasoning: dict[str, Any] | None = None,
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: dict[str, Any] | str | None = None,
     seed: int | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
@@ -62,6 +66,14 @@ def build_response_request(
     }
     if temperature is not None:
         payload["temperature"] = temperature
+    if top_p is not None:
+        payload["top_p"] = top_p
+    if reasoning is not None:
+        payload["reasoning"] = reasoning
+    if tools is not None:
+        payload["tools"] = tools
+    if tool_choice is not None:
+        payload["tool_choice"] = tool_choice
     if seed is not None:
         payload["seed"] = seed
     if metadata:
@@ -133,6 +145,10 @@ def create_response(
     model: str,
     max_output_tokens: int | None,
     temperature: float | None = None,
+    top_p: float | None = None,
+    reasoning: dict[str, Any] | None = None,
+    tools: list[dict[str, Any]] | None = None,
+    tool_choice: dict[str, Any] | str | None = None,
     seed: int | None = None,
     metadata: dict[str, Any] | None = None,
     api_key: str | None = None,
@@ -145,6 +161,10 @@ def create_response(
         model=model,
         max_output_tokens=max_output_tokens,
         temperature=temperature,
+        top_p=top_p,
+        reasoning=reasoning,
+        tools=tools,
+        tool_choice=tool_choice,
         seed=seed,
         metadata=metadata,
     )
