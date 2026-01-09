@@ -66,7 +66,7 @@ def run_openai_puzzle(
     run_id = run_id or uuid4().hex
     provider = "openai"
     special_settings_label = normalize_special_settings(special_settings)
-    reasoning = reasoning or {"effort": "high"}
+    reasoning = reasoning or {"effort": "high", "summary": "detailed"}
 
     request_payload = build_response_request(
         system_prompt=system_prompt.text,

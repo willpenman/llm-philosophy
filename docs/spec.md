@@ -71,8 +71,10 @@
 - Keep per-provider quirks isolated to their adapter.
 - Avoid hardcoding credentials; use environment variables.
 - Provide a dry-run mode that writes the request payloads without sending them.
+- Local dev convenience: `.venv/lib/python3.13/site-packages/llm_philosophy.pth` adds the repo root to `sys.path`. It lives inside `.venv`, so it is local and untracked; revisit if packaging/distribution becomes a priority.
 - Always use snapshot model names (e.g., `o3-2025-04-16`) to keep runs reproducible.
 - Default to the highest available reasoning effort for each provider (provider-specific parameter names).
+- Request the most detailed reasoning visibility available (e.g., `summary: detailed` or full reasoning where supported).
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
 - OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
 - TODO: include links to each provider's dev docs.

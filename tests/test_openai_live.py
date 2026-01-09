@@ -7,13 +7,8 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-import sys
 
 import pytest
-
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
 
 from providers.openai import create_response  # noqa: E402
 
