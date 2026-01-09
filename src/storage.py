@@ -185,10 +185,14 @@ class ResponseStore:
                 f"Completed: {display_date}",
                 "",
                 "---- INPUT ----",
+                "```",
                 input_text,
+                "```",
                 "",
                 f"---- {model_display}'S OUTPUT ----",
+                "```",
                 output_text,
+                "```",
             ]
         )
         text_path.write_text(text_body, encoding="utf-8")

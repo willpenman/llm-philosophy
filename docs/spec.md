@@ -52,10 +52,15 @@
   `Completed: {date in "Mmm dd, yyyy" (UTC)}`
 
   `---- INPUT ----`
+  ```text
   `{input text, including labels of "System", "User", or provider-specific roles}`
+  ```
 
   `---- {model_alias_or_snapshot}'S OUTPUT ----`
+  ```text
   `{output text}`
+  ```
+- Rationale: GitHub Markdown collapses single newlines inside paragraphs; wrapping input/output in fenced code blocks preserves the model's original line breaks and spacing.
 
   `{response text}`
 - `special_settings` covers non-default parameters (e.g., temperature sweeps) and may be provider-specific.
