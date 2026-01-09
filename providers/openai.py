@@ -187,6 +187,7 @@ def send_response_request(
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 60,
     progress_callback: Callable[[int], None] | None = None,
+    stream_text_callback: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -201,26 +202,22 @@ def send_response_request(
     try:
         with urllib.request.urlopen(request, timeout=timeout_s) as response:
             if payload.get("stream") is True:
-                events: list[dict[str, Any]] = []
                 streamed_chars = 0
                 response_payload: dict[str, Any] | None = None
                 for event in _iter_sse_events(response):
-                    events.append(event)
                     if event.get("type") == "response.output_text.delta":
                         delta = event.get("delta")
                         if isinstance(delta, str):
                             streamed_chars += len(delta)
+                            if stream_text_callback is not None:
+                                stream_text_callback(delta)
                             if progress_callback is not None:
                                 progress_callback(streamed_chars)
-                    if event.get("type") == "response.completed":
+                    elif event.get("type") in {"response.completed", "response.failed"}:
                         response = event.get("response")
                         if isinstance(response, dict):
                             response_payload = response
-                return {
-                    "stream": True,
-                    "events": events,
-                    "response": response_payload,
-                }
+                return response_payload or {}
             body = response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")

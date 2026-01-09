@@ -184,9 +184,5 @@ def test_openai_streaming_captures_long_output_live(model: str) -> None:
         stream_options={"include_obfuscation": False},
         reasoning={"effort": "medium"},
     )
-    payload = response.payload
-    assert payload.get("stream") is True
-    events = payload.get("events")
-    assert isinstance(events, list)
     assert response.output_text.strip().endswith("END")
     assert len(response.output_text) > 100

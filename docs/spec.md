@@ -1,107 +1,120 @@
 # Spec Notes
 
-## Repo shape (draft)
+## Purpose
+Build a small, reproducible framework for running philosophy-style LLM evaluations with a
+shared system prompt, a puzzle library, and append-only capture of requests and responses
+across providers.
+
+## Principles
+- Keep specs lightweight; record detailed conventions here, not in README.
+- Prefer append-only storage with clear provenance and timestamps.
+- Preserve provider payloads verbatim; normalize only when it adds clear value (e.g. we don't store SSE events).
+- Treat prompts as fixtures; avoid runtime mutation.
+- Favor minimal modules and simple data shapes over heavy abstractions.
+
+## Architecture overview
+- Prompts are Python modules that define system prompts and puzzles.
+- Provider adapters build requests and send them, handling provider quirks locally.
+- The runner orchestrates a single puzzle run, records request/response data, and writes
+  a readable text artifact.
+- Storage is append-only JSONL plus a single text file per response.
+
+## Repository layout
 - `prompts/`
   - `system.py` (one paragraph prompt with annotations)
-  - `puzzles/` (each puzzle as a few paragraphs, stored as `.py`)
-- `responses/` (append-only JSONL + raw response text, partitioned by provider/model)
+  - `puzzles/` (each puzzle stored as `.py`)
 - `providers/` (provider adapters and config handling)
+- `src/` (runner, storage, puzzle loading, system prompt loading)
 - `scripts/` (CLI entry points)
-- `src/` (core framework code)
-- `docs/` (provider notes, TODOs, and schema references)
+- `responses/` (append-only JSONL + raw response text, partitioned by provider/model)
+- `docs/` (provider notes, schema references, and this spec)
 
 ## Data capture requirements
 - Log the exact system prompt and puzzle text per request.
-- Store all metadata - provider name, model name, temperature, max tokens (always set to model max), stop sequences, seed, thinking tokens, request IDs.
-- Store full provider request/response blobs without lossy normalization.
-- Record model cost structure (input/output pricing) to compute per-run cost.
-- Pricing can be multi-tiered by modality, service tier, or output length (e.g., Gemini long-output pricing); keep room to extend beyond input/output.
+- Store provider name, model name, model aliases, parameter settings, and request IDs.
+- Store full provider request/response payloads without lossy normalization.
 - Persist timing info (request start/end, latency).
+- Record price schedules (input/output pricing) to enable cost computation.
 - Keep request/response pairs in JSONL for aggregation.
-- Generate a readable format that is just the raw response text (one file per response).
+- Generate a readable text file that is only input/output text (one file per response).
 - Leave room for analysis workflows (possibly in a separate repo linked by run IDs).
-- Avoid duplicating `run_id` inside provider payloads unless the API requires it.
 
-## Prompt module expectations
+## Prompt and puzzle fixtures
 - Each prompt is a `.py` module that exposes a single prompt string plus optional metadata.
-- Treat prompts as fixtures; avoid runtime mutation.
-- Keep the system prompt one paragraph.
+- System prompt remains a single paragraph.
+- Puzzles must supply non-empty text and stable names.
+- Avoid mutating prompts or puzzles at runtime.
 
-## Testing notes (draft)
-- Use `pytest` for lightweight smoke tests around loaders and fixtures.
-- Keep tests small and local; avoid network calls and provider dependencies.
-- Prefer tests that validate prompt/puzzle invariants (non-empty text, stable names).
-
-## Puzzle loader validation (draft)
-- `PUZZLE_TEXT` is required and must be a non-empty string.
-- `PUZZLE_NAME` defaults to the filename stem; when provided, it must be a non-empty string.
-- `PUZZLE_TITLE` and `PUZZLE_VERSION` are optional strings.
-- `PUZZLE_METADATA` is optional; when provided, it must be a dict.
-
-## Response storage conventions (draft)
+## Response storage conventions
 - Append-only JSONL files partitioned by provider/model, not by run.
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.
-- `responses/<provider>/<model>/responses.jsonl` for structured outputs and metadata.
+- `responses/<provider>/<model>/responses.jsonl` for full provider responses plus metadata.
 - `responses/<provider>/<model>/texts/` for raw response text files (one per response).
 - `run_id` is a correlation ID stored inside each JSONL record; use it for batch lookup.
-- Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
-- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC timestamp).
-- Text file contents should be standalone:
+- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC).
+- Text file contents are standalone:
   `{puzzle_label}: {full_puzzle_name}`
-  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]`
+  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings}]`
   `Completed: {date in "Mmm dd, yyyy" (UTC)}`
 
   `---- INPUT ----`
-  `{input text, including labels of "System", "User", or provider-specific roles}`
+  `{input text, with role labels}`
 
   `---- {model_alias_or_snapshot}'S OUTPUT ----`
   `{output text}`
+- `special_settings` captures non-default parameters (provider-specific if needed).
 
-  `{response text}`
-- `special_settings` covers non-default parameters (e.g., temperature sweeps) and may be provider-specific.
-
-## JSONL schema sketch (draft)
-- Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`, `puzzle_version`, `special_settings`.
+## JSONL schema
+- Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`,
+  `puzzle_version`, `special_settings`.
 - `request` holds the full provider request payload as sent.
 - `response` holds the full provider response payload as received.
-- Optional: `derived` for normalized conveniences (tokens, cost, price schedule) if computed.
+- Optional: `derived` for normalized conveniences (tokens, cost, price schedule).
+
+## Streaming behavior
+- Prefer streaming for long outputs to avoid connection dropouts.
+- Streamed deltas are used only to assemble output text.
+- Responses store only the completed provider payload (no SSE events).
+- If streaming ends without a completed payload, keep the partial text that was received.
 
 ## Provider handling
 - Normalize across providers with a thin adapter interface.
 - Keep per-provider quirks isolated to their adapter.
 - Avoid hardcoding credentials; use environment variables.
-- Provide a dry-run mode that writes the request payloads without sending them.
-- Local dev convenience: `.venv/lib/python3.13/site-packages/llm_philosophy.pth` adds the repo root to `sys.path`. It lives inside `.venv`, so it is local and untracked; revisit if packaging/distribution becomes a priority.
-- Always use snapshot model names (e.g., `o3-2025-04-16`) to keep runs reproducible.
-- Default to the highest available reasoning effort for each provider (provider-specific parameter names).
-- Request the most detailed reasoning visibility available (e.g., `summary: detailed` or full reasoning where supported).
-- Omit tool configuration entirely unless tools are required; some providers (OpenAI) report more reliable reasoning summaries when `tools` is absent.
-- Since we encourage long outputs, prefer streaming when the provider supports it (e.g., Anthropic guidance); capture partials if needed.
+- Provide a dry-run mode that writes request payloads without sending them.
+- Always use snapshot model names (e.g., `o3-2025-04-16`) for reproducibility.
+- Default to the highest available reasoning effort per provider.
+- Request the most detailed reasoning visibility available for the model.
+- Omit tool configuration entirely unless tools are required.
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
-- OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
-- TODO: include links to each provider's dev docs.
-- Future: enable synchronous calls to support fast "run all models for this puzzle" and "run all puzzles for this model."
+- Provider API syntax lives in provider-specific docs under `docs/providers/`.
+
+## Testing guidance
+- Use `pytest` for lightweight tests around loaders and request assembly.
+- Keep tests small and local; avoid network calls unless explicitly marked live.
+- Live tests must be opt-in, cost-labeled, and gated by environment variables.
+- Prefer tests that validate: system prompt, temperature, max output length, reasoning
+  effort, tool usage (where supported).
 
 ## Progress
 - Added a script to run a single puzzle against one OpenAI model and capture responses.
 - Added OpenAI request builder support and tests for o3 reasoning/tool parameters.
-- Added opt-in live OpenAI tests (marked `live`) for o3 parameter acceptance and error handling.
+- Added opt-in live OpenAI tests (marked `live`) for parameter acceptance and errors.
 - Live OpenAI call confirmed o3 rejects `temperature`.
 - Live OpenAI call confirmed `max_output_tokens` minimum is 16 for o3.
 - Added live tests for o3 `top_p` rejection and `max_output_tokens` upper bound.
 - Live OpenAI call accepted `max_output_tokens=100001`, upper bound still unknown.
 - Added live tests for o3 reasoning effort values and invalid `max_output_tokens`.
-- Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and rejects `none`/`minimal`/`xhigh`.
+- Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and
+  rejects values that are enabled for other OpenAI models: `none`/`minimal`/`xhigh`.
 - Added provider price schedule capture to response-derived metadata.
-- Enabled OpenAI streaming response capture with SSE delta assembly for long outputs.
-- Added an opt-in live OpenAI streaming test that validates long-form delta assembly.
+- Enabled OpenAI streaming response capture with delta assembly for long outputs.
+- Added an opt-in live OpenAI streaming test that validates streaming output assembly.
+- Streaming runs now store only the completed provider response payload (no SSE events)
+  while still capturing streamed text for output.
 
 ## TODO
+- Add additional OpenAI models to the live test model list with contrasting parameters.
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
-- Validate o3 parameter support (reasoning/tool settings) with a live OpenAI call.
-- Confirm live test expectations (success + invalid reasoning effort) against actual API behavior.
-- Run a live call to verify `reasoning` fields are accepted and inspect returned output.
 - Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
-- Add additional OpenAI models to live test model list with contrasting parameter support.
-- Fill in OpenAI per-model input/output pricing values.
 - Capture Gemini long-output pricing tiers when adding Gemini support.
