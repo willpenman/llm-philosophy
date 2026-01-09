@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
-from typing import Any
+from typing import Any, Callable, Iterator
 import urllib.error
 import urllib.request
 
@@ -78,6 +78,8 @@ def build_response_request(
     tool_choice: dict[str, Any] | str | None = None,
     seed: int | None = None,
     metadata: dict[str, Any] | None = None,
+    stream: bool | None = None,
+    stream_options: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if max_output_tokens is None:
         defaults = MODEL_DEFAULTS.get(model, {})
@@ -109,7 +111,73 @@ def build_response_request(
         payload["seed"] = seed
     if metadata:
         payload["metadata"] = metadata
+    if stream is not None:
+        payload["stream"] = stream
+    if stream_options is not None:
+        payload["stream_options"] = stream_options
     return payload
+
+
+def _iter_sse_events(response: Any) -> Iterator[dict[str, Any]]:
+    data_lines: list[str] = []
+    while True:
+        line_bytes = response.readline()
+        if not line_bytes:
+            if data_lines:
+                data = "\n".join(data_lines)
+                data_lines = []
+                if data == "[DONE]":
+                    break
+                yield _parse_sse_data(data)
+            break
+        line = line_bytes.decode("utf-8", errors="replace").rstrip("\r\n")
+        if not line:
+            if data_lines:
+                data = "\n".join(data_lines)
+                data_lines = []
+                if data == "[DONE]":
+                    break
+                yield _parse_sse_data(data)
+            continue
+        if line.startswith(":"):
+            continue
+        if line.startswith("data:"):
+            data_lines.append(line[len("data:"):].lstrip())
+
+
+def _parse_sse_data(data: str) -> dict[str, Any]:
+    try:
+        parsed = json.loads(data)
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Failed to parse OpenAI stream event: {data}") from exc
+    if not isinstance(parsed, dict):
+        raise RuntimeError(f"Unexpected OpenAI stream event payload: {parsed}")
+    return parsed
+
+
+def _extract_output_text_from_stream(events: list[dict[str, Any]]) -> str:
+    chunks: list[str] = []
+    response_payload: dict[str, Any] | None = None
+    for event in events:
+        event_type = event.get("type")
+        if event_type == "response.output_text.delta":
+            delta = event.get("delta")
+            if isinstance(delta, str):
+                chunks.append(delta)
+        elif event_type in {"response.output_text.done", "response.text.done"}:
+            if not chunks:
+                text = event.get("text")
+                if isinstance(text, str):
+                    chunks.append(text)
+        elif event_type == "response.completed":
+            response = event.get("response")
+            if isinstance(response, dict):
+                response_payload = response
+    if chunks:
+        return "".join(chunks)
+    if response_payload:
+        return extract_output_text(response_payload)
+    return ""
 
 
 def send_response_request(
@@ -118,6 +186,7 @@ def send_response_request(
     api_key: str,
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 60,
+    progress_callback: Callable[[int], None] | None = None,
 ) -> dict[str, Any]:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -131,6 +200,27 @@ def send_response_request(
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout_s) as response:
+            if payload.get("stream") is True:
+                events: list[dict[str, Any]] = []
+                streamed_chars = 0
+                response_payload: dict[str, Any] | None = None
+                for event in _iter_sse_events(response):
+                    events.append(event)
+                    if event.get("type") == "response.output_text.delta":
+                        delta = event.get("delta")
+                        if isinstance(delta, str):
+                            streamed_chars += len(delta)
+                            if progress_callback is not None:
+                                progress_callback(streamed_chars)
+                    if event.get("type") == "response.completed":
+                        response = event.get("response")
+                        if isinstance(response, dict):
+                            response_payload = response
+                return {
+                    "stream": True,
+                    "events": events,
+                    "response": response_payload,
+                }
             body = response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")
@@ -141,6 +231,12 @@ def send_response_request(
 
 
 def extract_output_text(payload: dict[str, Any]) -> str:
+    if payload.get("stream") is True:
+        events = payload.get("events", [])
+        if isinstance(events, list):
+            events_list = [event for event in events if isinstance(event, dict)]
+            return _extract_output_text_from_stream(events_list)
+
     output_text = payload.get("output_text")
     if isinstance(output_text, str):
         return output_text
@@ -182,6 +278,8 @@ def create_response(
     tool_choice: dict[str, Any] | str | None = None,
     seed: int | None = None,
     metadata: dict[str, Any] | None = None,
+    stream: bool | None = None,
+    stream_options: dict[str, Any] | None = None,
     api_key: str | None = None,
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 60,
@@ -198,6 +296,8 @@ def create_response(
         tool_choice=tool_choice,
         seed=seed,
         metadata=metadata,
+        stream=stream,
+        stream_options=stream_options,
     )
     response_payload = send_response_request(
         payload,

@@ -74,6 +74,19 @@ def test_build_response_request_omits_empty_tools() -> None:
     assert "tools" not in payload
 
 
+def test_build_response_request_includes_streaming_flags() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="o3-2025-04-16",
+        max_output_tokens=16,
+        stream=True,
+        stream_options={"include_obfuscation": False},
+    )
+    assert payload["stream"] is True
+    assert payload["stream_options"]["include_obfuscation"] is False
+
+
 def test_price_schedule_for_model_includes_units() -> None:
     schedule = price_schedule_for_model("o3-2025-04-16")
     assert schedule is not None

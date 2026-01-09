@@ -93,6 +93,8 @@
 - Added live tests for o3 reasoning effort values and invalid `max_output_tokens`.
 - Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and rejects `none`/`minimal`/`xhigh`.
 - Added provider price schedule capture to response-derived metadata.
+- Enabled OpenAI streaming response capture with SSE delta assembly for long outputs.
+- Added an opt-in live OpenAI streaming test that validates long-form delta assembly.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.

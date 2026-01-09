@@ -55,6 +55,7 @@ def run_openai_puzzle(
     temperature: float | None = None,
     reasoning: dict[str, Any] | None = None,
     seed: int | None = None,
+    stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
     run_id: str | None = None,
@@ -78,6 +79,7 @@ def run_openai_puzzle(
         temperature=temperature,
         reasoning=reasoning,
         seed=seed,
+        stream=stream,
     )
 
     store = ResponseStore(responses_dir or _default_responses_dir())
@@ -107,9 +109,29 @@ def run_openai_puzzle(
         f"requesting puzzle={puzzle.name} model={model}",
         flush=True,
     )
+    max_tokens = request_payload.get("max_output_tokens")
+    progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
+    last_progress = {"chars": 0}
+
+    def _progress(chars: int) -> None:
+        if progress_width <= 0:
+            return
+        if chars == last_progress["chars"]:
+            return
+        last_progress["chars"] = chars
+        # during streaming, we only have the characters themselves
+        # use "1 token per 4 characters" standard estimate
+        capped = str(int(chars/4)).zfill(progress_width)
+        total = str(max_tokens).zfill(progress_width)
+        print(f"\rReceived ≈{capped} / {total} tokens", end="", flush=True)
+
     response_payload = send_response_request(
-        request_payload, api_key=api_key or require_api_key()
+        request_payload,
+        api_key=api_key or require_api_key(),
+        progress_callback=_progress if stream else None,
     )
+    if stream and progress_width > 0:
+        print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = extract_output_text(response_payload)
     input_text = format_input_text(system_prompt.text, puzzle.text)

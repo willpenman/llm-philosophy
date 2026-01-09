@@ -7,7 +7,7 @@
 ## Model parameter availability
 - Source: pasted Responses API docs below plus live call results.
 - o3-2025-04-16:
-  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`.
+  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options` (per docs; not yet live-verified).
   - Not supported: `temperature`, `top_p` (live call returns 400 unsupported parameter).
   - Constraints: `max_output_tokens` must be >= 16. Upper bound not yet confirmed; a live call with 100001 succeeded.
   - Reasoning effort values:

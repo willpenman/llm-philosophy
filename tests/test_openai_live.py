@@ -12,6 +12,8 @@ import pytest
 
 from providers.openai import create_response  # noqa: E402
 
+ROOT = Path(__file__).resolve().parents[1]
+
 def _load_dotenv_if_present() -> None:
     env_path = ROOT / ".env"
     if not env_path.exists():
@@ -164,3 +166,27 @@ def test_openai_rejects_too_low_max_output_tokens_live(model: str) -> None:
             raise
     else:
         raise AssertionError("Expected max_output_tokens to be rejected.")
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+def test_openai_streaming_captures_long_output_live(model: str) -> None:
+    _skip_if_live_disabled()
+    response = _create_response_or_skip_on_server_error(
+        system_prompt="You are a test harness. Follow the user's instructions.",
+        user_prompt=(
+            "Write a long, continuous response of about 300 words about the "
+            "philosophical implications of model introspection. End with the word END."
+        ),
+        model=model,
+        max_output_tokens=4000,
+        stream=True,
+        stream_options={"include_obfuscation": False},
+        reasoning={"effort": "medium"},
+    )
+    payload = response.payload
+    assert payload.get("stream") is True
+    events = payload.get("events")
+    assert isinstance(events, list)
+    assert response.output_text.strip().endswith("END")
+    assert len(response.output_text) > 100
