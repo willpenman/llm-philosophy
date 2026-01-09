@@ -92,4 +92,4 @@
 - Confirm live test expectations (success + invalid reasoning effort) against actual API behavior.
 - Run a live call to verify `reasoning` fields are accepted and inspect returned output.
 - Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
-- Confirm o3 `max_output_tokens` upper bound via higher values.
+- Add additional OpenAI models to live test model list with contrasting parameter support.
