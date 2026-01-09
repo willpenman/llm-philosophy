@@ -42,21 +42,20 @@
 - Append-only JSONL files partitioned by provider/model, not by run.
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.
 - `responses/<provider>/<model>/responses.jsonl` for structured outputs and metadata.
-- `responses/<provider>/<model>/texts/` for readable response files (one per response, `.md` for GitHub rendering).
+- `responses/<provider>/<model>/texts/` for raw response text files (one per response).
 - `run_id` is a correlation ID stored inside each JSONL record; use it for batch lookup.
 - Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
-- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.md` (UTC timestamp).
+- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC timestamp).
 - Text file contents should be standalone:
-  `{puzzle_label}: {full_puzzle_name}` (with Markdown hard break)
-  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]` (with Markdown hard break)
-  `Completed: {date in "Mmm dd, yyyy" (UTC)}` (with Markdown hard break)
+  `{puzzle_label}: {full_puzzle_name}`
+  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]`
+  `Completed: {date in "Mmm dd, yyyy" (UTC)}`
 
   `---- INPUT ----`
-  `{input text, with line breaks preserved via Markdown hard breaks}`
+  `{input text, including labels of "System", "User", or provider-specific roles}`
 
   `---- {model_alias_or_snapshot}'S OUTPUT ----`
-  `{output text, with line breaks preserved via Markdown hard breaks}`
-- Rationale: GitHub Markdown collapses single newlines inside paragraphs; using Markdown hard breaks (two trailing spaces) preserves line breaks while still allowing line wrapping in the preview.
+  `{output text}`
 
   `{response text}`
 - `special_settings` covers non-default parameters (e.g., temperature sweeps) and may be provider-specific.

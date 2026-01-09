@@ -49,15 +49,6 @@ def _format_display_date(created_at: str) -> str:
     return timestamp.strftime("%b %d, %Y")
 
 
-def _markdown_with_breaks(text: str) -> str:
-    lines = text.splitlines()
-    return "\n".join(f"{line}  " if line else "" for line in lines)
-
-
-def _markdown_line(text: str) -> str:
-    return f"{text}  " if text else ""
-
-
 def _text_filename(
     special_settings: str,
     puzzle_name: str,
@@ -67,7 +58,7 @@ def _text_filename(
     version = puzzle_version or "unknown"
     settings = normalize_special_settings(special_settings)
     timestamp = _format_filename_timestamp(created_at)
-    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.md"
+    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.txt"
 
 
 def _base_record(
@@ -189,17 +180,15 @@ class ResponseStore:
         puzzle_prefix = puzzle_title_prefix or "Philosophy problem"
         text_body = "\n".join(
             [
-                _markdown_line(f"{puzzle_prefix}: {display_name}"),
-                _markdown_line(
-                    f"Model: {model_display} ({provider_display}){settings_display}"
-                ),
-                _markdown_line(f"Completed: {display_date}"),
+                f"{puzzle_prefix}: {display_name}",
+                f"Model: {model_display} ({provider_display}){settings_display}",
+                f"Completed: {display_date}",
                 "",
-                _markdown_line("---- INPUT ----"),
-                _markdown_with_breaks(input_text),
+                "---- INPUT ----",
+                input_text,
                 "",
-                _markdown_line(f"---- {model_display}'S OUTPUT ----"),
-                _markdown_with_breaks(output_text),
+                f"---- {model_display}'S OUTPUT ----",
+                output_text,
             ]
         )
         text_path.write_text(text_body, encoding="utf-8")
