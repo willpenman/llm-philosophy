@@ -47,14 +47,14 @@
 - Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
 - Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC timestamp).
 - Text file contents should be standalone:
-  `{full_puzzle_name}`
-  `{model} ({provider}), {special_settings}`
-  `{date}`
+  `{puzzle_label}: {full_puzzle_name}`
+  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]`
+  `Completed: {date in "Mmm dd, yyyy" (UTC)}`
 
-  `Input:`
+  `---- INPUT ----`
   `{input text, including labels of "System", "User", or provider-specific roles}`
 
-  `Output:`
+  `---- {model_alias_or_snapshot}'S OUTPUT ----`
   `{output text}`
 
   `{response text}`
@@ -75,6 +75,8 @@
 - Always use snapshot model names (e.g., `o3-2025-04-16`) to keep runs reproducible.
 - Default to the highest available reasoning effort for each provider (provider-specific parameter names).
 - Request the most detailed reasoning visibility available (e.g., `summary: detailed` or full reasoning where supported).
+- Omit tool configuration entirely unless tools are required; some providers (OpenAI) report more reliable reasoning summaries when `tools` is absent.
+- Since we encourage long outputs, prefer streaming when the provider supports it (e.g., Anthropic guidance); capture partials if needed.
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
 - OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
 - TODO: include links to each provider's dev docs.

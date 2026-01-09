@@ -43,6 +43,12 @@ def _format_filename_timestamp(created_at: str) -> str:
     return timestamp.strftime("%Y-%m-%dT%H%M%SZ")
 
 
+def _format_display_date(created_at: str) -> str:
+    timestamp = datetime.fromisoformat(created_at)
+    timestamp = timestamp.astimezone(timezone.utc)
+    return timestamp.strftime("%b %d, %Y")
+
+
 def _text_filename(
     special_settings: str,
     puzzle_name: str,
@@ -124,7 +130,10 @@ class ResponseStore:
         created_at: str,
         provider: str,
         model: str,
+        model_alias: str | None = None,
+        provider_alias: str | None = None,
         puzzle_name: str,
+        puzzle_title_prefix: str | None = None,
         puzzle_version: str | None,
         puzzle_title: str | None = None,
         special_settings: str,
@@ -160,16 +169,25 @@ class ResponseStore:
         )
         text_path = text_dir / filename
         display_name = puzzle_title or puzzle_name
+        model_display = model_alias or model
+        provider_display = provider_alias or provider
+        settings_display = (
+            ""
+            if normalize_special_settings(special_settings) == "default"
+            else f", {special_settings}"
+        )
+        display_date = _format_display_date(created_at)
+        puzzle_prefix = puzzle_title_prefix or "Philosophy problem"
         text_body = "\n".join(
             [
-                display_name,
-                f"{model} ({provider}), {special_settings}",
-                created_at,
+                f"{puzzle_prefix}: {display_name}",
+                f"Model: {model_display} ({provider_display}){settings_display}",
+                f"Completed: {display_date}",
                 "",
-                "Input:",
+                "---- INPUT ----",
                 input_text,
                 "",
-                "Output:",
+                f"---- {model_display}'S OUTPUT ----",
                 output_text,
             ]
         )

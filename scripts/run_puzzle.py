@@ -34,6 +34,7 @@ def main() -> None:
     )
     parser.add_argument("name", help="Puzzle name (filename without .py)")
     parser.add_argument("--model", default="o3-2025-04-16", help="Model snapshot name")
+    parser.add_argument("--max-output-tokens", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
     parser.add_argument("--special-settings", default=None)
     parser.add_argument("--dry-run", action="store_true")
@@ -46,13 +47,8 @@ def main() -> None:
         model=args.model,
         max_output_tokens=args.max_output_tokens,
         temperature=args.temperature,
-        seed=args.seed,
         special_settings=args.special_settings,
-        dry_run=args.dry_run,
-        puzzle_dir=_optional_path(args.puzzle_dir),
-        system_path=_optional_path(args.system_path),
-        responses_dir=_optional_path(args.responses_dir),
-        api_key=args.api_key,
+        dry_run=args.dry_run
     )
 
     print(f"run_id={result.run_id}")
@@ -61,8 +57,6 @@ def main() -> None:
         print("response_text_path=None")
         return
     print(f"response_text_path={result.response_text_path}")
-    print("\nOutput:\n")
-    print(result.output_text)
 
 
 if __name__ == "__main__":

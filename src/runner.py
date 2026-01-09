@@ -9,6 +9,8 @@ from uuid import uuid4
 
 from providers.openai import (
     build_response_request,
+    display_model_name,
+    display_provider_name,
     extract_output_text,
     price_schedule_for_model,
     require_api_key,
@@ -49,7 +51,7 @@ def run_openai_puzzle(
     *,
     puzzle_name: str,
     model: str = "o3-2025-04-16",
-    max_output_tokens: int | None,
+    max_output_tokens: int | None = None,
     temperature: float | None = None,
     reasoning: dict[str, Any] | None = None,
     seed: int | None = None,
@@ -101,6 +103,10 @@ def run_openai_puzzle(
         )
 
     request_started_at = created_at
+    print(
+        f"requesting puzzle={puzzle.name} model={model}",
+        flush=True,
+    )
     response_payload = send_response_request(
         request_payload, api_key=api_key or require_api_key()
     )
@@ -116,12 +122,16 @@ def run_openai_puzzle(
     price_schedule = price_schedule_for_model(model)
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
+    derived["model_alias"] = display_model_name(model)
     stored_text = store.record_response(
         run_id=run_id,
         created_at=created_at,
         provider=provider,
         model=model,
+        model_alias=display_model_name(model),
+        provider_alias=display_provider_name(provider),
         puzzle_name=puzzle.name,
+        puzzle_title_prefix="Philosophy problem",
         puzzle_version=puzzle.version,
         puzzle_title=puzzle.title,
         special_settings=special_settings_label,

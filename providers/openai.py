@@ -20,6 +20,13 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
 }
 
+MODEL_ALIASES: dict[str, str] = {
+    "o3-2025-04-16": "o3",
+}
+
+PROVIDER_ALIASES: dict[str, str] = {
+    "openai": "OpenAI",
+}
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -44,6 +51,14 @@ def price_schedule_for_model(model: str) -> dict[str, Any] | None:
         "input": schedule["input"],
         "output": schedule["output"],
     }
+
+
+def display_model_name(model: str) -> str:
+    return MODEL_ALIASES.get(model, model)
+
+
+def display_provider_name(provider: str) -> str:
+    return PROVIDER_ALIASES.get(provider, provider)
 
 
 def _content_item(text: str) -> dict[str, str]:
@@ -86,7 +101,7 @@ def build_response_request(
         payload["top_p"] = top_p
     if reasoning is not None:
         payload["reasoning"] = reasoning
-    if tools is not None:
+    if tools:
         payload["tools"] = tools
     if tool_choice is not None:
         payload["tool_choice"] = tool_choice
