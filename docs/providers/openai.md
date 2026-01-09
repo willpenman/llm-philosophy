@@ -15,6 +15,17 @@
   - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
 - TODO: find the true `max_output_tokens` upper bound.
 
+## Reasoning effort defaults (docs excerpt)
+- Supported values: `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.
+- gpt-5.1 defaults to `none` (no reasoning). Supported values for gpt-5.1: `none`, `low`, `medium`, `high`. Tool calls supported for all reasoning values in gpt-5.1.
+- All models before gpt-5.1 default to `medium` reasoning effort, and do not support `none`.
+- gpt-5-pro defaults to (and only supports) `high` reasoning effort.
+- `xhigh` is supported for all models after gpt-5.1-codex-max.
+
+## Pricing schedule (draft)
+- Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
+- o3-2025-04-16: input/output USD per million tokens (values TBD).
+
 Docs pasted in lieu of direct access:
 Request body
 background

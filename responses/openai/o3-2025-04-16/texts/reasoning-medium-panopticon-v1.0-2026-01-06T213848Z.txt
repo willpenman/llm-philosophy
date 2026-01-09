@@ -1,5 +1,5 @@
 LLM Panopticon
-o3-2025-04-16 (openai), default
+o3-2025-04-16 (openai), reasoning-medium
 2026-01-06T21:38:48.860185+00:00
 
 Input:

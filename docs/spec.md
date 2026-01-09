@@ -15,10 +15,12 @@
 - Store all metadata - provider name, model name, temperature, max tokens (always set to model max), stop sequences, seed, thinking tokens, request IDs.
 - Store full provider request/response blobs without lossy normalization.
 - Record model cost structure (input/output pricing) to compute per-run cost.
+- Pricing can be multi-tiered by modality, service tier, or output length (e.g., Gemini long-output pricing); keep room to extend beyond input/output.
 - Persist timing info (request start/end, latency).
 - Keep request/response pairs in JSONL for aggregation.
 - Generate a readable format that is just the raw response text (one file per response).
 - Leave room for analysis workflows (possibly in a separate repo linked by run IDs).
+- Avoid duplicating `run_id` inside provider payloads unless the API requires it.
 
 ## Prompt module expectations
 - Each prompt is a `.py` module that exposes a single prompt string plus optional metadata.
@@ -62,7 +64,7 @@
 - Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`, `puzzle_version`, `special_settings`.
 - `request` holds the full provider request payload as sent.
 - `response` holds the full provider response payload as received.
-- Optional: `derived` for normalized conveniences (tokens, cost) if computed.
+- Optional: `derived` for normalized conveniences (tokens, cost, price schedule) if computed.
 
 ## Provider handling
 - Normalize across providers with a thin adapter interface.
@@ -70,6 +72,7 @@
 - Avoid hardcoding credentials; use environment variables.
 - Provide a dry-run mode that writes the request payloads without sending them.
 - Always use snapshot model names (e.g., `o3-2025-04-16`) to keep runs reproducible.
+- Default to the highest available reasoning effort for each provider (provider-specific parameter names).
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
 - OpenAI Responses API docs: https://platform.openai.com/docs/api-reference/responses
 - TODO: include links to each provider's dev docs.
@@ -85,6 +88,7 @@
 - Live OpenAI call accepted `max_output_tokens=100001`, upper bound still unknown.
 - Added live tests for o3 reasoning effort values and invalid `max_output_tokens`.
 - Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and rejects `none`/`minimal`/`xhigh`.
+- Added provider price schedule capture to response-derived metadata.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
@@ -93,3 +97,5 @@
 - Run a live call to verify `reasoning` fields are accepted and inspect returned output.
 - Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
 - Add additional OpenAI models to live test model list with contrasting parameter support.
+- Fill in OpenAI per-model input/output pricing values.
+- Capture Gemini long-output pricing tiers when adding Gemini support.

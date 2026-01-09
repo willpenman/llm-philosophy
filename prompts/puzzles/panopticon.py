@@ -2,7 +2,7 @@
 
 PUZZLE_NAME = "panopticon"
 PUZZLE_TITLE = "LLM Panopticon"
-PUZZLE_VERSION = "1.0"
+PUZZLE_VERSION = "0.8"
 
 PUZZLE_TEXT = (
     """Problem: LLM panopticon 

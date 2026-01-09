@@ -10,6 +10,7 @@ from uuid import uuid4
 from providers.openai import (
     build_response_request,
     extract_output_text,
+    price_schedule_for_model,
     require_api_key,
     send_response_request,
 )
@@ -50,6 +51,7 @@ def run_openai_puzzle(
     model: str = "o3-2025-04-16",
     max_output_tokens: int | None,
     temperature: float | None = None,
+    reasoning: dict[str, Any] | None = None,
     seed: int | None = None,
     special_settings: str | None = None,
     dry_run: bool = False,
@@ -64,6 +66,7 @@ def run_openai_puzzle(
     run_id = run_id or uuid4().hex
     provider = "openai"
     special_settings_label = normalize_special_settings(special_settings)
+    reasoning = reasoning or {"effort": "high"}
 
     request_payload = build_response_request(
         system_prompt=system_prompt.text,
@@ -71,8 +74,8 @@ def run_openai_puzzle(
         model=model,
         max_output_tokens=max_output_tokens,
         temperature=temperature,
+        reasoning=reasoning,
         seed=seed,
-        metadata={"run_id": run_id},
     )
 
     store = ResponseStore(responses_dir or _default_responses_dir())
@@ -104,6 +107,15 @@ def run_openai_puzzle(
     request_completed_at = utc_now_iso()
     output_text = extract_output_text(response_payload)
     input_text = format_input_text(system_prompt.text, puzzle.text)
+    derived: dict[str, Any] = {
+        "timing": {
+            "request_started_at": request_started_at,
+            "request_completed_at": request_completed_at,
+        }
+    }
+    price_schedule = price_schedule_for_model(model)
+    if price_schedule is not None:
+        derived["price_schedule"] = price_schedule
     stored_text = store.record_response(
         run_id=run_id,
         created_at=created_at,
@@ -117,12 +129,7 @@ def run_openai_puzzle(
         response_payload=response_payload,
         input_text=input_text,
         output_text=output_text,
-        derived={
-            "timing": {
-                "request_started_at": request_started_at,
-                "request_completed_at": request_completed_at,
-            }
-        },
+        derived=derived,
     )
     return RunResult(
         run_id=run_id,

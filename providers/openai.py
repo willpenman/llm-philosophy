@@ -16,6 +16,10 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
 }
 
+PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
+    "o3-2025-04-16": {"input": 2.0, "output": 8.0},
+}
+
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -28,6 +32,18 @@ def require_api_key(env_var: str = "OPENAI_API_KEY") -> str:
     if not api_key:
         raise EnvironmentError(f"Missing {env_var} for OpenAI API access")
     return api_key
+
+
+def price_schedule_for_model(model: str) -> dict[str, Any] | None:
+    schedule = PRICE_SCHEDULES_USD_PER_MILLION.get(model)
+    if schedule is None:
+        return None
+    return {
+        "currency": "usd",
+        "unit": "per_million_tokens",
+        "input": schedule["input"],
+        "output": schedule["output"],
+    }
 
 
 def _content_item(text: str) -> dict[str, str]:

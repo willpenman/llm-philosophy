@@ -19,7 +19,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 - Prefer minimal, local tests that validate core invariants and avoid external dependencies.
 - When adding new provider/model functionality, create tests that verify the parameters and values most relevant to this eval suite: system prompt, temperature, max output length, level of reasoning/thinking, tool use. These differ per model and some models may not have these available!
 - Consider existing tests before adding new ones; do not duplicate tests.
-- When adding a model, use the parametrize lists to add it per test; test only the new one by passing the -k flag
+- When adding support for a new model, use the parametrize lists to add it per live test; test only the new one by passing the -k flag
 - Paid/live provider tests must be opt-in and clearly labeled with cost and env requirements (e.g., `@pytest.mark.live`, `RUN_LIVE_OPENAI=1`, `OPENAI_API_KEY`). Default runs should skip them.
 
 ## Working agreement
@@ -35,3 +35,6 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Pointers
 - Detailed storage conventions, JSONL schema sketch, and provider notes live in `docs/spec.md`.
+
+## Long-term insights
+- Cost modeling needs to support multi-tier pricing (modality, service tier, long-output tiers like Gemini) beyond simple input/output rates.
