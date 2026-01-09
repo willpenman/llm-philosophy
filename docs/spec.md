@@ -47,20 +47,16 @@
 - Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
 - Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.md` (UTC timestamp).
 - Text file contents should be standalone:
-  `{puzzle_label}: {full_puzzle_name}`
-  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]`
-  `Completed: {date in "Mmm dd, yyyy" (UTC)}`
+  `{puzzle_label}: {full_puzzle_name}` (with Markdown hard break)
+  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]` (with Markdown hard break)
+  `Completed: {date in "Mmm dd, yyyy" (UTC)}` (with Markdown hard break)
 
   `---- INPUT ----`
-  ```text
-  `{input text, including labels of "System", "User", or provider-specific roles}`
-  ```
+  `{input text, with line breaks preserved via Markdown hard breaks}`
 
   `---- {model_alias_or_snapshot}'S OUTPUT ----`
-  ```text
-  `{output text}`
-  ```
-- Rationale: GitHub Markdown collapses single newlines inside paragraphs; wrapping input/output in fenced code blocks preserves the model's original line breaks and spacing.
+  `{output text, with line breaks preserved via Markdown hard breaks}`
+- Rationale: GitHub Markdown collapses single newlines inside paragraphs; using Markdown hard breaks (two trailing spaces) preserves line breaks while still allowing line wrapping in the preview.
 
   `{response text}`
 - `special_settings` covers non-default parameters (e.g., temperature sweeps) and may be provider-specific.
