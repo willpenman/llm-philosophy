@@ -42,10 +42,10 @@
 - Append-only JSONL files partitioned by provider/model, not by run.
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.
 - `responses/<provider>/<model>/responses.jsonl` for structured outputs and metadata.
-- `responses/<provider>/<model>/texts/` for raw response text files (one per response).
+- `responses/<provider>/<model>/texts/` for readable response files (one per response, `.md` for GitHub rendering).
 - `run_id` is a correlation ID stored inside each JSONL record; use it for batch lookup.
 - Optional: `responses/runs.jsonl` to store per-run metadata (puzzle set, models, timestamp).
-- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC timestamp).
+- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.md` (UTC timestamp).
 - Text file contents should be standalone:
   `{puzzle_label}: {full_puzzle_name}`
   `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings if not default}]`

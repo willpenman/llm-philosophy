@@ -58,7 +58,7 @@ def _text_filename(
     version = puzzle_version or "unknown"
     settings = normalize_special_settings(special_settings)
     timestamp = _format_filename_timestamp(created_at)
-    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.txt"
+    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.md"
 
 
 def _base_record(
