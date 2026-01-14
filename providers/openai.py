@@ -14,19 +14,24 @@ DEFAULT_BASE_URL = "https://api.openai.com/v1/responses"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
+    "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
 }
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
+    "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
 }
 
 MODEL_ALIASES: dict[str, str] = {
     "o3-2025-04-16": "o3",
+    "gpt-4o-2024-05-13": "4o",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
     "openai": "OpenAI",
 }
+
+REASONING_MODELS: set[str] = {"o3-2025-04-16"}
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -59,6 +64,10 @@ def display_model_name(model: str) -> str:
 
 def display_provider_name(provider: str) -> str:
     return PROVIDER_ALIASES.get(provider, provider)
+
+
+def supports_reasoning(model: str) -> bool:
+    return model in REASONING_MODELS
 
 
 def _content_item(text: str) -> dict[str, str]:

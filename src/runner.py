@@ -15,6 +15,7 @@ from providers.openai import (
     price_schedule_for_model,
     require_api_key,
     send_response_request,
+    supports_reasoning,
 )
 from src.puzzles import Puzzle, load_puzzle
 from src.storage import ResponseStore, format_input_text, normalize_special_settings, utc_now_iso
@@ -69,7 +70,8 @@ def run_openai_puzzle(
     run_id = run_id or uuid4().hex
     provider = "openai"
     special_settings_label = normalize_special_settings(special_settings)
-    reasoning = reasoning or {"effort": "high", "summary": "detailed"}
+    if reasoning is None and supports_reasoning(model):
+        reasoning = {"effort": "high", "summary": "detailed"}
 
     request_payload = build_response_request(
         system_prompt=system_prompt.text,

@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
-from providers.openai import build_response_request, price_schedule_for_model  # noqa: E402
+import pytest
+
+from providers.openai import (  # noqa: E402
+    build_response_request,
+    display_model_name,
+    price_schedule_for_model,
+)
 
 
 def test_build_response_request_includes_system_and_user() -> None:
@@ -39,6 +45,16 @@ def test_build_response_request_supports_o3_parameters() -> None:
     assert payload["reasoning"]["effort"] == "medium"
     assert payload["tools"][0]["name"] == "noop"
     assert payload["tool_choice"] == "auto"
+
+
+def test_build_response_request_uses_gpt4o_default_max_output_tokens() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="gpt-4o-2024-05-13",
+        max_output_tokens=None,
+    )
+    assert payload["max_output_tokens"] == 64000
 
 
 def test_build_response_request_includes_temperature_when_set() -> None:
@@ -87,9 +103,22 @@ def test_build_response_request_includes_streaming_flags() -> None:
     assert payload["stream_options"]["include_obfuscation"] is False
 
 
-def test_price_schedule_for_model_includes_units() -> None:
-    schedule = price_schedule_for_model("o3-2025-04-16")
+@pytest.mark.parametrize(
+    ("model", "alias", "input_cost", "output_cost"),
+    [
+        ("o3-2025-04-16", "o3", 2.0, 8.0),
+        ("gpt-4o-2024-05-13", "4o", 2.5, 10.0),
+    ],
+)
+def test_price_schedule_for_model_includes_units(
+    model: str,
+    alias: str,
+    input_cost: float,
+    output_cost: float,
+) -> None:
+    schedule = price_schedule_for_model(model)
     assert schedule is not None
     assert schedule["unit"] == "per_million_tokens"
-    assert "input" in schedule
-    assert "output" in schedule
+    assert schedule["input"] == input_cost
+    assert schedule["output"] == output_cost
+    assert display_model_name(model) == alias

@@ -14,6 +14,7 @@ from providers.openai import create_response  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
+
 def _load_dotenv_if_present() -> None:
     env_path = ROOT / ".env"
     if not env_path.exists():
@@ -46,28 +47,47 @@ def _create_response_or_skip_on_server_error(**kwargs):
         raise
 
 
+# ACCEPTS SYSTEM
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_reasoning_and_tools_live(model: str) -> None:
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
+def test_openai_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
         model=model,
         max_output_tokens=16,
-        reasoning={"effort": "medium"},
-        tools=[
-            {
-                "type": "function",
-                "name": "noop",
-                "description": "No-op tool.",
-                "parameters": {"type": "object", "properties": {}},
-            }
-        ],
-        tool_choice="none",
     )
-    assert isinstance(response.output_text, str)
+    assert "OK" in response.output_text.upper()
 
+
+# TEMPERATURE AND TOP_P
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13"])
+def test_openai_accepts_temperature_top_p_live(model: str) -> None:
+    _skip_if_live_disabled()
+    response = _create_response_or_skip_on_server_error(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=16,
+        temperature=0.2,
+        top_p=0.9,
+    )
+    assert "OK" in response.output_text.upper()
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+def test_openai_rejects_top_p_live(model: str) -> None:
+    _skip_if_live_disabled()
+    with pytest.raises(RuntimeError, match=r"top_p"):
+        create_response(
+            system_prompt="System.",
+            user_prompt="User.",
+            model=model,
+            max_output_tokens=16,
+            top_p=0.9,
+        )
 
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["o3-2025-04-16"])
@@ -83,33 +103,27 @@ def test_openai_rejects_temperature_live(model: str) -> None:
         )
 
 
+# REASONING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_rejects_top_p_live(model: str) -> None:
-    _skip_if_live_disabled()
-    with pytest.raises(RuntimeError, match=r"top_p"):
-        create_response(
-            system_prompt="System.",
-            user_prompt="User.",
-            model=model,
-            max_output_tokens=16,
-            top_p=0.9,
-        )
-
-
-# this "should" be a failure, the docs record 100,000 as the limit
-@pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_accepts_high_max_output_tokens_live(model: str) -> None:
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
+def test_openai_accepts_tools_live(model: str) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
-        system_prompt="System.",
-        user_prompt="User.",
+        system_prompt="You are a test harness.",
+        user_prompt="Reply by using the noop tool, use property 'OK'.",
         model=model,
-        max_output_tokens=100001,
+        max_output_tokens=30,
+        tools=[
+            {
+                "type": "function",
+                "name": "noop",
+                "description": "No-op tool.",
+                "parameters": {"type": "object", "properties": {}},
+            }
+        ],
+        tool_choice="required",
     )
     assert isinstance(response.output_text, str)
-
 
 @pytest.mark.live
 @pytest.mark.parametrize("effort", ["low", "medium", "high"])
@@ -124,12 +138,24 @@ def test_openai_accepts_reasoning_effort_live(model: str, effort: str) -> None:
         reasoning={"effort": effort},
     )
     assert isinstance(response.output_text, str)
-
+    
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13"])
+def test_openai_rejects_reasoning_live(model: str) -> None:
+    _skip_if_live_disabled()
+    with pytest.raises(RuntimeError, match=r"reasoning"):
+        create_response(
+            system_prompt="System.",
+            user_prompt="User.",
+            model=model,
+            max_output_tokens=16,
+            reasoning={"effort": "medium"},
+        )
 
 @pytest.mark.live
 @pytest.mark.parametrize("effort", ["none", "minimal", "xhigh"])
 @pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_rejects_reasoning_effort_live(model: str, effort: str) -> None:
+def test_openai_rejects_invalid_reasoning_effort_live(model: str, effort: str) -> None:
     _skip_if_live_disabled()
     try:
         create_response(
@@ -147,6 +173,20 @@ def test_openai_rejects_reasoning_effort_live(model: str, effort: str) -> None:
             raise
     else:
         raise AssertionError("Expected reasoning.effort to be rejected.")
+
+# MAX OUTPUT TOKENS
+# max output tokens seems to not throw an error when too high, this "should" be an error
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+def test_openai_accepts_high_max_output_tokens_live(model: str) -> None:
+    _skip_if_live_disabled()
+    response = _create_response_or_skip_on_server_error(
+        system_prompt="System.",
+        user_prompt="User.",
+        model=model,
+        max_output_tokens=1000001,
+    )
+    assert isinstance(response.output_text, str)
 
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["o3-2025-04-16"])
@@ -169,8 +209,9 @@ def test_openai_rejects_too_low_max_output_tokens_live(model: str) -> None:
         raise AssertionError("Expected max_output_tokens to be rejected.")
 
 
+# STREAMING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
 def test_openai_streaming_captures_long_output_live(model: str) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
@@ -183,7 +224,6 @@ def test_openai_streaming_captures_long_output_live(model: str) -> None:
         max_output_tokens=4000,
         stream=True,
         stream_options={"include_obfuscation": False},
-        reasoning={"effort": "medium"},
     )
     assert response.output_text.strip().endswith("END")
     assert len(response.output_text) > 100

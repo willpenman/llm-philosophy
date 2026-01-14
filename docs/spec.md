@@ -112,9 +112,13 @@ across providers.
 - Added an opt-in live OpenAI streaming test that validates streaming output assembly.
 - Streaming runs now store only the completed provider response payload (no SSE events)
   while still capturing streamed text for output.
+- Added gpt-4o snapshot model metadata (alias/pricing) and static request tests.
+- Added opt-in live OpenAI tests for gpt-4o snapshot basic responses and sampling parameters.
+- Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
 
 ## TODO
-- Add additional OpenAI models to the live test model list with contrasting parameters.
+- Confirm gpt-4o-2024-05-13 parameter support (temperature/top_p acceptance, reasoning rejection).
+- Confirm gpt-4o-2024-05-13 `max_output_tokens` upper bound via live calls.
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
 - Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
 - Capture Gemini long-output pricing tiers when adding Gemini support.

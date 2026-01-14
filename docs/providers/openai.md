@@ -6,13 +6,18 @@
 
 ## Model parameter availability
 - Source: pasted Responses API docs below plus live call results.
+- Constraints: `max_output_tokens` is required for any call, and must be >= 16.
 - o3-2025-04-16:
   - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options` (per docs and live-verified).
   - Not supported: `temperature`, `top_p` (live call returns 400 unsupported parameter).
-  - Constraints: `max_output_tokens` must be >= 16. Upper bound not yet confirmed; a live call with 100001 succeeded.
+  - Max output upper bound is not reliably enforced in live calls (100001 and 1000001 both succeeded); trust docs for the effective limit.
   - Reasoning effort values:
     - Live: `low`, `medium`, `high` accepted; others (e.g. `ultra`) rejected - 400 unsupported.
   - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
+- gpt-4o-2024-05-13:
+  - Supported: `system`/`user` input items, `max_output_tokens`, `temperature`, `top_p` (docs and live confirmation).
+  - Not supported: `reasoning` (docs and live confirmation).
+  - Constraints: `max_output_tokens` upper bound expected 64k output (per docs; unconfirmed).
 - TODO: determine if `max_output_tokens` ever outputs an error for being too high; if so, what is the error point for o3 (and how does it relate to the 'true' max tokens, which are recorded as 100k by OAI).
 
 ## Reasoning effort defaults (docs excerpt)
@@ -24,7 +29,8 @@
 
 ## Pricing schedule (draft)
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
-- o3-2025-04-16: input/output USD per million tokens (values TBD).
+- o3-2025-04-16: input $2.00 / output $8.00 per million tokens.
+- gpt-4o-2024-05-13: input $2.50 / output $10.00 per million tokens.
 
 Docs pasted in lieu of direct access:
 Request body

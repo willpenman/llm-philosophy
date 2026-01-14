@@ -19,6 +19,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 - Prefer minimal, local tests that validate core invariants and avoid external dependencies.
 - When adding new provider/model functionality, create tests that verify the parameters and values most relevant to this eval suite: system prompt, temperature, max output length, level of reasoning/thinking, tool use. These differ per model and some models may not have these available!
 - Consider existing tests before adding new ones; do not duplicate tests.
+- Group tests thematically using section comments (keep similar live checks clustered).
 - When adding support for a new model, use the parametrize lists to add it per live test; test only the new one by passing the -k flag
 - Paid/live provider tests must be opt-in and clearly labeled with cost and env requirements, pass in the relevant RUN_LIVE flag (e.g., `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest -k streaming_captures_long_output_live -m live`). Default runs should skip them.
 
