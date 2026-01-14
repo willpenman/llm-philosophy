@@ -97,6 +97,7 @@ def test_openai_rejects_top_p_live(model: str) -> None:
         )
 
 
+# this "should" be a failure, the docs record 100,000 as the limit
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["o3-2025-04-16"])
 def test_openai_accepts_high_max_output_tokens_live(model: str) -> None:

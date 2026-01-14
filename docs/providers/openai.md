@@ -7,13 +7,13 @@
 ## Model parameter availability
 - Source: pasted Responses API docs below plus live call results.
 - o3-2025-04-16:
-  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options` (per docs; not yet live-verified).
+  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options` (per docs and live-verified).
   - Not supported: `temperature`, `top_p` (live call returns 400 unsupported parameter).
   - Constraints: `max_output_tokens` must be >= 16. Upper bound not yet confirmed; a live call with 100001 succeeded.
   - Reasoning effort values:
     - Live: `low`, `medium`, `high` accepted; others (e.g. `ultra`) rejected - 400 unsupported.
   - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
-- TODO: find the true `max_output_tokens` upper bound.
+- TODO: determine if `max_output_tokens` ever outputs an error for being too high; if so, what is the error point for o3 (and how does it relate to the 'true' max tokens, which are recorded as 100k by OAI).
 
 ## Reasoning effort defaults (docs excerpt)
 - Supported values: `none`, `minimal`, `low`, `medium`, `high`, `xhigh`.
