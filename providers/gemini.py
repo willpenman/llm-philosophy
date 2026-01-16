@@ -25,6 +25,7 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
+    "gemini-3-pro-preview": {"input": 2.0, "output": 12.0},
 }
 
 PROVIDER_ALIASES: dict[str, str] = {

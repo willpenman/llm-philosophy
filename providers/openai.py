@@ -201,14 +201,24 @@ def _extract_output_text_from_stream(events: list[dict[str, Any]]) -> str:
 
 def _coalesce_reasoning_summary_parts(
     *,
-    done_texts: dict[int, str],
+    done_order: list[tuple[int | None, str]],
     delta_chunks: dict[int, list[str]],
 ) -> list[str]:
     parts: list[str] = []
-    for index in sorted(set(done_texts) | set(delta_chunks)):
-        done_text = done_texts.get(index)
-        if isinstance(done_text, str) and done_text:
-            parts.append(done_text)
+    used_indices: set[int] = set()
+    for index, text in done_order:
+        if isinstance(text, str) and text:
+            parts.append(text)
+            if isinstance(index, int):
+                used_indices.add(index)
+            continue
+        if isinstance(index, int):
+            deltas = delta_chunks.get(index)
+            if isinstance(deltas, list) and deltas:
+                parts.append("".join(deltas))
+                used_indices.add(index)
+    for index in sorted(delta_chunks):
+        if index in used_indices:
             continue
         deltas = delta_chunks.get(index)
         if isinstance(deltas, list) and deltas:
@@ -222,12 +232,12 @@ def inject_reasoning_summary_from_stream(
 ) -> None:
     if not isinstance(response_payload, dict) or not isinstance(stream_capture, dict):
         return
-    done_texts = stream_capture.get("reasoning_summary_done")
+    done_order = stream_capture.get("reasoning_summary_done_order")
     delta_chunks = stream_capture.get("reasoning_summary_deltas")
-    if not isinstance(done_texts, dict) or not isinstance(delta_chunks, dict):
+    if not isinstance(done_order, list) or not isinstance(delta_chunks, dict):
         return
     summary_parts = _coalesce_reasoning_summary_parts(
-        done_texts=done_texts,
+        done_order=done_order,
         delta_chunks=delta_chunks,
     )
     if not summary_parts:
@@ -272,7 +282,7 @@ def send_response_request(
                 streamed_chars = 0
                 response_payload: dict[str, Any] | None = None
                 summary_chunks: dict[int, list[str]] = {}
-                summary_done_texts: dict[int, str] = {}
+                summary_done_order: list[tuple[int | None, str]] = []
                 sse_handle = None
                 if sse_event_path is not None:
                     sse_event_path.parent.mkdir(parents=True, exist_ok=True)
@@ -301,7 +311,11 @@ def send_response_request(
                             if isinstance(index, int) and isinstance(part, dict):
                                 text = part.get("text")
                                 if isinstance(text, str):
-                                    summary_done_texts[index] = text
+                                    summary_done_order.append((index, text))
+                            elif isinstance(part, dict):
+                                text = part.get("text")
+                                if isinstance(text, str):
+                                    summary_done_order.append((None, text))
                         elif event.get("type") in {
                             "response.completed",
                             "response.failed",
@@ -313,7 +327,7 @@ def send_response_request(
                     if sse_handle is not None:
                         sse_handle.close()
                 if stream_capture is not None:
-                    stream_capture["reasoning_summary_done"] = summary_done_texts
+                    stream_capture["reasoning_summary_done_order"] = summary_done_order
                     stream_capture["reasoning_summary_deltas"] = summary_chunks
                 return response_payload or {}
             body = response.read().decode("utf-8")

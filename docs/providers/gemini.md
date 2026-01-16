@@ -31,6 +31,10 @@
 ## Pricing schedule (draft)
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
 - gemini-2.0-flash-lite-001: input $0.075 / output $0.30 per million tokens.
+- gemini-3-pro-preview: input $2.00 / output $12.00 per million tokens.
+
+## Pricing tier note
+- Gemini 3 Pro uses an input-length tiered schedule, but we assume prompts stay under the 200k input threshold and keep a single input/output rate for pricing.
 
 ## SDK usage reference
 ```python

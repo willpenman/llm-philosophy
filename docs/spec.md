@@ -35,6 +35,7 @@ across providers.
 - Store full provider request/response payloads without lossy normalization.
 - Persist timing info (request start/end, latency).
 - Record price schedules (input/output pricing) to enable cost computation.
+- Gemini 3 Pro pricing uses input-length tiers; we assume prompts stay under the 200k input threshold and record a single input/output rate.
 - Keep request/response pairs in JSONL for aggregation.
 - Generate a readable text file that is only input/output text (one file per response).
 - Leave room for analysis workflows (possibly in a separate repo linked by run IDs).

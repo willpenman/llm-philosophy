@@ -50,6 +50,33 @@ def _format_timestamp(created_at: str) -> str:
     return timestamp.strftime("%Y-%m-%dT%H%M%SZ")
 
 
+def _build_progress_callback(
+    max_tokens: int | None,
+    *,
+    suffix: str,
+) -> Callable[[int], None]:
+    progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
+    last_progress = {"chars": 0}
+
+    def _progress(chars: int) -> None:
+        if progress_width <= 0:
+            return
+        if chars == last_progress["chars"]:
+            return
+        last_progress["chars"] = chars
+        # during streaming, we only have the characters themselves
+        # use "1 token per 4 characters" standard estimate
+        capped = str(int(chars / 4)).zfill(progress_width)
+        total = str(max_tokens).zfill(progress_width)
+        print(
+            f"\rReceiving output text, ≈ {capped} / {total} {suffix}",
+            end="",
+            flush=True,
+        )
+
+    return _progress
+
+
 def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
@@ -141,20 +168,7 @@ def run_openai_puzzle(
     max_tokens = request_payload.get("max_output_tokens")
     if stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
-    progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
-    last_progress = {"chars": 0}
-
-    def _progress(chars: int) -> None:
-        if progress_width <= 0:
-            return
-        if chars == last_progress["chars"]:
-            return
-        last_progress["chars"] = chars
-        # during streaming, we only have the characters themselves
-        # use "1 token per 4 characters" standard estimate
-        capped = str(int(chars / 4)).zfill(progress_width)
-        total = str(max_tokens).zfill(progress_width)
-        print(f"\rReceived ≈ {capped} / {total} tokens", end="", flush=True)
+    progress_callback = _build_progress_callback(max_tokens, suffix="tokens")
 
     streamed_chunks: list[str] = []
 
@@ -174,13 +188,13 @@ def run_openai_puzzle(
     response_payload = send_response_request(
         request_payload,
         api_key=api_key or require_api_key(),
-        progress_callback=_progress if stream else None,
+        progress_callback=progress_callback if stream else None,
         stream_text_callback=_collect_delta if stream else None,
         sse_event_path=sse_event_path,
         stream_capture=stream_capture,
     )
     inject_reasoning_summary_from_stream(response_payload, stream_capture)
-    if stream and progress_width > 0:
+    if stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = extract_output_text(response_payload)
@@ -319,24 +333,16 @@ def run_gemini_puzzle(
     config = request_payload.get("config")
     if isinstance(config, dict):
         max_tokens = config.get("max_output_tokens")
-    progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
-    last_progress = {"chars": 0}
-
-    def _progress(chars: int) -> None:
-        if progress_width <= 0:
-            return
-        if chars == last_progress["chars"]:
-            return
-        last_progress["chars"] = chars
-        capped = str(int(chars / 4)).zfill(progress_width)
-        total = str(max_tokens).zfill(progress_width)
-        print(f"\rReceived ≈ {capped} / {total} tokens", end="", flush=True)
+    progress_callback = _build_progress_callback(
+        max_tokens,
+        suffix="total possible",
+    )
 
     streamed_chars = {"total": 0}
 
     def _collect_delta(delta: str) -> None:
         streamed_chars["total"] += len(delta)
-        _progress(streamed_chars["total"])
+        progress_callback(streamed_chars["total"])
 
     response = send_generate_content_request(
         request_payload,
@@ -344,7 +350,7 @@ def run_gemini_puzzle(
         stream=stream,
         stream_text_callback=_collect_delta if stream else None,
     )
-    if stream and progress_width > 0:
+    if stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = response.output_text

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from providers.gemini import (
     build_generate_content_request,
     display_model_name,
@@ -48,10 +50,22 @@ def test_build_generate_content_request_omits_empty_tools() -> None:
     assert "tools" not in payload["config"]
 
 
-def test_price_schedule_for_model_includes_units() -> None:
-    schedule = price_schedule_for_model("gemini-2.0-flash-lite-001")
+@pytest.mark.parametrize(
+    ("model", "alias", "input_cost", "output_cost"),
+    [
+        ("gemini-2.0-flash-lite-001", "Gemini 2.0 Flash Lite", 0.075, 0.30),
+        ("gemini-3-pro-preview", "Gemini 3 Pro Preview", 2.0, 12.0),
+    ],
+)
+def test_price_schedule_for_model_includes_units(
+    model: str,
+    alias: str,
+    input_cost: float,
+    output_cost: float,
+) -> None:
+    schedule = price_schedule_for_model(model)
     assert schedule is not None
     assert schedule["unit"] == "per_million_tokens"
-    assert schedule["input"] == 0.075
-    assert schedule["output"] == 0.30
-    assert display_model_name("gemini-2.0-flash-lite-001") == "Gemini 2.0 Flash Lite"
+    assert schedule["input"] == input_cost
+    assert schedule["output"] == output_cost
+    assert display_model_name(model) == alias
