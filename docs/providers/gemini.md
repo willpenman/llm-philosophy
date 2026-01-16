@@ -25,6 +25,7 @@
   - Adapter defaults: `thinking_level="HIGH"` and `include_thoughts=True` when using Gemini 3 Pro.
   - Streaming capture: response payload stores reconstructed thought/output parts (single thought part + single output part) rather than per-chunk streaming parts.
   - Storage note: we do not persist adapter convenience fields like `output_text`/`thoughts_text` in the response payload; the response payload keeps the `candidates[].content.parts` shape as the canonical record.
+  - Thought capture note: reconstructed thought parts remain inside `response.candidates[].content.parts` (not `derived`), since this mirrors the provider payload shape.
   - Versions: preview only (`gemini-3-pro-preview`).
 
 ## Pricing schedule (draft)

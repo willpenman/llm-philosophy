@@ -47,6 +47,16 @@ def test_build_response_request_supports_o3_parameters() -> None:
     assert payload["tool_choice"] == "auto"
 
 
+def test_build_response_request_uses_gpt52_default_max_output_tokens() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="gpt-5.2-2025-12-11",
+        max_output_tokens=None,
+    )
+    assert payload["max_output_tokens"] == 128000
+
+
 def test_build_response_request_uses_gpt4o_default_max_output_tokens() -> None:
     payload = build_response_request(
         system_prompt="System text",
@@ -108,6 +118,7 @@ def test_build_response_request_includes_streaming_flags() -> None:
     [
         ("o3-2025-04-16", "o3", 2.0, 8.0),
         ("gpt-4o-2024-05-13", "4o", 2.5, 10.0),
+        ("gpt-5.2-2025-12-11", "GPT 5.2", 1.75, 14.0),
     ],
 )
 def test_price_schedule_for_model_includes_units(

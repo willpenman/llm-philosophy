@@ -16,6 +16,7 @@ DEFAULT_BASE_URL = "https://api.openai.com/v1/responses"
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
+    "gpt-5.2-2025-12-11": {"max_output_tokens": 128000},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
@@ -23,18 +24,20 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
+    "gpt-5.2-2025-12-11": {"input": 1.75, "output": 14.0},
 }
 
 MODEL_ALIASES: dict[str, str] = {
     "o3-2025-04-16": "o3",
     "gpt-4o-2024-05-13": "4o",
+    "gpt-5.2-2025-12-11": "GPT 5.2",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
     "openai": "OpenAI",
 }
 
-REASONING_MODELS: set[str] = {"o3-2025-04-16"}
+REASONING_MODELS: set[str] = {"o3-2025-04-16", "gpt-5.2-2025-12-11"}
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -196,6 +199,52 @@ def _extract_output_text_from_stream(events: list[dict[str, Any]]) -> str:
     return ""
 
 
+def _coalesce_reasoning_summary_parts(
+    *,
+    done_texts: dict[int, str],
+    delta_chunks: dict[int, list[str]],
+) -> list[str]:
+    parts: list[str] = []
+    for index in sorted(set(done_texts) | set(delta_chunks)):
+        done_text = done_texts.get(index)
+        if isinstance(done_text, str) and done_text:
+            parts.append(done_text)
+            continue
+        deltas = delta_chunks.get(index)
+        if isinstance(deltas, list) and deltas:
+            parts.append("".join(deltas))
+    return parts
+
+
+def inject_reasoning_summary_from_stream(
+    response_payload: dict[str, Any] | None,
+    stream_capture: dict[str, Any] | None,
+) -> None:
+    if not isinstance(response_payload, dict) or not isinstance(stream_capture, dict):
+        return
+    done_texts = stream_capture.get("reasoning_summary_done")
+    delta_chunks = stream_capture.get("reasoning_summary_deltas")
+    if not isinstance(done_texts, dict) or not isinstance(delta_chunks, dict):
+        return
+    summary_parts = _coalesce_reasoning_summary_parts(
+        done_texts=done_texts,
+        delta_chunks=delta_chunks,
+    )
+    if not summary_parts:
+        return
+    summary_text = "\n\n\n".join(summary_parts)
+    outputs = response_payload.get("output")
+    if not isinstance(outputs, list):
+        return
+    for item in outputs:
+        if not isinstance(item, dict):
+            continue
+        if item.get("type") != "reasoning":
+            continue
+        item["summary"] = [{"type": "summary_text", "text": summary_text}]
+        break
+
+
 def send_response_request(
     payload: dict[str, Any],
     *,
@@ -205,6 +254,7 @@ def send_response_request(
     progress_callback: Callable[[int], None] | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
     sse_event_path: Path | None = None,
+    stream_capture: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -221,6 +271,8 @@ def send_response_request(
             if payload.get("stream") is True:
                 streamed_chars = 0
                 response_payload: dict[str, Any] | None = None
+                summary_chunks: dict[int, list[str]] = {}
+                summary_done_texts: dict[int, str] = {}
                 sse_handle = None
                 if sse_event_path is not None:
                     sse_event_path.parent.mkdir(parents=True, exist_ok=True)
@@ -238,6 +290,18 @@ def send_response_request(
                                     stream_text_callback(delta)
                                 if progress_callback is not None:
                                     progress_callback(streamed_chars)
+                        elif event.get("type") == "response.reasoning_summary_text.delta":
+                            delta = event.get("delta")
+                            index = event.get("summary_index")
+                            if isinstance(delta, str) and isinstance(index, int):
+                                summary_chunks.setdefault(index, []).append(delta)
+                        elif event.get("type") == "response.reasoning_summary_part.done":
+                            index = event.get("summary_index")
+                            part = event.get("part")
+                            if isinstance(index, int) and isinstance(part, dict):
+                                text = part.get("text")
+                                if isinstance(text, str):
+                                    summary_done_texts[index] = text
                         elif event.get("type") in {
                             "response.completed",
                             "response.failed",
@@ -248,6 +312,9 @@ def send_response_request(
                 finally:
                     if sse_handle is not None:
                         sse_handle.close()
+                if stream_capture is not None:
+                    stream_capture["reasoning_summary_done"] = summary_done_texts
+                    stream_capture["reasoning_summary_deltas"] = summary_chunks
                 return response_payload or {}
             body = response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:

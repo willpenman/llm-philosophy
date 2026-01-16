@@ -13,6 +13,7 @@ from providers.openai import (
     display_model_name,
     display_provider_name,
     extract_output_text,
+    inject_reasoning_summary_from_stream,
     price_schedule_for_model,
     require_api_key,
     send_response_request,
@@ -162,24 +163,23 @@ def run_openai_puzzle(
 
     sse_event_path = None
     if debug_sse:
-        base_dir = responses_dir or _default_responses_dir()
+        base_dir = _repo_root() / "tmp"
         timestamp = _format_timestamp(created_at)
         sse_event_path = (
-            base_dir
-            / provider
-            / model
-            / "debug"
-            / f"sse-events-{run_id}-{timestamp}.jsonl"
+            base_dir / f"openai-sse-{model}-{run_id}-{timestamp}.jsonl"
         )
         print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
+    stream_capture: dict[str, Any] | None = {} if stream else None
     response_payload = send_response_request(
         request_payload,
         api_key=api_key or require_api_key(),
         progress_callback=_progress if stream else None,
         stream_text_callback=_collect_delta if stream else None,
         sse_event_path=sse_event_path,
+        stream_capture=stream_capture,
     )
+    inject_reasoning_summary_from_stream(response_payload, stream_capture)
     if stream and progress_width > 0:
         print("", flush=True)
     request_completed_at = utc_now_iso()

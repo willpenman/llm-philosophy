@@ -37,22 +37,30 @@ def _skip_if_live_disabled() -> None:
         pytest.skip("Missing OPENAI_API_KEY for live OpenAI tests.")
 
 
-def _create_response_or_skip_on_server_error(**kwargs):
+def _create_response_or_skip_on_server_error(request: pytest.FixtureRequest, **kwargs):
     try:
         return create_response(**kwargs)
     except RuntimeError as exc:
         message = str(exc)
         if "server_error" in message or "Internal Server Error" in message:
-            pytest.skip("OpenAI server error; retry live test.")
+            pytest.skip(
+                f"OpenAI server error in {request.node.nodeid}; retry live test."
+            )
         raise
 
 
 # ACCEPTS SYSTEM
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
-def test_openai_accepts_system_prompt_live(model: str) -> None:
+@pytest.mark.parametrize(
+    "model",
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13"],
+)
+def test_openai_accepts_system_prompt_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
         model=model,
@@ -63,10 +71,13 @@ def test_openai_accepts_system_prompt_live(model: str) -> None:
 
 # TEMPERATURE AND TOP_P
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13"])
-def test_openai_accepts_temperature_top_p_live(model: str) -> None:
+@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13", "gpt-5.2-2025-12-11"])
+def test_openai_accepts_temperature_top_p_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
         model=model,
@@ -82,8 +93,8 @@ def test_openai_rejects_top_p_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"top_p"):
         create_response(
-            system_prompt="System.",
-            user_prompt="User.",
+            system_prompt="You are a test harness. Reply with OK.",
+            user_prompt="Reply with OK.",
             model=model,
             max_output_tokens=16,
             top_p=0.9,
@@ -95,8 +106,8 @@ def test_openai_rejects_temperature_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"Unsupported parameter: 'temperature'"):
         create_response(
-            system_prompt="System.",
-            user_prompt="User.",
+            system_prompt="You are a test harness. Reply with OK.",
+            user_prompt="Reply with OK.",
             model=model,
             max_output_tokens=16,
             temperature=0.2,
@@ -105,10 +116,16 @@ def test_openai_rejects_temperature_live(model: str) -> None:
 
 # REASONING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
-def test_openai_accepts_tools_live(model: str) -> None:
+@pytest.mark.parametrize(
+    "model",
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13"],
+)
+def test_openai_accepts_tools_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="You are a test harness.",
         user_prompt="Reply by using the noop tool, use property 'OK'.",
         model=model,
@@ -127,10 +144,13 @@ def test_openai_accepts_tools_live(model: str) -> None:
 
 @pytest.mark.live
 @pytest.mark.parametrize("effort", ["low", "medium", "high"])
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_accepts_reasoning_effort_live(model: str, effort: str) -> None:
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+def test_openai_accepts_reasoning_effort_live(
+    request: pytest.FixtureRequest, model: str, effort: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="System.",
         user_prompt="User.",
         model=model,
@@ -177,10 +197,13 @@ def test_openai_rejects_invalid_reasoning_effort_live(model: str, effort: str) -
 # MAX OUTPUT TOKENS
 # max output tokens seems to not throw an error when too high, this "should" be an error
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
-def test_openai_accepts_high_max_output_tokens_live(model: str) -> None:
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+def test_openai_accepts_high_max_output_tokens_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="System.",
         user_prompt="User.",
         model=model,
@@ -211,10 +234,16 @@ def test_openai_rejects_too_low_max_output_tokens_live(model: str) -> None:
 
 # STREAMING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-4o-2024-05-13"])
-def test_openai_streaming_captures_long_output_live(model: str) -> None:
+@pytest.mark.parametrize(
+    "model",
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13"],
+)
+def test_openai_streaming_captures_long_output_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
     _skip_if_live_disabled()
     response = _create_response_or_skip_on_server_error(
+        request=request,
         system_prompt="You are a test harness. Follow the user's instructions.",
         user_prompt=(
             "Write a long, continuous response of about 300 words about the "

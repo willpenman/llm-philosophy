@@ -76,8 +76,10 @@ across providers.
 - Streamed deltas are used only to assemble output text.
 - Responses store only the completed provider payload (no SSE events).
 - Provider payloads should not include adapter-only helper fields (e.g. Gemini `output_text` or `thoughts_text`); keep those in the JSONL output text field or derived metadata.
+- For Gemini streaming, reconstructed thought parts stay inside the response payload `candidates[].content.parts` to mirror the provider shape (not stored in `derived`).
+- When streaming returns reasoning summary chunks (e.g. OpenAI `response.reasoning_summary_text.delta`), we store a concatenated summary inside the response payload (`output[].type=reasoning`), preferring `*.done` content and falling back to joined deltas when needed; join multiple summary parts with `\n\n\n`.
 - If streaming ends without a completed payload, keep the partial text that was received.
-- Optional debug mode for OpenAI streaming can write raw SSE event JSONL and skip request/response storage.
+- Optional debug mode for OpenAI streaming can write raw SSE event JSONL under `tmp/` and skip request/response storage.
 
 ## Provider handling
 - Normalize across providers with a thin adapter interface, at providers/{provider}.py
@@ -133,8 +135,11 @@ across providers.
 - Gemini streaming payloads now store reconstructed thought/output parts instead of per-chunk parts.
 - Gemini responses omit adapter-only `output_text`/`thoughts_text` fields; backfilled existing Gemini JSONL records.
 - Added an OpenAI SSE debug toggle to capture raw streaming events without recording requests/responses.
+- Added OpenAI gpt-5.2-2025-12-11 model metadata (alias, pricing, defaults) and test coverage.
+- OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
 - Capture Gemini long-output pricing tiers for cost modeling.
 - Capture Gemini 3 Pro preview pricing for cost modeling.
+- Run live OpenAI tests for gpt-5.2-2025-12-11 to confirm unsupported temperature/top_p and reasoning summary behavior.
