@@ -92,6 +92,33 @@ across providers.
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
 - Provider API syntax lives in provider-specific docs under `docs/providers/`.
 
+## Adding a new provider (best practices + coverage)
+- Capture provider docs before coding: auth env var, endpoint/SDK, minimal request example.
+- Define adapter behavior: system prompt mapping, reasoning/thinking config, sampling params,
+  max output, tool config omission defaults, and streaming strategy.
+- Preserve raw payloads: store provider request/response exactly as sent/received; avoid
+  adapter-only fields in payloads (keep those in derived metadata or text artifacts).
+- Streaming: assemble output text from deltas, and if the provider doesn't return a final
+  payload, reconstruct a payload that mirrors the provider's normal shape.
+- Reasoning visibility: request the most detailed reasoning summary allowed by the model,
+  and document any constraints (e.g., required max output, unsupported sampling).
+- Model metadata: add snapshot model names, aliases, pricing schedule, defaults, and any
+  capability flags (reasoning, sampling, tools) to the adapter.
+- Pricing: note any tiered pricing rules and the assumption we use for cost modeling.
+- Provider docs must record:
+  - Model list (with stable vs preview notes).
+  - Parameter availability per model (system prompt, temperature/top_p/top_k, max output,
+    reasoning/thinking, tools), plus defaults and known limits.
+  - Streaming payload shape and any reconstruction rules.
+  - Live-verified behaviors (accept/reject cases) and gaps to test.
+- Tests to add:
+  - Static request assembly tests for defaults and parameter mapping.
+  - Static pricing/alias tests.
+  - Live tests (opt-in) for parameter acceptance/rejection, reasoning, and streaming capture.
+  - Structure tests with parametrize and the model name(s) directly, e.g. `@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])`
+  - Ensure tests cover system prompt, temperature, max output length, reasoning/thinking,
+    and tools where supported.
+
 ## Adding a model to an existing provider
 - Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not used (e.g. `gemini-2.5-flash`), make a note of that.
 - Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support).
@@ -143,6 +170,7 @@ across providers.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
+- Documented provider onboarding best practices and required coverage in the spec.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
