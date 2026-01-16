@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from src.system_prompt import load_system_prompt  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_load_system_prompt_smoke() -> None:

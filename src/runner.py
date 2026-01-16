@@ -10,8 +10,10 @@ from uuid import uuid4
 
 from providers.openai import (
     build_response_request,
+    calculate_cost_breakdown as openai_calculate_cost_breakdown,
     display_model_name,
     display_provider_name,
+    extract_usage_breakdown as openai_extract_usage_breakdown,
     extract_output_text,
     extract_reasoning_summary_from_stream,
     price_schedule_for_model,
@@ -21,14 +23,17 @@ from providers.openai import (
 )
 from providers.gemini import (
     build_generate_content_request,
+    calculate_cost_breakdown as gemini_calculate_cost_breakdown,
     default_temperature_for_model as gemini_default_temperature_for_model,
     display_model_name as display_gemini_model_name,
     display_provider_name as display_gemini_provider_name,
+    extract_usage_breakdown as gemini_extract_usage_breakdown,
     price_schedule_for_model as gemini_price_schedule_for_model,
     require_api_key as require_gemini_api_key,
     send_generate_content_request,
     supports_reasoning as gemini_supports_reasoning,
 )
+from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
 from src.puzzles import Puzzle, load_puzzle
 from src.storage import ResponseStore, format_input_text, normalize_special_settings, utc_now_iso
 from src.system_prompt import SystemPrompt, load_system_prompt
@@ -84,6 +89,73 @@ def _repo_root() -> Path:
 
 def _default_responses_dir() -> Path:
     return _repo_root() / "responses"
+
+
+def _format_relative_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(_repo_root()))
+    except ValueError:
+        return str(path)
+
+
+def _format_token_line(
+    tokens: TokenBreakdown,
+    *,
+    max_output_tokens: int | None,
+) -> str | None:
+    if (
+        tokens.input_tokens is None
+        and tokens.reasoning_tokens is None
+        and tokens.output_tokens is None
+    ):
+        return None
+    input_label = (
+        str(tokens.input_tokens)
+        if isinstance(tokens.input_tokens, int)
+        else "unknown"
+    )
+    if isinstance(tokens.reasoning_tokens, int):
+        reasoning_label = str(tokens.reasoning_tokens)
+    elif tokens.reasoning_tokens is None:
+        reasoning_label = "0 (disabled)"
+    else:
+        reasoning_label = "unknown"
+    output_label = (
+        str(tokens.output_tokens)
+        if isinstance(tokens.output_tokens, int)
+        else "unknown"
+    )
+    line = (
+        "Actual tokens: "
+        f"input={input_label}, thinking={reasoning_label}, output={output_label}"
+    )
+    if isinstance(tokens.output_tokens, int) and isinstance(max_output_tokens, int):
+        if max_output_tokens > 0:
+            percent = int(round((tokens.output_tokens / max_output_tokens) * 100))
+            line = f"{line} ({percent}% of allowable output)"
+    return line
+
+
+def _print_run_summary(
+    *,
+    response_payload: dict[str, Any] | None,
+    tokens: TokenBreakdown | None,
+    cost: CostBreakdown | None,
+    max_output_tokens: int | None,
+    response_text_path: Path | None,
+) -> None:
+    if not isinstance(response_payload, dict):
+        return
+    if response_payload.get("error") is None:
+        print("Received complete response with no errors.", flush=True)
+    token_line = _format_token_line(tokens, max_output_tokens=max_output_tokens) if tokens else None
+    if token_line is not None:
+        print(token_line, flush=True)
+    if cost is not None:
+        print(format_cost_line(cost), flush=True)
+    if response_text_path is not None:
+        relative_path = _format_relative_path(response_text_path)
+        print(f"View problem completion at {relative_path}", flush=True)
 
 
 def _format_special_setting(name: str, value: float | int | str) -> str:
@@ -284,27 +356,16 @@ def run_openai_puzzle(
     output_text = extract_output_text(response_payload)
     if stream and streamed_chunks and not output_text:
         output_text = "".join(streamed_chunks)
-    usage = response_payload.get("usage") if isinstance(response_payload, dict) else None
-    if isinstance(usage, dict):
-        output_tokens = usage.get("output_tokens")
-        thinking_tokens = None
-        details = usage.get("output_tokens_details")
-        if isinstance(details, dict):
-            thinking_tokens = details.get("reasoning_tokens")
-        if isinstance(output_tokens, int) or isinstance(thinking_tokens, int) or thinking_tokens is None:
-            if isinstance(thinking_tokens, int):
-                thinking_label = str(thinking_tokens)
-            elif thinking_tokens is None:
-                thinking_label = "0 (disabled)"
-            else:
-                thinking_label = "unknown"
-            output_label = (
-                str(output_tokens) if isinstance(output_tokens, int) else "unknown"
-            )
-            print(
-                f"Actual tokens: thinking={thinking_label}, output={output_label}",
-                flush=True,
-            )
+    usage_breakdown = (
+        openai_extract_usage_breakdown(response_payload)
+        if isinstance(response_payload, dict)
+        else None
+    )
+    cost_breakdown = (
+        openai_calculate_cost_breakdown(response_payload, model=model)
+        if isinstance(response_payload, dict)
+        else None
+    )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -336,6 +397,13 @@ def run_openai_puzzle(
             output_text=output_text,
             derived=derived,
         )
+    _print_run_summary(
+        response_payload=response_payload if isinstance(response_payload, dict) else None,
+        tokens=usage_breakdown,
+        cost=cost_breakdown,
+        max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
+        response_text_path=stored_text.path if stored_text else None,
+    )
     return RunResult(
         run_id=run_id,
         request_payload=request_payload,
@@ -444,24 +512,16 @@ def run_gemini_puzzle(
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = response.output_text
-    usage = response.payload.get("usage_metadata") if isinstance(response.payload, dict) else None
-    if isinstance(usage, dict):
-        output_tokens = usage.get("candidates_token_count")
-        thinking_tokens = usage.get("thoughts_token_count")
-        if isinstance(output_tokens, int) or isinstance(thinking_tokens, int) or thinking_tokens is None:
-            if isinstance(thinking_tokens, int):
-                thinking_label = str(thinking_tokens)
-            elif thinking_tokens is None:
-                thinking_label = "0 (disabled)"
-            else:
-                thinking_label = "unknown"
-            output_label = (
-                str(output_tokens) if isinstance(output_tokens, int) else "unknown"
-            )
-            print(
-                f"Actual tokens: thinking={thinking_label}, output={output_label}",
-                flush=True,
-            )
+    usage_breakdown = (
+        gemini_extract_usage_breakdown(response.payload)
+        if isinstance(response.payload, dict)
+        else None
+    )
+    cost_breakdown = (
+        gemini_calculate_cost_breakdown(response.payload, model=model)
+        if isinstance(response.payload, dict)
+        else None
+    )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -491,6 +551,13 @@ def run_gemini_puzzle(
         input_text=input_text,
         output_text=output_text,
         derived=derived,
+    )
+    _print_run_summary(
+        response_payload=response.payload if isinstance(response.payload, dict) else None,
+        tokens=usage_breakdown,
+        cost=cost_breakdown,
+        max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
+        response_text_path=stored_text.path,
     )
     return RunResult(
         run_id=run_id,

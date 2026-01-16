@@ -10,6 +10,8 @@ from typing import Any, Callable, Iterator
 import urllib.error
 import urllib.request
 
+from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
+
 
 DEFAULT_BASE_URL = "https://api.openai.com/v1/responses"
 
@@ -78,6 +80,33 @@ def supports_reasoning(model: str) -> bool:
 
 def supports_model(model: str) -> bool:
     return model in SUPPORTED_MODELS
+
+
+def extract_usage_breakdown(payload: dict[str, Any]) -> TokenBreakdown | None:
+    usage = payload.get("usage")
+    if not isinstance(usage, dict):
+        return None
+    input_tokens = usage.get("input_tokens")
+    output_tokens = usage.get("output_tokens")
+    reasoning_tokens = None
+    details = usage.get("output_tokens_details")
+    if isinstance(details, dict):
+        reasoning_tokens = details.get("reasoning_tokens")
+    return TokenBreakdown(
+        input_tokens=input_tokens if isinstance(input_tokens, int) else None,
+        reasoning_tokens=reasoning_tokens if isinstance(reasoning_tokens, int) else None,
+        output_tokens=output_tokens if isinstance(output_tokens, int) else None,
+    )
+
+
+def calculate_cost_breakdown(payload: dict[str, Any], *, model: str) -> CostBreakdown | None:
+    schedule = price_schedule_for_model(model)
+    if schedule is None:
+        return None
+    tokens = extract_usage_breakdown(payload)
+    if tokens is None:
+        return None
+    return compute_cost_breakdown(tokens, schedule, output_includes_reasoning=True)
 
 
 def _content_item(text: str) -> dict[str, str]:

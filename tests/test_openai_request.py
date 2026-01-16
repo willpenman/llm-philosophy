@@ -6,7 +6,9 @@ import pytest
 
 from providers.openai import (  # noqa: E402
     build_response_request,
+    calculate_cost_breakdown,
     display_model_name,
+    extract_usage_breakdown,
     price_schedule_for_model,
 )
 
@@ -133,3 +135,34 @@ def test_price_schedule_for_model_includes_units(
     assert schedule["input"] == input_cost
     assert schedule["output"] == output_cost
     assert display_model_name(model) == alias
+
+
+def test_extract_usage_breakdown_reads_openai_usage() -> None:
+    payload = {
+        "usage": {
+            "input_tokens": 12,
+            "output_tokens": 34,
+            "output_tokens_details": {"reasoning_tokens": 5},
+        }
+    }
+    breakdown = extract_usage_breakdown(payload)
+    assert breakdown is not None
+    assert breakdown.input_tokens == 12
+    assert breakdown.output_tokens == 34
+    assert breakdown.reasoning_tokens == 5
+
+
+def test_calculate_cost_breakdown_uses_openai_rates() -> None:
+    payload = {
+        "usage": {
+            "input_tokens": 10,
+            "output_tokens": 30,
+            "output_tokens_details": {"reasoning_tokens": 5},
+        }
+    }
+    breakdown = calculate_cost_breakdown(payload, model="o3-2025-04-16")
+    assert breakdown is not None
+    assert breakdown.input_cost == pytest.approx(0.00002)
+    assert breakdown.reasoning_cost == pytest.approx(0.00004)
+    assert breakdown.output_cost == pytest.approx(0.0002)
+    assert breakdown.total_cost == pytest.approx(0.00026)

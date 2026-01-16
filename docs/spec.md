@@ -171,6 +171,7 @@ across providers.
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 - Documented provider onboarding best practices and required coverage in the spec.
+- Added provider-specific usage/cost extraction helpers and richer run summaries with token usage, cost formatting, and completion links.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.

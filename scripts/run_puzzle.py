@@ -122,14 +122,8 @@ def main() -> None:
                 f"Unknown model {model}; pass --provider to override."
             )
 
-    print(f"run_id={result.run_id}")
-    print(f"request_path={result.request_path}")
     if result.sse_event_path is not None:
         print(f"sse_event_path={result.sse_event_path}")
-    if result.response_text_path is None:
-        print("response_text_path=None")
-        return
-    print(f"response_text_path={result.response_text_path}")
 
 
 if __name__ == "__main__":

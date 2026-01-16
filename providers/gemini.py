@@ -7,6 +7,8 @@ import json
 import os
 from typing import Any, Callable
 
+from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
+
 
 MODEL_ALIASES: dict[str, str] = {
     "gemini-2.0-flash-lite-001": "Gemini 2.0 Flash Lite",
@@ -82,6 +84,30 @@ def supports_model(model: str) -> bool:
 
 def default_temperature_for_model(model: str) -> float | None:
     return MODEL_DEFAULT_TEMPERATURES.get(model)
+
+
+def extract_usage_breakdown(payload: dict[str, Any]) -> TokenBreakdown | None:
+    usage = payload.get("usage_metadata")
+    if not isinstance(usage, dict):
+        return None
+    input_tokens = usage.get("prompt_token_count")
+    output_tokens = usage.get("candidates_token_count")
+    reasoning_tokens = usage.get("thoughts_token_count")
+    return TokenBreakdown(
+        input_tokens=input_tokens if isinstance(input_tokens, int) else None,
+        reasoning_tokens=reasoning_tokens if isinstance(reasoning_tokens, int) else None,
+        output_tokens=output_tokens if isinstance(output_tokens, int) else None,
+    )
+
+
+def calculate_cost_breakdown(payload: dict[str, Any], *, model: str) -> CostBreakdown | None:
+    schedule = price_schedule_for_model(model)
+    if schedule is None:
+        return None
+    tokens = extract_usage_breakdown(payload)
+    if tokens is None:
+        return None
+    return compute_cost_breakdown(tokens, schedule, output_includes_reasoning=False)
 
 
 def build_generate_content_request(
