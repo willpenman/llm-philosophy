@@ -52,11 +52,18 @@ def main() -> None:
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument("--special-settings", default=None)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--debug-openai-sse",
+        action="store_true",
+        help="Capture raw OpenAI SSE events to a debug file and skip request/response storage.",
+    )
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
 
     if args.provider == "gemini":
+        if args.debug_openai_sse:
+            raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
         model = args.model
         result = run_gemini_puzzle(
             puzzle_name=args.name,
@@ -77,6 +84,7 @@ def main() -> None:
             temperature=args.temperature,
             special_settings=args.special_settings,
             dry_run=args.dry_run,
+            debug_sse=args.debug_openai_sse,
         )
     else:
         model = args.model
@@ -87,6 +95,8 @@ def main() -> None:
                 f"Model {model} matches multiple providers; pass --provider to select."
             )
         if gemini_supported:
+            if args.debug_openai_sse:
+                raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
             result = run_gemini_puzzle(
                 puzzle_name=args.name,
                 model=model,
@@ -105,6 +115,7 @@ def main() -> None:
                 temperature=args.temperature,
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
+                debug_sse=args.debug_openai_sse,
             )
         else:
             raise ValueError(
@@ -113,6 +124,8 @@ def main() -> None:
 
     print(f"run_id={result.run_id}")
     print(f"request_path={result.request_path}")
+    if result.sse_event_path is not None:
+        print(f"sse_event_path={result.sse_event_path}")
     if result.response_text_path is None:
         print("response_text_path=None")
         return

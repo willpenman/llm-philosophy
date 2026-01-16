@@ -41,3 +41,4 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Long-term insights
 - Cost modeling needs to support multi-tier pricing (modality, service tier, long-output tiers like Gemini) beyond simple input/output rates.
+- Streaming responses may surface reasoning summaries only in SSE events for some models; keep tooling to capture raw events for audits.

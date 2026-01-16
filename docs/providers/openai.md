@@ -57,6 +57,7 @@
   - Reasoning effort values:
     - Live: `low`, `medium`, `high` accepted; others (e.g. `ultra`) rejected - 400 unsupported.
   - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
+  - Debugging note: a `--debug-openai-sse` run records raw SSE event JSONL (event objects such as `response.completed` and `response.reasoning_text.done`) without writing to request/response JSONL storage.
 - gpt-4o-2024-05-13:
   - Supported: `system`/`user` input items, `max_output_tokens`, `temperature`, `top_p` (docs and live confirmation).
   - Not supported: `reasoning` (docs and live confirmation).

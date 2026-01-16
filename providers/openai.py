@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
 from typing import Any, Callable, Iterator
 import urllib.error
 import urllib.request
@@ -203,6 +204,7 @@ def send_response_request(
     timeout_s: float = 60,
     progress_callback: Callable[[int], None] | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
+    sse_event_path: Path | None = None,
 ) -> dict[str, Any]:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -219,19 +221,33 @@ def send_response_request(
             if payload.get("stream") is True:
                 streamed_chars = 0
                 response_payload: dict[str, Any] | None = None
-                for event in _iter_sse_events(response):
-                    if event.get("type") == "response.output_text.delta":
-                        delta = event.get("delta")
-                        if isinstance(delta, str):
-                            streamed_chars += len(delta)
-                            if stream_text_callback is not None:
-                                stream_text_callback(delta)
-                            if progress_callback is not None:
-                                progress_callback(streamed_chars)
-                    elif event.get("type") in {"response.completed", "response.failed"}:
-                        response = event.get("response")
-                        if isinstance(response, dict):
-                            response_payload = response
+                sse_handle = None
+                if sse_event_path is not None:
+                    sse_event_path.parent.mkdir(parents=True, exist_ok=True)
+                    sse_handle = sse_event_path.open("a", encoding="utf-8")
+                try:
+                    for event in _iter_sse_events(response):
+                        if sse_handle is not None:
+                            sse_handle.write(json.dumps(event, ensure_ascii=True))
+                            sse_handle.write("\n")
+                        if event.get("type") == "response.output_text.delta":
+                            delta = event.get("delta")
+                            if isinstance(delta, str):
+                                streamed_chars += len(delta)
+                                if stream_text_callback is not None:
+                                    stream_text_callback(delta)
+                                if progress_callback is not None:
+                                    progress_callback(streamed_chars)
+                        elif event.get("type") in {
+                            "response.completed",
+                            "response.failed",
+                        }:
+                            response = event.get("response")
+                            if isinstance(response, dict):
+                                response_payload = response
+                finally:
+                    if sse_handle is not None:
+                        sse_handle.close()
                 return response_payload or {}
             body = response.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
@@ -292,6 +308,7 @@ def create_response(
     metadata: dict[str, Any] | None = None,
     stream: bool | None = None,
     stream_options: dict[str, Any] | None = None,
+    sse_event_path: Path | None = None,
     api_key: str | None = None,
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 60,
@@ -316,6 +333,7 @@ def create_response(
         api_key=api_key or require_api_key(),
         base_url=base_url,
         timeout_s=timeout_s,
+        sse_event_path=sse_event_path,
     )
     return OpenAIResponse(
         payload=response_payload,

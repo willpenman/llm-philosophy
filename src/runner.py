@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
@@ -37,8 +38,15 @@ class RunResult:
     request_payload: dict[str, Any]
     response_payload: dict[str, Any] | None
     output_text: str
-    request_path: Path
+    request_path: Path | None
     response_text_path: Path | None
+    sse_event_path: Path | None
+
+
+def _format_timestamp(created_at: str) -> str:
+    timestamp = datetime.fromisoformat(created_at)
+    timestamp = timestamp.astimezone(timezone.utc)
+    return timestamp.strftime("%Y-%m-%dT%H%M%SZ")
 
 
 def _repo_root() -> Path:
@@ -68,6 +76,8 @@ def run_openai_puzzle(
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
+    debug_sse: bool = False,
+    debug_sse_path: Path | None = None,
     run_id: str | None = None,
     puzzle_dir: Path | None = None,
     system_path: Path | None = None,
@@ -82,6 +92,9 @@ def run_openai_puzzle(
     if reasoning is None and supports_reasoning(model):
         reasoning = {"effort": "high", "summary": "detailed"}
 
+    if debug_sse and not stream:
+        raise ValueError("debug_sse requires stream=True")
+
     request_payload = build_response_request(
         system_prompt=system_prompt.text,
         user_prompt=puzzle.text,
@@ -93,17 +106,20 @@ def run_openai_puzzle(
         stream=stream,
     )
 
-    store = ResponseStore(responses_dir or _default_responses_dir())
-    request_path = store.record_request(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        puzzle_name=puzzle.name,
-        puzzle_version=puzzle.version,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-    )
+    store: ResponseStore | None = None
+    request_path: Path | None = None
+    if not debug_sse:
+        store = ResponseStore(responses_dir or _default_responses_dir())
+        request_path = store.record_request(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            puzzle_name=puzzle.name,
+            puzzle_version=puzzle.version,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+        )
 
     if dry_run:
         return RunResult(
@@ -113,6 +129,7 @@ def run_openai_puzzle(
             output_text="",
             request_path=request_path,
             response_text_path=None,
+            sse_event_path=None,
         )
 
     request_started_at = created_at
@@ -143,11 +160,25 @@ def run_openai_puzzle(
     def _collect_delta(delta: str) -> None:
         streamed_chunks.append(delta)
 
+    sse_event_path = None
+    if debug_sse:
+        base_dir = responses_dir or _default_responses_dir()
+        timestamp = _format_timestamp(created_at)
+        sse_event_path = (
+            base_dir
+            / provider
+            / model
+            / "debug"
+            / f"sse-events-{run_id}-{timestamp}.jsonl"
+        )
+        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+
     response_payload = send_response_request(
         request_payload,
         api_key=api_key or require_api_key(),
         progress_callback=_progress if stream else None,
         stream_text_callback=_collect_delta if stream else None,
+        sse_event_path=sse_event_path,
     )
     if stream and progress_width > 0:
         print("", flush=True)
@@ -187,31 +218,34 @@ def run_openai_puzzle(
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
     derived["model_alias"] = display_model_name(model)
-    stored_text = store.record_response(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        model_alias=display_model_name(model),
-        provider_alias=display_provider_name(provider),
-        puzzle_name=puzzle.name,
-        puzzle_title_prefix="Philosophy problem",
-        puzzle_version=puzzle.version,
-        puzzle_title=puzzle.title,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-        response_payload=response_payload,
-        input_text=input_text,
-        output_text=output_text,
-        derived=derived,
-    )
+    stored_text = None
+    if store is not None:
+        stored_text = store.record_response(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            model_alias=display_model_name(model),
+            provider_alias=display_provider_name(provider),
+            puzzle_name=puzzle.name,
+            puzzle_title_prefix="Philosophy problem",
+            puzzle_version=puzzle.version,
+            puzzle_title=puzzle.title,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+            response_payload=response_payload,
+            input_text=input_text,
+            output_text=output_text,
+            derived=derived,
+        )
     return RunResult(
         run_id=run_id,
         request_payload=request_payload,
         response_payload=response_payload,
         output_text=output_text,
         request_path=request_path,
-        response_text_path=stored_text.path,
+        response_text_path=stored_text.path if stored_text else None,
+        sse_event_path=sse_event_path,
     )
 
 
@@ -273,6 +307,7 @@ def run_gemini_puzzle(
             output_text="",
             request_path=request_path,
             response_text_path=None,
+            sse_event_path=None,
         )
 
     request_started_at = created_at
@@ -367,4 +402,5 @@ def run_gemini_puzzle(
         output_text=output_text,
         request_path=request_path,
         response_text_path=stored_text.path,
+        sse_event_path=None,
     )

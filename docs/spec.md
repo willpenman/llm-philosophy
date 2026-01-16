@@ -77,6 +77,7 @@ across providers.
 - Responses store only the completed provider payload (no SSE events).
 - Provider payloads should not include adapter-only helper fields (e.g. Gemini `output_text` or `thoughts_text`); keep those in the JSONL output text field or derived metadata.
 - If streaming ends without a completed payload, keep the partial text that was received.
+- Optional debug mode for OpenAI streaming can write raw SSE event JSONL and skip request/response storage.
 
 ## Provider handling
 - Normalize across providers with a thin adapter interface, at providers/{provider}.py
@@ -131,6 +132,7 @@ across providers.
 - Gemini runner now defaults Gemini 3 Pro to high thinking with thought inclusion.
 - Gemini streaming payloads now store reconstructed thought/output parts instead of per-chunk parts.
 - Gemini responses omit adapter-only `output_text`/`thoughts_text` fields; backfilled existing Gemini JSONL records.
+- Added an OpenAI SSE debug toggle to capture raw streaming events without recording requests/responses.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
