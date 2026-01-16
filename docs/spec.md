@@ -75,6 +75,7 @@ across providers.
 - Prefer streaming for long outputs to avoid connection dropouts.
 - Streamed deltas are used only to assemble output text.
 - Responses store only the completed provider payload (no SSE events).
+- Provider payloads should not include adapter-only helper fields (e.g. Gemini `output_text` or `thoughts_text`); keep those in the JSONL output text field or derived metadata.
 - If streaming ends without a completed payload, keep the partial text that was received.
 
 ## Provider handling
@@ -129,6 +130,7 @@ across providers.
 - Added Gemini 3 Pro preview model support with thinking-config live test.
 - Gemini runner now defaults Gemini 3 Pro to high thinking with thought inclusion.
 - Gemini streaming payloads now store reconstructed thought/output parts instead of per-chunk parts.
+- Gemini responses omit adapter-only `output_text`/`thoughts_text` fields; backfilled existing Gemini JSONL records.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.

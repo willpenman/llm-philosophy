@@ -230,9 +230,6 @@ def send_generate_content_request(
                 thoughts_text = "".join(thought_chunks)
                 response_payload = last_payload or {}
                 response_payload["stream"] = True
-                response_payload["output_text"] = output_text
-                if thoughts_text:
-                    response_payload["thoughts_text"] = thoughts_text
                 reconstructed_parts = _reconstruct_parts(output_text, thoughts_text)
                 if reconstructed_parts:
                     response_payload["candidates"] = [
