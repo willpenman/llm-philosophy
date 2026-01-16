@@ -9,10 +9,14 @@ from typing import Any, Callable
 
 
 MODEL_ALIASES: dict[str, str] = {
-    "gemini-2.0-flash-lite-001": "2.0 Flash Lite",
+    "gemini-2.0-flash-lite-001": "Gemini 2.0 Flash Lite",
+    "gemini-3-pro-preview": "Gemini 3 Pro Preview",
 }
 
-SUPPORTED_MODELS: set[str] = {"gemini-2.0-flash-lite-001"}
+SUPPORTED_MODELS: set[str] = {
+    "gemini-2.0-flash-lite-001",
+    "gemini-3-pro-preview",
+}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
@@ -22,7 +26,7 @@ PROVIDER_ALIASES: dict[str, str] = {
     "gemini": "Gemini",
 }
 
-REASONING_MODELS: set[str] = set()
+REASONING_MODELS: set[str] = {"gemini-3-pro-preview"}
 
 
 @dataclass(frozen=True)
@@ -109,6 +113,29 @@ def _serialize_response(response: Any) -> dict[str, Any]:
     return {"raw": str(response)}
 
 
+def extract_output_text(payload: dict[str, Any]) -> str:
+    candidates = payload.get("candidates")
+    if not isinstance(candidates, list):
+        return ""
+    chunks: list[str] = []
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        content = candidate.get("content")
+        if not isinstance(content, dict):
+            continue
+        parts = content.get("parts")
+        if not isinstance(parts, list):
+            continue
+        for part in parts:
+            if not isinstance(part, dict):
+                continue
+            text = part.get("text")
+            if isinstance(text, str):
+                chunks.append(text)
+    return "".join(chunks)
+
+
 def send_generate_content_request(
     payload: dict[str, Any],
     *,
@@ -152,8 +179,11 @@ def send_generate_content_request(
     except errors.APIError as exc:
         raise RuntimeError(f"Gemini API error {exc.code}: {exc.message}") from exc
 
+    response_payload = _serialize_response(response)
     output_text = getattr(response, "text", "")
-    return GeminiResponse(payload=_serialize_response(response), output_text=output_text)
+    if not isinstance(output_text, str) or not output_text:
+        output_text = extract_output_text(response_payload)
+    return GeminiResponse(payload=response_payload, output_text=output_text)
 
 
 def create_response(

@@ -126,7 +126,9 @@ across providers.
 - Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
 - Added a Gemini provider adapter with request capture, a run script, and static/live tests.
 - Added Gemini streaming support with reconstructed payload capture.
+- Added Gemini 3 Pro preview model support with thinking-config live test.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
 - Capture Gemini long-output pricing tiers for cost modeling.
+- Capture Gemini 3 Pro preview pricing for cost modeling.
