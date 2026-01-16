@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from uuid import uuid4
 
 from providers.openai import (
@@ -54,6 +54,29 @@ def _load_fixtures(
     system_prompt = load_system_prompt(system_path)
     puzzle = load_puzzle(puzzle_name, puzzle_dir)
     return system_prompt, puzzle
+
+
+def _make_stream_progress(max_tokens: int | None) -> tuple[Callable[[int], None], Callable[[], None]]:
+    if not isinstance(max_tokens, int) or max_tokens <= 0:
+        return (lambda _chars: None), (lambda: None)
+
+    progress_width = len(str(max_tokens))
+    last_progress = {"chars": 0}
+
+    def _progress(chars: int) -> None:
+        if chars == last_progress["chars"]:
+            return
+        last_progress["chars"] = chars
+        # during streaming, we only have the characters themselves
+        # use "1 token per 4 characters" standard estimate
+        capped = str(int(chars / 4)).zfill(progress_width)
+        total = str(max_tokens).zfill(progress_width)
+        print(f"\rReceived ≈ {capped} / {total} tokens", end="", flush=True)
+
+    def _finish() -> None:
+        print("", flush=True)
+
+    return _progress, _finish
 
 
 def run_openai_puzzle(
@@ -120,20 +143,9 @@ def run_openai_puzzle(
         flush=True,
     )
     max_tokens = request_payload.get("max_output_tokens")
-    progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
-    last_progress = {"chars": 0}
-
-    def _progress(chars: int) -> None:
-        if progress_width <= 0:
-            return
-        if chars == last_progress["chars"]:
-            return
-        last_progress["chars"] = chars
-        # during streaming, we only have the characters themselves
-        # use "1 token per 4 characters" standard estimate
-        capped = str(int(chars/4)).zfill(progress_width)
-        total = str(max_tokens).zfill(progress_width)
-        print(f"\rReceived ≈ {capped} / {total} tokens", end="", flush=True)
+    progress_callback, finish_progress = _make_stream_progress(
+        max_tokens if isinstance(max_tokens, int) else None
+    )
 
     streamed_chunks: list[str] = []
 
@@ -143,11 +155,11 @@ def run_openai_puzzle(
     response_payload = send_response_request(
         request_payload,
         api_key=api_key or require_api_key(),
-        progress_callback=_progress if stream else None,
+        progress_callback=progress_callback if stream else None,
         stream_text_callback=_collect_delta if stream else None,
     )
-    if stream and progress_width > 0:
-        print("", flush=True)
+    if stream:
+        finish_progress()
     request_completed_at = utc_now_iso()
     output_text = extract_output_text(response_payload)
     if stream and streamed_chunks and not output_text:
@@ -272,11 +284,28 @@ def run_gemini_puzzle(
         f"requesting puzzle={puzzle.name} model={model}",
         flush=True,
     )
+    max_tokens = None
+    config = request_payload.get("config")
+    if isinstance(config, dict):
+        max_tokens = config.get("max_output_tokens")
+    progress_callback, finish_progress = _make_stream_progress(
+        max_tokens if isinstance(max_tokens, int) else None
+    )
+
+    streamed_chars = {"total": 0}
+
+    def _collect_delta(delta: str) -> None:
+        streamed_chars["total"] += len(delta)
+        progress_callback(streamed_chars["total"])
+
     response = send_generate_content_request(
         request_payload,
         api_key=api_key or require_gemini_api_key(),
         stream=stream,
+        stream_text_callback=_collect_delta if stream else None,
     )
+    if stream:
+        finish_progress()
     request_completed_at = utc_now_iso()
     output_text = response.output_text
     usage = response.payload.get("usage_metadata") if isinstance(response.payload, dict) else None
