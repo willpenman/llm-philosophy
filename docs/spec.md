@@ -106,6 +106,8 @@ across providers.
 - Live tests must be opt-in, cost-labeled, and gated by environment variables.
 - Prefer tests that validate expected use/nonuse of: system prompt, temperature, max output
   length, reasoning effort, tool usage (where supported).
+- When asserting a parameter is unsupported on a reasoning-capable model, explicitly enable
+  reasoning in the request so the test matches default runner behavior.
 - Group tests by their purpose
 - Parametrize each test, manually add the relevant model name in as part of an array (will be useful as we add more models)
 
@@ -137,10 +139,13 @@ across providers.
 - Gemini responses omit adapter-only `output_text`/`thoughts_text` fields; backfilled existing Gemini JSONL records.
 - Added an OpenAI SSE debug toggle to capture raw streaming events without recording requests/responses.
 - Added OpenAI gpt-5.2-2025-12-11 model metadata (alias, pricing, defaults) and test coverage.
+- Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
+- Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
 - Capture Gemini long-output pricing tiers for cost modeling.
 - Capture Gemini 3 Pro preview pricing for cost modeling.
-- Run live OpenAI tests for gpt-5.2-2025-12-11 to confirm unsupported temperature/top_p and reasoning summary behavior.
+- Run live OpenAI tests for gpt-5.2-2025-12-11 to confirm `top_p` support and reasoning summary behavior.
+- Run live Gemini tests for gemini-3-pro-preview to confirm whether `temperature` is rejected when `thinking_config` is enabled.

@@ -105,6 +105,22 @@ def test_gemini_accepts_sampling_params_live(model: str) -> None:
     assert "OK" in response.output_text.upper()
 
 
+@pytest.mark.live
+@pytest.mark.parametrize("model", [])
+def test_gemini_rejects_temperature_with_thinking_live(model: str) -> None:
+    _skip_if_live_disabled()
+    payload = build_generate_content_request(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=150,
+    )
+    payload["config"]["thinking_config"] = {"thinking_level": "HIGH"}
+    payload["config"]["temperature"] = 0.2
+    with pytest.raises(RuntimeError):
+        send_generate_content_request(payload)
+
+
 # REASONING
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001"])

@@ -71,7 +71,7 @@ def test_openai_accepts_system_prompt_live(
 
 # TEMPERATURE AND TOP_P
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13", "gpt-5.2-2025-12-11"])
+@pytest.mark.parametrize("model", ["gpt-4o-2024-05-13"])
 def test_openai_accepts_temperature_top_p_live(
     request: pytest.FixtureRequest, model: str
 ) -> None:
@@ -87,8 +87,9 @@ def test_openai_accepts_temperature_top_p_live(
     )
     assert "OK" in response.output_text.upper()
 
+
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
 def test_openai_rejects_top_p_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"top_p"):
@@ -98,10 +99,12 @@ def test_openai_rejects_top_p_live(model: str) -> None:
             model=model,
             max_output_tokens=16,
             top_p=0.9,
+            reasoning={"effort":"medium"}
         )
 
+
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
 def test_openai_rejects_temperature_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"Unsupported parameter: 'temperature'"):
@@ -111,6 +114,7 @@ def test_openai_rejects_temperature_live(model: str) -> None:
             model=model,
             max_output_tokens=16,
             temperature=0.2,
+            reasoning={"effort":"medium"}
         )
 
 

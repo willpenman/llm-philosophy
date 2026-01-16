@@ -61,7 +61,9 @@
   - Debugging note: a `--debug-openai-sse` run records raw SSE event JSONL (event objects such as `response.completed` and `response.reasoning_text.done`) under `tmp/` without writing to request/response JSONL storage.
 - Streaming note: when SSE includes reasoning summary deltas (e.g. `response.reasoning_summary_text.delta`), the runner stores a concatenated summary inside the response payload reasoning item (`output[].type=reasoning`), preferring `*.done` content and falling back to joined deltas, using `\n\n\n` between parts.
 - gpt-5.2-2025-12-11:
-  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options`, `temperature`, `top_p` (live verified).
+  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options`.
+  - Not supported: `temperature` (live call returns 400 unsupported parameter).
+  - Unverified: `top_p`.
   - Defaults: `max_output_tokens=128000`.
 - gpt-4o-2024-05-13:
   - Supported: `system`/`user` input items, `max_output_tokens`, `temperature`, `top_p` (docs and live confirmation).
