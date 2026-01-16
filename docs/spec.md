@@ -78,7 +78,7 @@ across providers.
 - If streaming ends without a completed payload, keep the partial text that was received.
 
 ## Provider handling
-- Normalize across providers with a thin adapter interface.
+- Normalize across providers with a thin adapter interface, at providers/{provider}.py
 - Keep per-provider quirks isolated to their adapter.
 - Provide a dry-run mode that writes request payloads without sending them.
 - Default to the highest available reasoning effort per model.
@@ -101,6 +101,8 @@ across providers.
 - Live tests must be opt-in, cost-labeled, and gated by environment variables.
 - Prefer tests that validate expected use/nonuse of: system prompt, temperature, max output
   length, reasoning effort, tool usage (where supported).
+- Group tests by their purpose
+- Parametrize each test, manually add the relevant model name in as part of an array (will be useful as we add more models)
 
 ## Progress
 - Added a script to run a single puzzle against one OpenAI model and capture responses.
