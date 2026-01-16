@@ -80,21 +80,27 @@ across providers.
 ## Provider handling
 - Normalize across providers with a thin adapter interface.
 - Keep per-provider quirks isolated to their adapter.
-- Avoid hardcoding credentials; use environment variables.
 - Provide a dry-run mode that writes request payloads without sending them.
-- Always use snapshot model names (e.g., `o3-2025-04-16`) for reproducibility.
-- Default to the highest available reasoning effort per provider.
+- Default to the highest available reasoning effort per model.
 - Request the most detailed reasoning visibility available for the model.
 - Omit tool configuration entirely unless tools are required.
 - Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
 - Provider API syntax lives in provider-specific docs under `docs/providers/`.
 
+## Adding a model to an existing provider
+- Use snapshot model names (e.g., `o3-2025-04-16`).
+- Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support).
+- Add/extend static tests for request assembly defaults and pricing/alias display.
+- Update live tests by extending parameterized model lists where behavior matches; add model-specific live tests for divergent behaviors (e.g., rejects reasoning or accepts sampling).
+- Keep live tests grouped by behavior and use `-k` to run just the new model’s parameterized case when validating.
+- Update provider docs with parameter support (system prompt, temperature/top_p, reasoning, tools, max output constraints); conduct live tests and record results as such.
+
 ## Testing guidance
 - Use `pytest` for lightweight tests around loaders and request assembly.
 - Keep tests small and local; avoid network calls unless explicitly marked live.
 - Live tests must be opt-in, cost-labeled, and gated by environment variables.
-- Prefer tests that validate: system prompt, temperature, max output length, reasoning
-  effort, tool usage (where supported).
+- Prefer tests that validate expected use/nonuse of: system prompt, temperature, max output
+  length, reasoning effort, tool usage (where supported).
 
 ## Progress
 - Added a script to run a single puzzle against one OpenAI model and capture responses.
@@ -117,8 +123,5 @@ across providers.
 - Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
 
 ## TODO
-- Confirm gpt-4o-2024-05-13 parameter support (temperature/top_p acceptance, reasoning rejection).
-- Confirm gpt-4o-2024-05-13 `max_output_tokens` upper bound via live calls.
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
-- Confirm o3 `max_output_tokens` upper bound via live calls with higher values.
 - Capture Gemini long-output pricing tiers when adding Gemini support.
