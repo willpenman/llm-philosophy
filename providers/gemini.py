@@ -23,6 +23,10 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "gemini-3-pro-preview": {"max_output_tokens": 65536},
 }
 
+MODEL_DEFAULT_TEMPERATURES: dict[str, float] = {
+    "gemini-3-pro-preview": 1.0,
+}
+
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
     "gemini-3-pro-preview": {"input": 2.0, "output": 12.0},
@@ -74,6 +78,10 @@ def supports_reasoning(model: str) -> bool:
 
 def supports_model(model: str) -> bool:
     return model in SUPPORTED_MODELS
+
+
+def default_temperature_for_model(model: str) -> float | None:
+    return MODEL_DEFAULT_TEMPERATURES.get(model)
 
 
 def build_generate_content_request(

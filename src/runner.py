@@ -21,6 +21,7 @@ from providers.openai import (
 )
 from providers.gemini import (
     build_generate_content_request,
+    default_temperature_for_model as gemini_default_temperature_for_model,
     display_model_name as display_gemini_model_name,
     display_provider_name as display_gemini_provider_name,
     price_schedule_for_model as gemini_price_schedule_for_model,
@@ -83,6 +84,70 @@ def _repo_root() -> Path:
 
 def _default_responses_dir() -> Path:
     return _repo_root() / "responses"
+
+
+def _format_special_setting(name: str, value: float | int | str) -> str:
+    if isinstance(value, float) and value.is_integer():
+        value_label = str(int(value))
+    else:
+        value_label = str(value)
+    return f"{name}-{value_label}"
+
+
+def _format_setting_display(
+    name: str,
+    value: float | int | str,
+    *,
+    default: float | int | str | None = None,
+) -> str:
+    if isinstance(value, float) and value.is_integer():
+        value_label = str(int(value))
+    else:
+        value_label = str(value)
+    if default is None or value == default:
+        return f"'{name}' setting set to {value_label}"
+    if isinstance(default, float) and default.is_integer():
+        default_label = str(int(default))
+    else:
+        default_label = str(default)
+    return f"'{name}' setting set to {value_label} instead of default {default_label}"
+
+
+def _gemini_special_settings(
+    *,
+    explicit: str | None,
+    model: str,
+    temperature: float | None,
+    top_p: float | None,
+    top_k: int | None,
+) -> tuple[str, str | None]:
+    if explicit is not None and str(explicit).strip():
+        return normalize_special_settings(explicit), str(explicit)
+    settings: list[str] = []
+    settings_display: list[str] = []
+    if temperature is not None:
+        default_temp = gemini_default_temperature_for_model(model)
+        if default_temp is None or temperature != default_temp:
+            settings.append(_format_special_setting("temperature", temperature))
+            settings_display.append(
+                _format_setting_display(
+                    "temperature",
+                    temperature,
+                    default=default_temp,
+                )
+            )
+    if top_p is not None:
+        settings.append(_format_special_setting("top_p", top_p))
+        settings_display.append(_format_setting_display("top_p", top_p))
+    if top_k is not None:
+        settings.append(_format_special_setting("top_k", top_k))
+        settings_display.append(_format_setting_display("top_k", top_k))
+    if not settings:
+        return "default", None
+    return (
+        normalize_special_settings(",".join(settings)),
+        "; ".join(settings_display),
+    )
 
 
 def _load_fixtures(
@@ -304,7 +369,13 @@ def run_gemini_puzzle(
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     provider = "gemini"
-    special_settings_label = normalize_special_settings(special_settings)
+    special_settings_label, special_settings_display = _gemini_special_settings(
+        explicit=special_settings,
+        model=model,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+    )
 
     if thinking_config is None and gemini_supports_reasoning(model):
         thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
@@ -414,6 +485,7 @@ def run_gemini_puzzle(
         puzzle_version=puzzle.version,
         puzzle_title=puzzle.title,
         special_settings=special_settings_label,
+        special_settings_display=special_settings_display,
         request_payload=request_payload,
         response_payload=response.payload,
         input_text=input_text,

@@ -142,6 +142,7 @@ across providers.
 - Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
+- Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.

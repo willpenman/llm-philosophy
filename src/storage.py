@@ -137,6 +137,7 @@ class ResponseStore:
         puzzle_version: str | None,
         puzzle_title: str | None = None,
         special_settings: str,
+        special_settings_display: str | None = None,
         request_payload: dict[str, Any],
         response_payload: dict[str, Any],
         input_text: str,
@@ -174,7 +175,7 @@ class ResponseStore:
         settings_display = (
             ""
             if normalize_special_settings(special_settings) == "default"
-            else f", {special_settings}"
+            else f", {special_settings_display or special_settings}"
         )
         display_date = _format_display_date(created_at)
         puzzle_prefix = puzzle_title_prefix or "Philosophy problem"
