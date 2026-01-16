@@ -1,4 +1,4 @@
-"""Run a single puzzle with the OpenAI adapter."""
+"""Run a single puzzle with a provider adapter."""
 
 from __future__ import annotations
 
@@ -8,7 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
-from src.runner import run_openai_puzzle  # noqa: E402
+from providers.gemini import supports_model as gemini_supports_model  # noqa: E402
+from providers.openai import supports_model as openai_supports_model  # noqa: E402
+from src.runner import run_gemini_puzzle, run_openai_puzzle  # noqa: E402
 
 
 def _load_dotenv(path: Path) -> None:
@@ -30,26 +32,84 @@ def _optional_path(value: str | None) -> Path | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run one puzzle against a single OpenAI model."
+        description="Run one puzzle against a single provider model."
     )
     parser.add_argument("name", help="Puzzle name (filename without .py)")
-    parser.add_argument("--model", default="o3-2025-04-16", help="Model snapshot name")
+    parser.add_argument(
+        "--model",
+        required=True,
+        help="Model name (used to select provider automatically)",
+    )
+    parser.add_argument(
+        "--provider",
+        default=None,
+        choices=["openai", "gemini"],
+        help="Override provider selection",
+    )
     parser.add_argument("--max-output-tokens", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
+    parser.add_argument("--top-p", type=float, default=None)
+    parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument("--special-settings", default=None)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
 
-    result = run_openai_puzzle(
-        puzzle_name=args.name,
-        model=args.model,
-        max_output_tokens=args.max_output_tokens,
-        temperature=args.temperature,
-        special_settings=args.special_settings,
-        dry_run=args.dry_run
-    )
+    if args.provider == "gemini":
+        model = args.model
+        result = run_gemini_puzzle(
+            puzzle_name=args.name,
+            model=model,
+            max_output_tokens=args.max_output_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            top_k=args.top_k,
+            special_settings=args.special_settings,
+            dry_run=args.dry_run,
+        )
+    elif args.provider == "openai":
+        model = args.model
+        result = run_openai_puzzle(
+            puzzle_name=args.name,
+            model=model,
+            max_output_tokens=args.max_output_tokens,
+            temperature=args.temperature,
+            special_settings=args.special_settings,
+            dry_run=args.dry_run,
+        )
+    else:
+        model = args.model
+        openai_supported = openai_supports_model(model)
+        gemini_supported = gemini_supports_model(model)
+        if openai_supported and gemini_supported:
+            raise ValueError(
+                f"Model {model} matches multiple providers; pass --provider to select."
+            )
+        if gemini_supported:
+            result = run_gemini_puzzle(
+                puzzle_name=args.name,
+                model=model,
+                max_output_tokens=args.max_output_tokens,
+                temperature=args.temperature,
+                top_p=args.top_p,
+                top_k=args.top_k,
+                special_settings=args.special_settings,
+                dry_run=args.dry_run,
+            )
+        elif openai_supported:
+            result = run_openai_puzzle(
+                puzzle_name=args.name,
+                model=model,
+                max_output_tokens=args.max_output_tokens,
+                temperature=args.temperature,
+                special_settings=args.special_settings,
+                dry_run=args.dry_run,
+            )
+        else:
+            raise ValueError(
+                f"Unknown model {model}; pass --provider to override."
+            )
 
     print(f"run_id={result.run_id}")
     print(f"request_path={result.request_path}")

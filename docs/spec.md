@@ -88,7 +88,7 @@ across providers.
 - Provider API syntax lives in provider-specific docs under `docs/providers/`.
 
 ## Adding a model to an existing provider
-- Use snapshot model names (e.g., `o3-2025-04-16`).
+- Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not used (e.g. `gemini-2.5-flash`), make a note of that.
 - Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support).
 - Add/extend static tests for request assembly defaults and pricing/alias display.
 - Update live tests by extending parameterized model lists where behavior matches; add model-specific live tests for divergent behaviors (e.g., rejects reasoning or accepts sampling).
@@ -104,6 +104,7 @@ across providers.
 
 ## Progress
 - Added a script to run a single puzzle against one OpenAI model and capture responses.
+- Unified the single-run script so it routes to a provider based on the model name.
 - Added OpenAI request builder support and tests for o3 reasoning/tool parameters.
 - Added opt-in live OpenAI tests (marked `live`) for parameter acceptance and errors.
 - Live OpenAI call confirmed o3 rejects `temperature`.
@@ -121,7 +122,9 @@ across providers.
 - Added gpt-4o snapshot model metadata (alias/pricing) and static request tests.
 - Added opt-in live OpenAI tests for gpt-4o snapshot basic responses and sampling parameters.
 - Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
+- Added a Gemini provider adapter with request capture, a run script, and static/live tests.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
-- Capture Gemini long-output pricing tiers when adding Gemini support.
+- Capture Gemini long-output pricing tiers for cost modeling.
+- Add Gemini streaming support once finalized response payload handling is clarified.

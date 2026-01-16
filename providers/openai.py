@@ -17,6 +17,8 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
 }
 
+SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
+
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
@@ -68,6 +70,10 @@ def display_provider_name(provider: str) -> str:
 
 def supports_reasoning(model: str) -> bool:
     return model in REASONING_MODELS
+
+
+def supports_model(model: str) -> bool:
+    return model in SUPPORTED_MODELS
 
 
 def _content_item(text: str) -> dict[str, str]:

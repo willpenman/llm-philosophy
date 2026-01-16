@@ -17,6 +17,14 @@ from providers.openai import (
     send_response_request,
     supports_reasoning,
 )
+from providers.gemini import (
+    build_generate_content_request,
+    display_model_name as display_gemini_model_name,
+    display_provider_name as display_gemini_provider_name,
+    price_schedule_for_model as gemini_price_schedule_for_model,
+    require_api_key as require_gemini_api_key,
+    send_generate_content_request,
+)
 from src.puzzles import Puzzle, load_puzzle
 from src.storage import ResponseStore, format_input_text, normalize_special_settings, utc_now_iso
 from src.system_prompt import SystemPrompt, load_system_prompt
@@ -177,6 +185,110 @@ def run_openai_puzzle(
         run_id=run_id,
         request_payload=request_payload,
         response_payload=response_payload,
+        output_text=output_text,
+        request_path=request_path,
+        response_text_path=stored_text.path,
+    )
+
+
+def run_gemini_puzzle(
+    *,
+    puzzle_name: str,
+    model: str = "gemini-2.0-flash-lite-001",
+    max_output_tokens: int | None = None,
+    temperature: float | None = None,
+    top_p: float | None = None,
+    top_k: int | None = None,
+    special_settings: str | None = None,
+    dry_run: bool = False,
+    run_id: str | None = None,
+    puzzle_dir: Path | None = None,
+    system_path: Path | None = None,
+    responses_dir: Path | None = None,
+    api_key: str | None = None,
+) -> RunResult:
+    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    created_at = utc_now_iso()
+    run_id = run_id or uuid4().hex
+    provider = "gemini"
+    special_settings_label = normalize_special_settings(special_settings)
+
+    request_payload = build_generate_content_request(
+        system_prompt=system_prompt.text,
+        user_prompt=puzzle.text,
+        model=model,
+        max_output_tokens=max_output_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+    )
+
+    store = ResponseStore(responses_dir or _default_responses_dir())
+    request_path = store.record_request(
+        run_id=run_id,
+        created_at=created_at,
+        provider=provider,
+        model=model,
+        puzzle_name=puzzle.name,
+        puzzle_version=puzzle.version,
+        special_settings=special_settings_label,
+        request_payload=request_payload,
+    )
+
+    if dry_run:
+        return RunResult(
+            run_id=run_id,
+            request_payload=request_payload,
+            response_payload=None,
+            output_text="",
+            request_path=request_path,
+            response_text_path=None,
+        )
+
+    request_started_at = created_at
+    print(
+        f"requesting puzzle={puzzle.name} model={model}",
+        flush=True,
+    )
+    response = send_generate_content_request(
+        request_payload,
+        api_key=api_key or require_gemini_api_key(),
+    )
+    request_completed_at = utc_now_iso()
+    output_text = response.output_text
+    input_text = format_input_text(system_prompt.text, puzzle.text)
+    derived: dict[str, Any] = {
+        "timing": {
+            "request_started_at": request_started_at,
+            "request_completed_at": request_completed_at,
+        }
+    }
+    price_schedule = gemini_price_schedule_for_model(model)
+    if price_schedule is not None:
+        derived["price_schedule"] = price_schedule
+    derived["model_alias"] = display_gemini_model_name(model)
+    stored_text = store.record_response(
+        run_id=run_id,
+        created_at=created_at,
+        provider=provider,
+        model=model,
+        model_alias=display_gemini_model_name(model),
+        provider_alias=display_gemini_provider_name(provider),
+        puzzle_name=puzzle.name,
+        puzzle_title_prefix="Philosophy problem",
+        puzzle_version=puzzle.version,
+        puzzle_title=puzzle.title,
+        special_settings=special_settings_label,
+        request_payload=request_payload,
+        response_payload=response.payload,
+        input_text=input_text,
+        output_text=output_text,
+        derived=derived,
+    )
+    return RunResult(
+        run_id=run_id,
+        request_payload=request_payload,
+        response_payload=response.payload,
         output_text=output_text,
         request_path=request_path,
         response_text_path=stored_text.path,
