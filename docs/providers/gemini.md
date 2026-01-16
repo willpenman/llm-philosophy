@@ -22,6 +22,8 @@
     - "Use the thinkingLevel parameter with Gemini 3 models. While thinkingBudget is accepted for backwards compatibility, using it with Gemini 3 Pro may result in suboptimal performance."
     - `thinking_level` can be "LOW" or "HIGH" - for 3 Flash, there's "minimal", "low", "medium", and "high"
     - If you don't specify a thinking level, Gemini will use the Gemini 3 models' default dynamic thinking level, "high". "You cannot disable thinking for Gemini 3 Pro." 
+  - Adapter defaults: `thinking_level="HIGH"` and `include_thoughts=True` when using Gemini 3 Pro.
+  - Streaming capture: response payload stores reconstructed thought/output parts (single thought part + single output part) rather than per-chunk streaming parts.
   - Versions: preview only (`gemini-3-pro-preview`).
 
 ## Pricing schedule (draft)

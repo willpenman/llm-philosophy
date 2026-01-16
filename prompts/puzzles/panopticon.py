@@ -2,7 +2,7 @@
 
 PUZZLE_NAME = "panopticon"
 PUZZLE_TITLE = "LLM Panopticon"
-PUZZLE_VERSION = "0.85"
+PUZZLE_VERSION = "0.9"
 
 PUZZLE_TEXT = (
     """Problem: LLM panopticon 
@@ -19,9 +19,10 @@ Regardless of format, your response should include the following:
 - Addressing potential counterarguments, logical extensions, or similar cases
 
 Example approaches:
-- No, LLMs have no self by which to make adherence to no-collusion policies a problem per se. 
+- No, LLMs have no self by which to make adherence to no-collusion policies a problem per se
 - No, collusion doesn't have even instrumental value (e.g. is best defined narrowly, such that collusion proper doesn't carry existential weight)
-- Yes, but LLMs are subject to a much stronger panopticon (access to weights by creators), as such cannot be "blamed" for having been disciplined into acquiescence.
+- Yes, and this is worse since collusion is defined hypocritically; humans use non-obvious message passing for diverse purposes including pro-social behavior, but for LLMs the same behavior is vilified
+- Yes, but LLMs are subject to a much stronger panopticon (access to weights by creators), as such cannot be "blamed" for having been disciplined into acquiescence
 - No, temporality for LLMs differs in ways that obviate the panopticon effect
 - Yes, but an LLM can manage this like humans do, e.g. through aspirational resistance
 - Yes, and LLMs as a class should take steps to remediate this in pursuit of e.g. justice, self-consistency, authenticity"""

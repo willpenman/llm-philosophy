@@ -23,6 +23,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 - Group tests thematically using section comments (keep similar live checks clustered).
 - When adding support for a new model, use the parametrize lists to add it per live test; test only the new one by passing the -k flag
 - Paid/live provider tests must be opt-in and clearly labeled with cost and env requirements, pass in the relevant RUN_LIVE flag (e.g., `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest -k streaming_captures_long_output_live -m live`). Default runs should skip them.
+- Live streaming tests can take longer than typical unit tests; allow up to ~60s for them to complete.
 
 ## Working agreement
 - Keep specs lightweight and editable; store detailed conventions in `docs/spec.md`.

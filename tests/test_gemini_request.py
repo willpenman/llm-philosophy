@@ -54,4 +54,4 @@ def test_price_schedule_for_model_includes_units() -> None:
     assert schedule["unit"] == "per_million_tokens"
     assert schedule["input"] == 0.075
     assert schedule["output"] == 0.30
-    assert display_model_name("gemini-2.0-flash-lite-001") == "2.0 Flash Lite"
+    assert display_model_name("gemini-2.0-flash-lite-001") == "Gemini 2.0 Flash Lite"

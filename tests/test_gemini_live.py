@@ -189,13 +189,13 @@ def test_gemini_accepts_max_output_tokens_8192_live(model: str) -> None:
 
 # STREAMING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001"])
+@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])
 def test_gemini_streaming_captures_long_output_live(model: str) -> None:
     _skip_if_live_disabled()
     response = create_response(
         system_prompt="You are a test harness. Follow the user's instructions.",
         user_prompt=(
-            "Write a long, continuous response of about 300 words about the "
+            "Write a response of about 300 words about the "
             "philosophical implications of model introspection. End with the word END."
         ),
         model=model,

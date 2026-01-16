@@ -127,6 +127,8 @@ across providers.
 - Added a Gemini provider adapter with request capture, a run script, and static/live tests.
 - Added Gemini streaming support with reconstructed payload capture.
 - Added Gemini 3 Pro preview model support with thinking-config live test.
+- Gemini runner now defaults Gemini 3 Pro to high thinking with thought inclusion.
+- Gemini streaming payloads now store reconstructed thought/output parts instead of per-chunk parts.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.

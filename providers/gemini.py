@@ -18,6 +18,11 @@ SUPPORTED_MODELS: set[str] = {
     "gemini-3-pro-preview",
 }
 
+MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
+    "gemini-2.0-flash-lite-001": {"max_output_tokens": 8192},
+    "gemini-3-pro-preview": {"max_output_tokens": 65536},
+}
+
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
 }
@@ -79,9 +84,13 @@ def build_generate_content_request(
     temperature: float | None = None,
     top_p: float | None = None,
     top_k: int | None = None,
+    thinking_config: dict[str, Any] | None = None,
     tools: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     config: dict[str, Any] = {"system_instruction": system_prompt}
+    if max_output_tokens is None:
+        defaults = MODEL_DEFAULTS.get(model, {})
+        max_output_tokens = defaults.get("max_output_tokens")
     if max_output_tokens is not None:
         config["max_output_tokens"] = max_output_tokens
     if temperature is not None:
@@ -90,6 +99,8 @@ def build_generate_content_request(
         config["top_p"] = top_p
     if top_k is not None:
         config["top_k"] = top_k
+    if thinking_config:
+        config["thinking_config"] = thinking_config
     if tools:
         config["tools"] = tools
 
@@ -113,10 +124,10 @@ def _serialize_response(response: Any) -> dict[str, Any]:
     return {"raw": str(response)}
 
 
-def extract_output_text(payload: dict[str, Any]) -> str:
+def _extract_text_parts(payload: dict[str, Any], *, include_thoughts: bool) -> list[str]:
     candidates = payload.get("candidates")
     if not isinstance(candidates, list):
-        return ""
+        return []
     chunks: list[str] = []
     for candidate in candidates:
         if not isinstance(candidate, dict):
@@ -131,9 +142,53 @@ def extract_output_text(payload: dict[str, Any]) -> str:
             if not isinstance(part, dict):
                 continue
             text = part.get("text")
-            if isinstance(text, str):
-                chunks.append(text)
-    return "".join(chunks)
+            if not isinstance(text, str):
+                continue
+            is_thought = part.get("thought")
+            if is_thought and not include_thoughts:
+                continue
+            chunks.append(text)
+    return chunks
+
+
+def _extract_part_entries(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    candidates = payload.get("candidates")
+    if not isinstance(candidates, list):
+        return []
+    entries: list[dict[str, Any]] = []
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        content = candidate.get("content")
+        if not isinstance(content, dict):
+            continue
+        parts = content.get("parts")
+        if not isinstance(parts, list):
+            continue
+        for part in parts:
+            if not isinstance(part, dict):
+                continue
+            text = part.get("text")
+            if not isinstance(text, str) or not text:
+                continue
+            entries.append({"text": text, "thought": part.get("thought") is True})
+    return entries
+
+
+def _reconstruct_parts(
+    output_text: str,
+    thoughts_text: str,
+) -> list[dict[str, Any]]:
+    parts: list[dict[str, Any]] = []
+    if thoughts_text:
+        parts.append({"text": thoughts_text, "thought": True})
+    if output_text:
+        parts.append({"text": output_text, "thought": False})
+    return parts
+
+
+def extract_output_text(payload: dict[str, Any]) -> str:
+    return "".join(_extract_text_parts(payload, include_thoughts=False))
 
 
 def send_generate_content_request(
@@ -153,22 +208,36 @@ def send_generate_content_request(
         with genai.Client(**client_params) as client:
             if stream:
                 chunks: list[str] = []
+                thought_chunks: list[str] = []
                 last_payload: dict[str, Any] | None = None
                 for chunk in client.models.generate_content_stream(
                     model=payload["model"],
                     contents=payload["contents"],
                     config=payload.get("config"),
                 ):
-                    chunk_text = getattr(chunk, "text", "")
-                    if chunk_text:
-                        chunks.append(chunk_text)
+                    chunk_payload = _serialize_response(chunk)
+                    for part in _extract_part_entries(chunk_payload):
+                        text = part["text"]
+                        is_thought = part["thought"]
+                        if is_thought:
+                            thought_chunks.append(text)
+                        else:
+                            chunks.append(text)
                         if stream_text_callback is not None:
-                            stream_text_callback(chunk_text)
-                    last_payload = _serialize_response(chunk)
+                            stream_text_callback(text)
+                    last_payload = chunk_payload
                 output_text = "".join(chunks)
+                thoughts_text = "".join(thought_chunks)
                 response_payload = last_payload or {}
                 response_payload["stream"] = True
                 response_payload["output_text"] = output_text
+                if thoughts_text:
+                    response_payload["thoughts_text"] = thoughts_text
+                reconstructed_parts = _reconstruct_parts(output_text, thoughts_text)
+                if reconstructed_parts:
+                    response_payload["candidates"] = [
+                        {"content": {"parts": reconstructed_parts}}
+                    ]
                 return GeminiResponse(payload=response_payload, output_text=output_text)
 
             response = client.models.generate_content(
@@ -195,10 +264,13 @@ def create_response(
     temperature: float | None = None,
     top_p: float | None = None,
     top_k: int | None = None,
+    thinking_config: dict[str, Any] | None = None,
     tools: list[dict[str, Any]] | None = None,
     stream: bool | None = None,
     api_key: str | None = None,
 ) -> GeminiResponse:
+    if thinking_config is None and supports_reasoning(model):
+        thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
     payload = build_generate_content_request(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
@@ -207,6 +279,7 @@ def create_response(
         temperature=temperature,
         top_p=top_p,
         top_k=top_k,
+        thinking_config=thinking_config,
         tools=tools,
     )
     return send_generate_content_request(
