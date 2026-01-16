@@ -13,7 +13,7 @@ from providers.openai import (
     display_model_name,
     display_provider_name,
     extract_output_text,
-    inject_reasoning_summary_from_stream,
+    extract_reasoning_summary_from_stream,
     price_schedule_for_model,
     require_api_key,
     send_response_request,
@@ -193,7 +193,26 @@ def run_openai_puzzle(
         sse_event_path=sse_event_path,
         stream_capture=stream_capture,
     )
-    inject_reasoning_summary_from_stream(response_payload, stream_capture)
+    reasoning_summary = extract_reasoning_summary_from_stream(stream_capture)
+    if isinstance(reasoning_summary, str) and reasoning_summary:
+        outputs = (
+            response_payload.get("output")
+            if isinstance(response_payload, dict)
+            else None
+        )
+        if isinstance(outputs, list):
+            for item in outputs:
+                if not isinstance(item, dict):
+                    continue
+                if item.get("type") != "reasoning":
+                    continue
+                existing_summary = item.get("summary")
+                if existing_summary:
+                    break
+                item["summary"] = [
+                    {"type": "summary_text", "text": reasoning_summary}
+                ]
+                break
     if stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()

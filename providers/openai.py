@@ -226,33 +226,22 @@ def _coalesce_reasoning_summary_parts(
     return parts
 
 
-def inject_reasoning_summary_from_stream(
-    response_payload: dict[str, Any] | None,
+def extract_reasoning_summary_from_stream(
     stream_capture: dict[str, Any] | None,
-) -> None:
-    if not isinstance(response_payload, dict) or not isinstance(stream_capture, dict):
-        return
+) -> str | None:
+    if not isinstance(stream_capture, dict):
+        return None
     done_order = stream_capture.get("reasoning_summary_done_order")
     delta_chunks = stream_capture.get("reasoning_summary_deltas")
     if not isinstance(done_order, list) or not isinstance(delta_chunks, dict):
-        return
+        return None
     summary_parts = _coalesce_reasoning_summary_parts(
         done_order=done_order,
         delta_chunks=delta_chunks,
     )
     if not summary_parts:
-        return
-    summary_text = "\n\n\n".join(summary_parts)
-    outputs = response_payload.get("output")
-    if not isinstance(outputs, list):
-        return
-    for item in outputs:
-        if not isinstance(item, dict):
-            continue
-        if item.get("type") != "reasoning":
-            continue
-        item["summary"] = [{"type": "summary_text", "text": summary_text}]
-        break
+        return None
+    return "\n\n\n".join(summary_parts)
 
 
 def send_response_request(
