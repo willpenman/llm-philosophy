@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
-from typing import Any
+from typing import Any, Callable
 
 
 MODEL_ALIASES: dict[str, str] = {
@@ -113,6 +113,8 @@ def send_generate_content_request(
     payload: dict[str, Any],
     *,
     api_key: str | None = None,
+    stream: bool | None = None,
+    stream_text_callback: Callable[[str], None] | None = None,
 ) -> GeminiResponse:
     from google import genai
     from google.genai import errors
@@ -122,6 +124,26 @@ def send_generate_content_request(
         if api_key is not None:
             client_params["api_key"] = api_key
         with genai.Client(**client_params) as client:
+            if stream:
+                chunks: list[str] = []
+                last_payload: dict[str, Any] | None = None
+                for chunk in client.models.generate_content_stream(
+                    model=payload["model"],
+                    contents=payload["contents"],
+                    config=payload.get("config"),
+                ):
+                    chunk_text = getattr(chunk, "text", "")
+                    if chunk_text:
+                        chunks.append(chunk_text)
+                        if stream_text_callback is not None:
+                            stream_text_callback(chunk_text)
+                    last_payload = _serialize_response(chunk)
+                output_text = "".join(chunks)
+                response_payload = last_payload or {}
+                response_payload["stream"] = True
+                response_payload["output_text"] = output_text
+                return GeminiResponse(payload=response_payload, output_text=output_text)
+
             response = client.models.generate_content(
                 model=payload["model"],
                 contents=payload["contents"],
@@ -144,6 +166,7 @@ def create_response(
     top_p: float | None = None,
     top_k: int | None = None,
     tools: list[dict[str, Any]] | None = None,
+    stream: bool | None = None,
     api_key: str | None = None,
 ) -> GeminiResponse:
     payload = build_generate_content_request(
@@ -159,4 +182,5 @@ def create_response(
     return send_generate_content_request(
         payload,
         api_key=api_key or require_api_key(),
+        stream=stream,
     )

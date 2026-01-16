@@ -15,8 +15,8 @@
   - Thinking config: SDK exposes `thinking_config` (`thinking_level`, `thinking_budget`,
     `include_thoughts`), but the model rejects it in live calls.
   - Live: `max_output_tokens=8193` did not error; upper bound is not enforced.
-  - Streaming: SDK supports `generate_content_stream`, but the adapter currently
-    uses non-streaming to preserve the finalized payload shape.
+- Streaming: adapter uses `generate_content_stream` and reconstructs the
+  response payload from the final chunk plus assembled output text.
 
 ## Pricing schedule (draft)
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).

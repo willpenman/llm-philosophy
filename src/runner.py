@@ -152,6 +152,27 @@ def run_openai_puzzle(
     output_text = extract_output_text(response_payload)
     if stream and streamed_chunks and not output_text:
         output_text = "".join(streamed_chunks)
+    usage = response_payload.get("usage") if isinstance(response_payload, dict) else None
+    if isinstance(usage, dict):
+        output_tokens = usage.get("output_tokens")
+        thinking_tokens = None
+        details = usage.get("output_tokens_details")
+        if isinstance(details, dict):
+            thinking_tokens = details.get("reasoning_tokens")
+        if isinstance(output_tokens, int) or isinstance(thinking_tokens, int) or thinking_tokens is None:
+            if isinstance(thinking_tokens, int):
+                thinking_label = str(thinking_tokens)
+            elif thinking_tokens is None:
+                thinking_label = "0 (disabled)"
+            else:
+                thinking_label = "unknown"
+            output_label = (
+                str(output_tokens) if isinstance(output_tokens, int) else "unknown"
+            )
+            print(
+                f"Actual tokens: thinking={thinking_label}, output={output_label}",
+                flush=True,
+            )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -199,6 +220,7 @@ def run_gemini_puzzle(
     temperature: float | None = None,
     top_p: float | None = None,
     top_k: int | None = None,
+    stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
     run_id: str | None = None,
@@ -253,9 +275,28 @@ def run_gemini_puzzle(
     response = send_generate_content_request(
         request_payload,
         api_key=api_key or require_gemini_api_key(),
+        stream=stream,
     )
     request_completed_at = utc_now_iso()
     output_text = response.output_text
+    usage = response.payload.get("usage_metadata") if isinstance(response.payload, dict) else None
+    if isinstance(usage, dict):
+        output_tokens = usage.get("candidates_token_count")
+        thinking_tokens = usage.get("thoughts_token_count")
+        if isinstance(output_tokens, int) or isinstance(thinking_tokens, int) or thinking_tokens is None:
+            if isinstance(thinking_tokens, int):
+                thinking_label = str(thinking_tokens)
+            elif thinking_tokens is None:
+                thinking_label = "0 (disabled)"
+            else:
+                thinking_label = "unknown"
+            output_label = (
+                str(output_tokens) if isinstance(output_tokens, int) else "unknown"
+            )
+            print(
+                f"Actual tokens: thinking={thinking_label}, output={output_label}",
+                flush=True,
+            )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {

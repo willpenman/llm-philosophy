@@ -8,7 +8,7 @@ across providers.
 ## Principles
 - Keep specs lightweight; record detailed conventions here, not in README.
 - Prefer append-only storage with clear provenance and timestamps.
-- Preserve provider payloads verbatim; normalize only when it adds clear value (e.g. we don't store SSE events).
+- Preserve provider payloads verbatim when available; for streaming responses without a final payload, record a reconstructed payload derived from the assembled output text and metadata. Normalize only when it adds clear value (e.g. we don't store SSE events).
 - Treat prompts as fixtures; avoid runtime mutation.
 - Favor minimal modules and simple data shapes over heavy abstractions.
 
@@ -123,8 +123,8 @@ across providers.
 - Added opt-in live OpenAI tests for gpt-4o snapshot basic responses and sampling parameters.
 - Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
 - Added a Gemini provider adapter with request capture, a run script, and static/live tests.
+- Added Gemini streaming support with reconstructed payload capture.
 
 ## TODO
 - Wire up additional provider adapters after validating the OpenAI run script end-to-end.
 - Capture Gemini long-output pricing tiers for cost modeling.
-- Add Gemini streaming support once finalized response payload handling is clarified.
