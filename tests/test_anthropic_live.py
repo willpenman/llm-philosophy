@@ -39,15 +39,14 @@ def _skip_if_live_disabled() -> None:
 
 # ACCEPTS SYSTEM
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101"])
+@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-3-haiku-20240307"])
 def test_anthropic_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = build_messages_request(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
         model=model,
-        max_output_tokens=2048,
-        thinking={"type": "enabled", "budget_tokens": 1024},
+        max_output_tokens=2048
     )
     response = send_messages_request(
         payload,
@@ -56,7 +55,7 @@ def test_anthropic_accepts_system_prompt_live(model: str) -> None:
     assert "OK" in response.output_text.upper()
 
 
-# TEMPERATURE AND THINKING
+# TEMPERATURE
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["claude-opus-4-5-20251101"])
 def test_anthropic_rejects_temperature_with_thinking_live(model: str) -> None:
@@ -76,17 +75,61 @@ def test_anthropic_rejects_temperature_with_thinking_live(model: str) -> None:
         )
 
 
-# MAX OUTPUT TOKENS
+# THINKING
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["claude-opus-4-5-20251101"])
-def test_anthropic_rejects_over_max_output_tokens_live(model: str) -> None:
+def test_anthropic_accepts_thinking_live(model: str) -> None:
+    _skip_if_live_disabled()
+    payload = build_messages_request(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=2048,
+        thinking={"type": "enabled", "budget_tokens": 1024},
+    )
+    response = send_messages_request(
+        payload,
+        api_key=os.environ["ANTHROPIC_API_KEY"],
+    )
+    assert "OK" in response.output_text.upper()
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["claude-3-haiku-20240307"])
+def test_anthropic_rejects_thinking_live(model: str) -> None:
+    _skip_if_live_disabled()
+    payload = {
+        "model": model,
+        "max_tokens": 512,
+        "system": [{"type": "text", "text": "System."}],
+        "messages": [{"role": "user", "content": "User."}],
+        "thinking": {"type": "enabled", "budget_tokens": 1024},
+    }
+    with pytest.raises(RuntimeError, match=r"thinking"):
+        send_messages_request(
+            payload,
+            api_key=os.environ["ANTHROPIC_API_KEY"],
+        )
+
+
+# MAX OUTPUT TOKENS
+@pytest.mark.live
+@pytest.mark.parametrize(
+    ("model", "max_output_tokens"),
+    [
+        ("claude-opus-4-5-20251101", 64001),
+        ("claude-3-haiku-20240307", 4501),
+    ],
+)
+def test_anthropic_rejects_over_max_output_tokens_live(
+    model: str, max_output_tokens: int
+) -> None:
     _skip_if_live_disabled()
     payload = build_messages_request(
         system_prompt="System.",
         user_prompt="User.",
         model=model,
-        max_output_tokens=64001,
-        thinking={"type": "enabled", "budget_tokens": 1024},
+        max_output_tokens=max_output_tokens
     )
     with pytest.raises(RuntimeError, match=r"max_tokens"):
         send_messages_request(

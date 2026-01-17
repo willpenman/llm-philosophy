@@ -8,6 +8,7 @@
 
 ## Models
 - Claude Opus 4.5 (`claude-opus-4-5-20251101`) (first supported here)
+- Claude Haiku 3 (`claude-3-haiku-20240307`) (only model left with no extended thinking; max output 4,000)
 - Extended thinking docs list: Claude Sonnet 4.5/4/3.7, Claude Haiku 4.5, Claude Opus 4.5/4.1/4
 
 ## Model parameter availability
@@ -15,6 +16,7 @@
 - `messages`: list of role/content items; we use a single user message with string content.
 - `max_tokens`: required; `budget_tokens` must be less than `max_tokens` when thinking is enabled.
   - Live test: Opus 4.5 rejects `max_tokens` that exceed the model limit (e.g., 64,001 fails).
+  - Haiku 3 has stated max of 4k in docs, but the API is not as exact, doesn't fail to about 4500 tokens
 - `thinking` (extended thinking):
   - Supported for Claude 4/4.5 models, including Opus 4.5.
   - Use `{"type": "enabled", "budget_tokens": <int>}`.
@@ -23,6 +25,7 @@
   - Thinking output is summarized for Claude 4.x; usage billing counts the full thinking tokens.
   - Incompatible with `temperature` and `top_k`; `top_p` is allowed between 0.95 and 1.0.
   - Streaming required when `max_tokens` exceeds 21,333.
+  - Claude Haiku 3 does not support extended thinking (live test: request with `thinking` rejected).
 - `temperature`, `top_p`, `top_k`: supported generally, but see thinking incompatibilities above.
 - `effort` (beta): only Claude Opus 4.5; requires beta header `effort-2025-11-24`
   and `output_config.effort`. `high` is the default and equivalent to omitting the parameter.
@@ -43,5 +46,6 @@
 ## Pricing schedule (draft)
 - Prices tracked per million tokens for base input/output only.
 - Claude Opus 4.5: input $5.00 / output $25.00 per million tokens.
+- Claude Haiku 3: input $0.25 / output $1.25 per million tokens.
 - Complete cost modeling sums `input_tokens` + cache read/write tokens and applies the base input rate
   (cache multipliers are not modeled yet), we use a simplified version with just input tokens.

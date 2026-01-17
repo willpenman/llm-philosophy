@@ -17,12 +17,14 @@ DEFAULT_VERSION = "2023-06-01"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "claude-opus-4-5-20251101": {"max_output_tokens": 64000, "thinking_budget_tokens": 20000},
+    "claude-3-haiku-20240307": {"max_output_tokens": 4000},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 
 MODEL_ALIASES: dict[str, str] = {
-    "claude-opus-4-5-20251101": "Opus 4.5",
+    "claude-opus-4-5-20251101": "Claude Opus 4.5",
+    "claude-3-haiku-20240307": "Claude Haiku 3",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
@@ -33,6 +35,7 @@ REASONING_MODELS: set[str] = {"claude-opus-4-5-20251101"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "claude-opus-4-5-20251101": {"input": 5.0, "output": 25.0},
+    "claude-3-haiku-20240307": {"input": 0.25, "output": 1.25},
 }
 
 

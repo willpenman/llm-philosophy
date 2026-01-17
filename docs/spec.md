@@ -175,7 +175,9 @@ across providers.
 - Added an Anthropic Messages adapter with Opus 4.5 defaults, streaming reconstruction, and usage/cost helpers.
 - Added Anthropic request assembly tests and wired Anthropic into the run/list scripts.
 - Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
+- Added Claude Haiku 3 model support plus a live test that thinking is rejected.
 
 ## TODO
  - Wire up the Fireworks provider adapter.
  - Run live Anthropic tests for Opus 4.5 (thinking enabled, temperature/top_k rejection, streaming capture).
+ - Run live Anthropic test to confirm Haiku 3 max output errors above 4,000.

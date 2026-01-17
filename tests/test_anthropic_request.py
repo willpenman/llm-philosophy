@@ -35,6 +35,14 @@ def test_build_messages_request_uses_default_max_output_tokens() -> None:
     )
     assert payload["max_tokens"] == 64000
 
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-3-haiku-20240307",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 4000
+
 
 def test_build_messages_request_includes_optional_params() -> None:
     payload = build_messages_request(
@@ -80,6 +88,7 @@ def test_build_messages_request_rejects_invalid_thinking_config(
     ("model", "alias", "input_cost", "output_cost"),
     [
         ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),
+        ("claude-3-haiku-20240307", "Claude Haiku 3", 0.25, 1.25),
     ],
 )
 def test_price_schedule_for_model_includes_units(
