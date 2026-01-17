@@ -8,9 +8,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 
+from providers.anthropic import supports_model as anthropic_supports_model  # noqa: E402
 from providers.gemini import supports_model as gemini_supports_model  # noqa: E402
 from providers.openai import supports_model as openai_supports_model  # noqa: E402
-from src.runner import run_gemini_puzzle, run_openai_puzzle  # noqa: E402
+from src.runner import (  # noqa: E402
+    run_anthropic_puzzle,
+    run_gemini_puzzle,
+    run_openai_puzzle,
+)
 
 
 def _load_dotenv(path: Path) -> None:
@@ -43,7 +48,7 @@ def main() -> None:
     parser.add_argument(
         "--provider",
         default=None,
-        choices=["openai", "gemini"],
+        choices=["openai", "gemini", "anthropic"],
         help="Override provider selection",
     )
     parser.add_argument("--max-output-tokens", type=int, default=None)
@@ -86,11 +91,31 @@ def main() -> None:
             dry_run=args.dry_run,
             debug_sse=args.debug_openai_sse,
         )
+    elif args.provider == "anthropic":
+        if args.debug_openai_sse:
+            raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
+        model = args.model
+        result = run_anthropic_puzzle(
+            puzzle_name=args.name,
+            model=model,
+            max_output_tokens=args.max_output_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            top_k=args.top_k,
+            special_settings=args.special_settings,
+            dry_run=args.dry_run,
+        )
     else:
         model = args.model
         openai_supported = openai_supports_model(model)
         gemini_supported = gemini_supports_model(model)
-        if openai_supported and gemini_supported:
+        anthropic_supported = anthropic_supports_model(model)
+        matches = [name for name, ok in {
+            "openai": openai_supported,
+            "gemini": gemini_supported,
+            "anthropic": anthropic_supported,
+        }.items() if ok]
+        if len(matches) > 1:
             raise ValueError(
                 f"Model {model} matches multiple providers; pass --provider to select."
             )
@@ -98,6 +123,19 @@ def main() -> None:
             if args.debug_openai_sse:
                 raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
             result = run_gemini_puzzle(
+                puzzle_name=args.name,
+                model=model,
+                max_output_tokens=args.max_output_tokens,
+                temperature=args.temperature,
+                top_p=args.top_p,
+                top_k=args.top_k,
+                special_settings=args.special_settings,
+                dry_run=args.dry_run,
+            )
+        elif anthropic_supported:
+            if args.debug_openai_sse:
+                raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
+            result = run_anthropic_puzzle(
                 puzzle_name=args.name,
                 model=model,
                 max_output_tokens=args.max_output_tokens,

@@ -172,10 +172,10 @@ across providers.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 - Documented provider onboarding best practices and required coverage in the spec.
 - Added provider-specific usage/cost extraction helpers and richer run summaries with token usage, cost formatting, and completion links.
+- Added an Anthropic Messages adapter with Opus 4.5 defaults, streaming reconstruction, and usage/cost helpers.
+- Added Anthropic request assembly tests and wired Anthropic into the run/list scripts.
+- Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
 
 ## TODO
-- Wire up additional provider adapters after validating the OpenAI run script end-to-end.
-- Capture Gemini long-output pricing tiers for cost modeling.
-- Capture Gemini 3 Pro preview pricing for cost modeling.
-- Run live OpenAI tests for gpt-5.2-2025-12-11 to confirm `top_p` support and reasoning summary behavior.
-- Run live Gemini tests for gemini-3-pro-preview to confirm whether `temperature` is rejected when `thinking_config` is enabled.
+ - Wire up the Fireworks provider adapter.
+ - Run live Anthropic tests for Opus 4.5 (thinking enabled, temperature/top_k rejection, streaming capture).

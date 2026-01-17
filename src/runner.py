@@ -33,6 +33,19 @@ from providers.gemini import (
     send_generate_content_request,
     supports_reasoning as gemini_supports_reasoning,
 )
+from providers.anthropic import (
+    build_messages_request,
+    calculate_cost_breakdown as anthropic_calculate_cost_breakdown,
+    default_thinking_budget_for_model as anthropic_default_thinking_budget_for_model,
+    display_model_name as display_anthropic_model_name,
+    display_provider_name as display_anthropic_provider_name,
+    extract_output_text as extract_anthropic_output_text,
+    extract_usage_breakdown as anthropic_extract_usage_breakdown,
+    price_schedule_for_model as anthropic_price_schedule_for_model,
+    require_api_key as require_anthropic_api_key,
+    send_messages_request,
+    supports_reasoning as anthropic_supports_reasoning,
+)
 from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
 from src.puzzles import Puzzle, load_puzzle
 from src.storage import ResponseStore, format_input_text, normalize_special_settings, utc_now_iso
@@ -546,6 +559,149 @@ def run_gemini_puzzle(
         puzzle_title=puzzle.title,
         special_settings=special_settings_label,
         special_settings_display=special_settings_display,
+        request_payload=request_payload,
+        response_payload=response.payload,
+        input_text=input_text,
+        output_text=output_text,
+        derived=derived,
+    )
+    _print_run_summary(
+        response_payload=response.payload if isinstance(response.payload, dict) else None,
+        tokens=usage_breakdown,
+        cost=cost_breakdown,
+        max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
+        response_text_path=stored_text.path,
+    )
+    return RunResult(
+        run_id=run_id,
+        request_payload=request_payload,
+        response_payload=response.payload,
+        output_text=output_text,
+        request_path=request_path,
+        response_text_path=stored_text.path,
+        sse_event_path=None,
+    )
+
+
+def run_anthropic_puzzle(
+    *,
+    puzzle_name: str,
+    model: str = "claude-opus-4-5-20251101",
+    max_output_tokens: int | None = None,
+    temperature: float | None = None,
+    top_p: float | None = None,
+    top_k: int | None = None,
+    thinking: dict[str, Any] | None = None,
+    stream: bool = True,
+    special_settings: str | None = None,
+    dry_run: bool = False,
+    run_id: str | None = None,
+    puzzle_dir: Path | None = None,
+    system_path: Path | None = None,
+    responses_dir: Path | None = None,
+    api_key: str | None = None,
+) -> RunResult:
+    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    created_at = utc_now_iso()
+    run_id = run_id or uuid4().hex
+    provider = "anthropic"
+    special_settings_label = normalize_special_settings(special_settings)
+
+    if thinking is None and anthropic_supports_reasoning(model):
+        budget_tokens = anthropic_default_thinking_budget_for_model(model)
+        if budget_tokens is not None:
+            thinking = {"type": "enabled", "budget_tokens": budget_tokens}
+
+    request_payload = build_messages_request(
+        system_prompt=system_prompt.text,
+        user_prompt=puzzle.text,
+        model=model,
+        max_output_tokens=max_output_tokens,
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k,
+        thinking=thinking,
+        stream=stream,
+    )
+
+    store = ResponseStore(responses_dir or _default_responses_dir())
+    request_path = store.record_request(
+        run_id=run_id,
+        created_at=created_at,
+        provider=provider,
+        model=model,
+        puzzle_name=puzzle.name,
+        puzzle_version=puzzle.version,
+        special_settings=special_settings_label,
+        request_payload=request_payload,
+    )
+
+    if dry_run:
+        return RunResult(
+            run_id=run_id,
+            request_payload=request_payload,
+            response_payload=None,
+            output_text="",
+            request_path=request_path,
+            response_text_path=None,
+            sse_event_path=None,
+        )
+
+    request_started_at = created_at
+    print(
+        f"Requesting model {model} for puzzle '{puzzle.name}'",
+        flush=True,
+    )
+    max_tokens = request_payload.get("max_tokens")
+    progress_callback = _build_progress_callback(
+        max_tokens if isinstance(max_tokens, int) else None,
+        suffix="total possible",
+    )
+
+    response = send_messages_request(
+        request_payload,
+        api_key=api_key or require_anthropic_api_key(),
+        progress_callback=progress_callback if stream else None,
+    )
+    if stream and isinstance(max_tokens, int):
+        print("", flush=True)
+    request_completed_at = utc_now_iso()
+    output_text = response.output_text
+    if not output_text and isinstance(response.payload, dict):
+        output_text = extract_anthropic_output_text(response.payload)
+    usage_breakdown = (
+        anthropic_extract_usage_breakdown(response.payload)
+        if isinstance(response.payload, dict)
+        else None
+    )
+    cost_breakdown = (
+        anthropic_calculate_cost_breakdown(response.payload, model=model)
+        if isinstance(response.payload, dict)
+        else None
+    )
+    input_text = format_input_text(system_prompt.text, puzzle.text)
+    derived: dict[str, Any] = {
+        "timing": {
+            "request_started_at": request_started_at,
+            "request_completed_at": request_completed_at,
+        }
+    }
+    price_schedule = anthropic_price_schedule_for_model(model)
+    if price_schedule is not None:
+        derived["price_schedule"] = price_schedule
+    derived["model_alias"] = display_anthropic_model_name(model)
+    stored_text = store.record_response(
+        run_id=run_id,
+        created_at=created_at,
+        provider=provider,
+        model=model,
+        model_alias=display_anthropic_model_name(model),
+        provider_alias=display_anthropic_provider_name(provider),
+        puzzle_name=puzzle.name,
+        puzzle_title_prefix="Philosophy problem",
+        puzzle_version=puzzle.version,
+        puzzle_title=puzzle.title,
+        special_settings=special_settings_label,
         request_payload=request_payload,
         response_payload=response.payload,
         input_text=input_text,

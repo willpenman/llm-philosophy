@@ -1,0 +1,129 @@
+"""Tests for Anthropic request assembly."""
+
+from __future__ import annotations
+
+import pytest
+
+from providers.anthropic import (
+    build_messages_request,
+    calculate_cost_breakdown,
+    display_model_name,
+    extract_usage_breakdown,
+    price_schedule_for_model,
+)
+
+
+def test_build_messages_request_includes_system_and_user() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-5-20251101",
+        max_output_tokens=128,
+    )
+    assert payload["model"] == "claude-opus-4-5-20251101"
+    assert payload["system"][0]["text"] == "System text"
+    assert payload["messages"][0]["role"] == "user"
+    assert payload["messages"][0]["content"] == "User text"
+
+
+def test_build_messages_request_uses_default_max_output_tokens() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-5-20251101",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 64000
+
+
+def test_build_messages_request_includes_optional_params() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-5-20251101",
+        max_output_tokens=128,
+        temperature=0.2,
+        top_p=0.95,
+        top_k=40,
+        thinking=None,
+        stream=True,
+    )
+    assert payload["temperature"] == 0.2
+    assert payload["top_p"] == 0.95
+    assert payload["top_k"] == 40
+    assert payload["stream"] is True
+
+
+@pytest.mark.parametrize(
+    ("thinking", "error"),
+    [
+        ({"type": "disabled", "budget_tokens": 1000}, "thinking.type"),
+        ({"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
+        ({"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
+        ({"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
+    ],
+)
+def test_build_messages_request_rejects_invalid_thinking_config(
+    thinking: dict[str, object], error: str
+) -> None:
+    with pytest.raises(ValueError, match=error):
+        build_messages_request(
+            system_prompt="System text",
+            user_prompt="User text",
+            model="claude-opus-4-5-20251101",
+            max_output_tokens=128,
+            thinking=thinking,
+        )
+
+
+@pytest.mark.parametrize(
+    ("model", "alias", "input_cost", "output_cost"),
+    [
+        ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),
+    ],
+)
+def test_price_schedule_for_model_includes_units(
+    model: str,
+    alias: str,
+    input_cost: float,
+    output_cost: float,
+) -> None:
+    schedule = price_schedule_for_model(model)
+    assert schedule is not None
+    assert schedule["unit"] == "per_million_tokens"
+    assert schedule["input"] == input_cost
+    assert schedule["output"] == output_cost
+    assert display_model_name(model) == alias
+
+
+def test_extract_usage_breakdown_reads_anthropic_usage() -> None:
+    payload = {
+        "usage": {
+            "input_tokens": 10,
+            "cache_creation_input_tokens": 2,
+            "cache_read_input_tokens": 3,
+            "output_tokens": 20,
+        }
+    }
+    breakdown = extract_usage_breakdown(payload)
+    assert breakdown is not None
+    assert breakdown.input_tokens == 15
+    assert breakdown.output_tokens == 20
+    assert breakdown.reasoning_tokens is None
+
+
+def test_calculate_cost_breakdown_uses_anthropic_rates() -> None:
+    payload = {
+        "usage": {
+            "input_tokens": 10,
+            "cache_creation_input_tokens": 2,
+            "cache_read_input_tokens": 3,
+            "output_tokens": 20,
+        }
+    }
+    breakdown = calculate_cost_breakdown(payload, model="claude-opus-4-5-20251101")
+    assert breakdown is not None
+    assert breakdown.input_cost == pytest.approx(0.000075)
+    assert breakdown.reasoning_cost == pytest.approx(0.0)
+    assert breakdown.output_cost == pytest.approx(0.0005)
+    assert breakdown.total_cost == pytest.approx(0.000575)

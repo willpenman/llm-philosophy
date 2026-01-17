@@ -4,6 +4,11 @@ from __future__ import annotations
 
 from collections import defaultdict
 
+from providers.anthropic import (  # noqa: E402
+    SUPPORTED_MODELS as ANTHROPIC_MODELS,
+    display_model_name as display_anthropic_model_name,
+    display_provider_name as display_anthropic_provider_name,
+)
 from providers.gemini import (  # noqa: E402
     SUPPORTED_MODELS as GEMINI_MODELS,
     display_model_name as display_gemini_model_name,
@@ -33,6 +38,11 @@ def main() -> None:
     for model in sorted(GEMINI_MODELS):
         grouped[display_gemini_provider_name("gemini")].append(
             _format_model_name(model, display_gemini_model_name(model))
+        )
+
+    for model in sorted(ANTHROPIC_MODELS):
+        grouped[display_anthropic_provider_name("anthropic")].append(
+            _format_model_name(model, display_anthropic_model_name(model))
         )
 
     for provider in sorted(grouped.keys()):
