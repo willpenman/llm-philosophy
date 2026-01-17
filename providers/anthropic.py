@@ -344,7 +344,27 @@ def send_messages_request(
     try:
         with urllib.request.urlopen(request, timeout=timeout_s) as response:
             if payload.get("stream") is True:
-                events = list(_iter_sse_events(response))
+                events: list[dict[str, Any]] = []
+                streamed_chars = 0
+                for event in _iter_sse_events(response):
+                    events.append(event)
+                    if progress_callback is None:
+                        continue
+                    data_payload = event.get("data")
+                    if not isinstance(data_payload, dict):
+                        continue
+                    event_type = event.get("event") or data_payload.get("type")
+                    if event_type != "content_block_delta":
+                        continue
+                    delta = data_payload.get("delta")
+                    if not isinstance(delta, dict):
+                        continue
+                    if delta.get("type") != "text_delta":
+                        continue
+                    text = delta.get("text")
+                    if isinstance(text, str):
+                        streamed_chars += len(text)
+                        progress_callback(streamed_chars)
                 response_payload = _reconstruct_stream_payload(events)
                 output_text = extract_output_text(response_payload)
                 if progress_callback is not None and output_text:
