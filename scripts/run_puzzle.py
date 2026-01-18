@@ -6,16 +6,16 @@ import argparse
 import os
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-
-from providers.anthropic import supports_model as anthropic_supports_model  # noqa: E402
-from providers.gemini import supports_model as gemini_supports_model  # noqa: E402
-from providers.openai import supports_model as openai_supports_model  # noqa: E402
-from src.runner import (  # noqa: E402
+from src.providers.anthropic import supports_model as anthropic_supports_model
+from src.providers.gemini import supports_model as gemini_supports_model
+from src.providers.openai import supports_model as openai_supports_model
+from src.runner import (
     run_anthropic_puzzle,
     run_gemini_puzzle,
     run_openai_puzzle,
 )
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _load_dotenv(path: Path) -> None:

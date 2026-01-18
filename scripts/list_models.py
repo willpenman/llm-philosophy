@@ -3,18 +3,17 @@
 from __future__ import annotations
 
 from collections import defaultdict
-
-from providers.anthropic import (  # noqa: E402
+from src.providers.anthropic import (
     SUPPORTED_MODELS as ANTHROPIC_MODELS,
     display_model_name as display_anthropic_model_name,
     display_provider_name as display_anthropic_provider_name,
 )
-from providers.gemini import (  # noqa: E402
+from src.providers.gemini import (
     SUPPORTED_MODELS as GEMINI_MODELS,
     display_model_name as display_gemini_model_name,
     display_provider_name as display_gemini_provider_name,
 )
-from providers.openai import (  # noqa: E402
+from src.providers.openai import (
     SUPPORTED_MODELS as OPENAI_MODELS,
     display_model_name as display_openai_model_name,
     display_provider_name as display_openai_provider_name,

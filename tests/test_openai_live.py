@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from providers.openai import create_response  # noqa: E402
+from src.providers.openai import create_response  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 

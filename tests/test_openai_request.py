@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from providers.openai import (  # noqa: E402
+from src.providers.openai import (  # noqa: E402
     build_response_request,
     calculate_cost_breakdown,
     display_model_name,

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from providers.anthropic import (
+from src.providers.anthropic import (
     build_messages_request,
     calculate_cost_breakdown,
     display_model_name,

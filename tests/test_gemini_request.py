@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from providers.gemini import (
+from src.providers.gemini import (
     build_generate_content_request,
     calculate_cost_breakdown,
     display_model_name,

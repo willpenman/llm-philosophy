@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
 
-from providers.openai import (
+from src.providers.openai import (
     build_response_request,
     calculate_cost_breakdown as openai_calculate_cost_breakdown,
     display_model_name,
@@ -21,7 +21,7 @@ from providers.openai import (
     send_response_request,
     supports_reasoning,
 )
-from providers.gemini import (
+from src.providers.gemini import (
     build_generate_content_request,
     calculate_cost_breakdown as gemini_calculate_cost_breakdown,
     default_temperature_for_model as gemini_default_temperature_for_model,
@@ -33,7 +33,7 @@ from providers.gemini import (
     send_generate_content_request,
     supports_reasoning as gemini_supports_reasoning,
 )
-from providers.anthropic import (
+from src.providers.anthropic import (
     build_messages_request,
     calculate_cost_breakdown as anthropic_calculate_cost_breakdown,
     default_thinking_budget_for_model as anthropic_default_thinking_budget_for_model,

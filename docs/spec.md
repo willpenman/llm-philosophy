@@ -20,14 +20,17 @@ across providers.
 - Storage is append-only JSONL plus a single text file per response.
 
 ## Repository layout
+- `README.md`
 - `prompts/`
   - `system.py` (one paragraph prompt with annotations)
   - `puzzles/` (each puzzle stored as `.py`)
-- `providers/` (provider adapters and config handling)
+- `src/providers/` (provider adapters and config handling)
 - `src/` (runner, storage, puzzle loading, system prompt loading)
 - `scripts/` (CLI entry points)
 - `responses/` (append-only JSONL + raw response text, partitioned by provider/model)
 - `docs/` (provider notes, schema references, and this spec)
+- `tests/` (static and live tests per provider, additional tests per feature eg cost calculation)
+- `tmp/` (output directory for temporary files, eg sse dumps)
 
 ## Data capture requirements
 - Log the exact system prompt and puzzle text per request.
@@ -83,7 +86,7 @@ across providers.
 - Optional debug mode for OpenAI streaming can write raw SSE event JSONL under `tmp/` and skip request/response storage.
 
 ## Provider handling
-- Normalize across providers with a thin adapter interface, at providers/{provider}.py
+- Normalize across providers with a thin adapter interface, at src/providers/{provider}.py
 - Keep per-provider quirks isolated to their adapter.
 - Provide a dry-run mode that writes request payloads without sending them.
 - Default to the highest available reasoning effort per model.
@@ -176,6 +179,7 @@ across providers.
 - Added Anthropic request assembly tests and wired Anthropic into the run/list scripts.
 - Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
 - Added Claude Haiku 3 model support plus a live test that thinking is rejected.
+- Moved provider adapters under `src/providers` and updated scripts to run as modules without `sys.path` edits.
 
 ## TODO
  - Wire up the Fireworks provider adapter.

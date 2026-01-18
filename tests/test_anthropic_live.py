@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from providers.anthropic import build_messages_request, send_messages_request  # noqa: E402
+from src.providers.anthropic import build_messages_request, send_messages_request  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 

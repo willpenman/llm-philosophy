@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from providers.gemini import (  # noqa: E402
+from src.providers.gemini import (  # noqa: E402
     build_generate_content_request,
     create_response,
     send_generate_content_request,

@@ -5,9 +5,9 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+from src.puzzles import load_puzzle
 
-from src.puzzles import load_puzzle  # noqa: E402
+ROOT = Path(__file__).resolve().parents[1]
 
 
 def _load_system_prompt() -> str:

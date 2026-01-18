@@ -5,7 +5,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 
 ## Development
 - Use python (3.13) through the venv: `source .venv/bin/activate`
-- For API reference, do not trust your intuition. Consult local docs in provider-specific file (e.g. `providers/openai.md`) and/or use web search to identify current api syntax. When unsure, highlight to user and wait to finish the task until given confirmation.
+- For API reference, do not trust your intuition. Consult local docs in provider-specific file (e.g. `docs/providers/openai.md`) and/or use web search to identify current api syntax. When unsure, highlight to user and wait to finish the task until given confirmation.
   - You don't have access to the OpenAI docs online; the first ~100 lines of the .md are helpful information and should be directly read when dealing with OpenAI, then the docs are pasted in afterward and those can be searched.
 - Task wrap-up: 
   - Document any long-term insights about agent abilities and directions here
