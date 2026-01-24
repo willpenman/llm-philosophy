@@ -172,6 +172,7 @@ across providers.
 - Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
 - OpenAI adapter now uses the openai-python SDK for Responses (supports custom base_url).
+- Added a Fireworks Responses adapter (OpenAI-compatible) with DeepSeek V3.2 support, pricing metadata, and request/live tests.
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 - Documented provider onboarding best practices and required coverage in the spec.
@@ -189,4 +190,4 @@ across providers.
 - Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 
 ## TODO
- - Wire up the Fireworks provider adapter.
+- Verify Fireworks Responses parameter support (temperature/top_p/tools) and max output token limits for DeepSeek V3.2.

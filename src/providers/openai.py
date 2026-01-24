@@ -177,7 +177,10 @@ def _model_dump(value: Any) -> dict[str, Any]:
         return value
     dump = getattr(value, "model_dump", None)
     if callable(dump):
-        return dump()
+        try:
+            return dump(mode="json", exclude_none=True, warnings="none")
+        except TypeError:
+            return dump()
     legacy_dump = getattr(value, "dict", None)
     if callable(legacy_dump):
         return legacy_dump()

@@ -23,6 +23,12 @@ from src.providers.openai import (
     display_model_name as display_openai_model_name,
     display_provider_name as display_openai_provider_name,
 )
+from src.providers.fireworks import (
+    SUPPORTED_MODELS as FIREWORKS_MODELS,
+    display_model_name as display_fireworks_model_name,
+    display_provider_name as display_fireworks_provider_name,
+    provider_for_model as fireworks_provider_for_model,
+)
 
 
 def _format_model_name(model: str, display_name: str) -> str:
@@ -52,6 +58,12 @@ def main() -> None:
     for model in sorted(GROK_MODELS):
         grouped[display_grok_provider_name("grok")].append(
             _format_model_name(model, display_grok_model_name(model))
+        )
+
+    for model in sorted(FIREWORKS_MODELS):
+        provider = fireworks_provider_for_model(model)
+        grouped[display_fireworks_provider_name(provider)].append(
+            _format_model_name(model, display_fireworks_model_name(model))
         )
 
     for provider in sorted(grouped.keys()):

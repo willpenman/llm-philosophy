@@ -1,0 +1,8 @@
+Source: https://app.fireworks.ai/models/fireworks/deepseek-v3p2 (captured 2026-01-24)
+
+Model page highlights:
+- Model ID: accounts/fireworks/models/deepseek-v3p2
+- Provider: DeepSeek AI
+- Context length: 160k tokens
+- Pricing (serverless): input $0.56 / 1M tokens (uncached), cached input $0.28 / 1M tokens, output $1.68 / 1M tokens
+- Max output tokens: not listed on the page (estimate used elsewhere: 64k, unverified)

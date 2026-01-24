@@ -10,11 +10,13 @@ from src.providers.anthropic import supports_model as anthropic_supports_model
 from src.providers.gemini import supports_model as gemini_supports_model
 from src.providers.grok import supports_model as grok_supports_model
 from src.providers.openai import supports_model as openai_supports_model
+from src.providers.fireworks import supports_model as fireworks_supports_model
 from src.runner import (
     run_anthropic_puzzle,
     run_gemini_puzzle,
     run_grok_puzzle,
     run_openai_puzzle,
+    run_fireworks_puzzle,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,7 +52,7 @@ def main() -> None:
     parser.add_argument(
         "--provider",
         default=None,
-        choices=["openai", "gemini", "anthropic", "grok"],
+        choices=["openai", "gemini", "anthropic", "grok", "fireworks"],
         help="Override provider selection",
     )
     parser.add_argument("--max-output-tokens", type=int, default=None)
@@ -130,17 +132,32 @@ def main() -> None:
             debug_sse=args.debug_sse,
             stream=stream_override if stream_override is not None else False,
         )
+    elif args.provider == "fireworks":
+        model = args.model
+        result = run_fireworks_puzzle(
+            puzzle_name=args.name,
+            model=model,
+            max_output_tokens=args.max_output_tokens,
+            temperature=args.temperature,
+            top_p=args.top_p,
+            special_settings=args.special_settings,
+            dry_run=args.dry_run,
+            debug_sse=args.debug_sse,
+            stream=stream_override if stream_override is not None else True,
+        )
     else:
         model = args.model
         openai_supported = openai_supports_model(model)
         gemini_supported = gemini_supports_model(model)
         anthropic_supported = anthropic_supports_model(model)
         grok_supported = grok_supports_model(model)
+        fireworks_supported = fireworks_supports_model(model)
         matches = [name for name, ok in {
             "openai": openai_supported,
             "gemini": gemini_supported,
             "anthropic": anthropic_supported,
             "grok": grok_supported,
+            "fireworks": fireworks_supported,
         }.items() if ok]
         if len(matches) > 1:
             raise ValueError(
@@ -194,6 +211,18 @@ def main() -> None:
                 dry_run=args.dry_run,
                 debug_sse=args.debug_sse,
                 stream=stream_override if stream_override is not None else False,
+            )
+        elif fireworks_supported:
+            result = run_fireworks_puzzle(
+                puzzle_name=args.name,
+                model=model,
+                max_output_tokens=args.max_output_tokens,
+                temperature=args.temperature,
+                top_p=args.top_p,
+                special_settings=args.special_settings,
+                dry_run=args.dry_run,
+                debug_sse=args.debug_sse,
+                stream=stream_override if stream_override is not None else True,
             )
         else:
             raise ValueError(
