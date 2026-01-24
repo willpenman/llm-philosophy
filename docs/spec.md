@@ -171,6 +171,7 @@ across providers.
 - Added OpenAI gpt-5.2-2025-12-11 model metadata (alias, pricing, defaults) and test coverage.
 - Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
+- OpenAI adapter now uses the openai-python SDK for Responses (supports custom base_url).
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 - Documented provider onboarding best practices and required coverage in the spec.
@@ -185,10 +186,7 @@ across providers.
 - Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
 - Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
 - Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
-- Grok now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
+- Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 
 ## TODO
  - Wire up the Fireworks provider adapter.
- - Run live Anthropic tests for Opus 4.5 (thinking enabled, temperature/top_k rejection, streaming capture).
- - Run live Anthropic test to confirm Haiku 3 max output errors above 4,000.
- - Run live Grok tests once service stabilizes (system prompt acceptance, streaming capture, parameter rejection, usage shape, max output defaults).

@@ -6,14 +6,14 @@ from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
-from typing import Any, Callable, Iterator
-import urllib.error
-import urllib.request
+from typing import Any, Callable
+
+from openai import APIConnectionError, APIStatusError, OpenAI, OpenAIError
 
 from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 
-DEFAULT_BASE_URL = "https://api.openai.com/v1/responses"
+DEFAULT_BASE_URL = "https://api.openai.com/v1"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
@@ -52,6 +52,12 @@ def require_api_key(env_var: str = "OPENAI_API_KEY") -> str:
     if not api_key:
         raise EnvironmentError(f"Missing {env_var} for OpenAI API access")
     return api_key
+
+
+def _normalize_base_url(base_url: str) -> str:
+    if base_url.endswith("/responses"):
+        return base_url[: -len("/responses")]
+    return base_url
 
 
 def price_schedule_for_model(model: str) -> dict[str, Any] | None:
@@ -166,41 +172,16 @@ def build_response_request(
     return payload
 
 
-def _iter_sse_events(response: Any) -> Iterator[dict[str, Any]]:
-    data_lines: list[str] = []
-    while True:
-        line_bytes = response.readline()
-        if not line_bytes:
-            if data_lines:
-                data = "\n".join(data_lines)
-                data_lines = []
-                if data == "[DONE]":
-                    break
-                yield _parse_sse_data(data)
-            break
-        line = line_bytes.decode("utf-8", errors="replace").rstrip("\r\n")
-        if not line:
-            if data_lines:
-                data = "\n".join(data_lines)
-                data_lines = []
-                if data == "[DONE]":
-                    break
-                yield _parse_sse_data(data)
-            continue
-        if line.startswith(":"):
-            continue
-        if line.startswith("data:"):
-            data_lines.append(line[len("data:"):].lstrip())
-
-
-def _parse_sse_data(data: str) -> dict[str, Any]:
-    try:
-        parsed = json.loads(data)
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Failed to parse OpenAI stream event: {data}") from exc
-    if not isinstance(parsed, dict):
-        raise RuntimeError(f"Unexpected OpenAI stream event payload: {parsed}")
-    return parsed
+def _model_dump(value: Any) -> dict[str, Any]:
+    if isinstance(value, dict):
+        return value
+    dump = getattr(value, "model_dump", None)
+    if callable(dump):
+        return dump()
+    legacy_dump = getattr(value, "dict", None)
+    if callable(legacy_dump):
+        return legacy_dump()
+    raise TypeError(f"Unsupported OpenAI payload type: {type(value)!r}")
 
 
 def _extract_output_text_from_stream(events: list[dict[str, Any]]) -> str:
@@ -284,77 +265,72 @@ def send_response_request(
     sse_event_path: Path | None = None,
     stream_capture: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    data = json.dumps(payload).encode("utf-8")
-    request = urllib.request.Request(
-        base_url,
-        data=data,
-        method="POST",
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        },
-    )
     try:
-        with urllib.request.urlopen(request, timeout=timeout_s) as response:
-            if payload.get("stream") is True:
-                streamed_chars = 0
-                response_payload: dict[str, Any] | None = None
-                summary_chunks: dict[int, list[str]] = {}
-                summary_done_order: list[tuple[int | None, str]] = []
-                sse_handle = None
-                if sse_event_path is not None:
-                    sse_event_path.parent.mkdir(parents=True, exist_ok=True)
-                    sse_handle = sse_event_path.open("a", encoding="utf-8")
-                try:
-                    for event in _iter_sse_events(response):
-                        if sse_handle is not None:
-                            sse_handle.write(json.dumps(event, ensure_ascii=True))
-                            sse_handle.write("\n")
-                        if event.get("type") == "response.output_text.delta":
-                            delta = event.get("delta")
-                            if isinstance(delta, str):
-                                streamed_chars += len(delta)
-                                if stream_text_callback is not None:
-                                    stream_text_callback(delta)
-                                if progress_callback is not None:
-                                    progress_callback(streamed_chars)
-                        elif event.get("type") == "response.reasoning_summary_text.delta":
-                            delta = event.get("delta")
-                            index = event.get("summary_index")
-                            if isinstance(delta, str) and isinstance(index, int):
-                                summary_chunks.setdefault(index, []).append(delta)
-                        elif event.get("type") == "response.reasoning_summary_part.done":
-                            index = event.get("summary_index")
-                            part = event.get("part")
-                            if isinstance(index, int) and isinstance(part, dict):
-                                text = part.get("text")
-                                if isinstance(text, str):
-                                    summary_done_order.append((index, text))
-                            elif isinstance(part, dict):
-                                text = part.get("text")
-                                if isinstance(text, str):
-                                    summary_done_order.append((None, text))
-                        elif event.get("type") in {
-                            "response.completed",
-                            "response.failed",
-                        }:
-                            response = event.get("response")
-                            if isinstance(response, dict):
-                                response_payload = response
-                finally:
+        client = OpenAI(api_key=api_key, base_url=_normalize_base_url(base_url))
+        if payload.get("stream") is True:
+            streamed_chars = 0
+            response_payload: dict[str, Any] | None = None
+            summary_chunks: dict[int, list[str]] = {}
+            summary_done_order: list[tuple[int | None, str]] = []
+            sse_handle = None
+            if sse_event_path is not None:
+                sse_event_path.parent.mkdir(parents=True, exist_ok=True)
+                sse_handle = sse_event_path.open("a", encoding="utf-8")
+            try:
+                stream = client.responses.create(**payload, timeout=timeout_s)
+                for event in stream:
+                    event_payload = _model_dump(event)
                     if sse_handle is not None:
-                        sse_handle.close()
-                if stream_capture is not None:
-                    stream_capture["reasoning_summary_done_order"] = summary_done_order
-                    stream_capture["reasoning_summary_deltas"] = summary_chunks
-                return response_payload or {}
-            body = response.read().decode("utf-8")
-    except urllib.error.HTTPError as exc:
-        error_body = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"OpenAI API error {exc.code}: {error_body}") from exc
-    except urllib.error.URLError as exc:
+                        sse_handle.write(json.dumps(event_payload, ensure_ascii=True))
+                        sse_handle.write("\n")
+                    event_type = event_payload.get("type")
+                    if event_type == "response.output_text.delta":
+                        delta = event_payload.get("delta")
+                        if isinstance(delta, str):
+                            streamed_chars += len(delta)
+                            if stream_text_callback is not None:
+                                stream_text_callback(delta)
+                            if progress_callback is not None:
+                                progress_callback(streamed_chars)
+                    elif event_type == "response.reasoning_summary_text.delta":
+                        delta = event_payload.get("delta")
+                        index = event_payload.get("summary_index")
+                        if isinstance(delta, str) and isinstance(index, int):
+                            summary_chunks.setdefault(index, []).append(delta)
+                    elif event_type == "response.reasoning_summary_part.done":
+                        index = event_payload.get("summary_index")
+                        part = event_payload.get("part")
+                        if isinstance(index, int) and isinstance(part, dict):
+                            text = part.get("text")
+                            if isinstance(text, str):
+                                summary_done_order.append((index, text))
+                        elif isinstance(part, dict):
+                            text = part.get("text")
+                            if isinstance(text, str):
+                                summary_done_order.append((None, text))
+                    elif event_type in {"response.completed", "response.failed"}:
+                        response = event_payload.get("response")
+                        if isinstance(response, dict):
+                            response_payload = response
+            finally:
+                if sse_handle is not None:
+                    sse_handle.close()
+            if stream_capture is not None:
+                stream_capture["reasoning_summary_done_order"] = summary_done_order
+                stream_capture["reasoning_summary_deltas"] = summary_chunks
+            return response_payload or {}
+        response = client.responses.create(**payload, timeout=timeout_s)
+        return _model_dump(response)
+    except APIStatusError as exc:
+        body = exc.body
+        detail = str(exc)
+        if body is not None:
+            detail = f"{detail} | body={json.dumps(body, ensure_ascii=True)}"
+        raise RuntimeError(f"OpenAI API error {exc.status_code}: {detail}") from exc
+    except APIConnectionError as exc:
         raise RuntimeError(f"OpenAI API connection error: {exc}") from exc
-    return json.loads(body)
+    except OpenAIError as exc:
+        raise RuntimeError(f"OpenAI API error: {exc}") from exc
 
 
 def extract_output_text(payload: dict[str, Any]) -> str:
