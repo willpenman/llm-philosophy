@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
 from typing import Any, Callable, Iterator
 import urllib.error
 import urllib.request
@@ -262,6 +263,7 @@ def send_chat_completion_request(
     timeout_s: float = 3600,
     progress_callback: Callable[[int], None] | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
+    sse_event_path: Path | None = None,
 ) -> dict[str, Any]:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -280,24 +282,35 @@ def send_chat_completion_request(
             if payload.get("stream") is True:
                 events: list[dict[str, Any]] = []
                 streamed_chars = 0
-                for event in _iter_sse_events(response):
-                    events.append(event)
-                    choices = event.get("choices")
-                    if not isinstance(choices, list):
-                        continue
-                    for choice in choices:
-                        if not isinstance(choice, dict):
+                sse_handle = None
+                if sse_event_path is not None:
+                    sse_event_path.parent.mkdir(parents=True, exist_ok=True)
+                    sse_handle = sse_event_path.open("a", encoding="utf-8")
+                try:
+                    for event in _iter_sse_events(response):
+                        events.append(event)
+                        if sse_handle is not None:
+                            sse_handle.write(json.dumps(event, ensure_ascii=True))
+                            sse_handle.write("\n")
+                        choices = event.get("choices")
+                        if not isinstance(choices, list):
                             continue
-                        delta = choice.get("delta")
-                        if not isinstance(delta, dict):
-                            continue
-                        text = delta.get("content")
-                        if isinstance(text, str):
-                            streamed_chars += len(text)
-                            if stream_text_callback is not None:
-                                stream_text_callback(text)
-                            if progress_callback is not None:
-                                progress_callback(streamed_chars)
+                        for choice in choices:
+                            if not isinstance(choice, dict):
+                                continue
+                            delta = choice.get("delta")
+                            if not isinstance(delta, dict):
+                                continue
+                            text = delta.get("content")
+                            if isinstance(text, str):
+                                streamed_chars += len(text)
+                                if stream_text_callback is not None:
+                                    stream_text_callback(text)
+                                if progress_callback is not None:
+                                    progress_callback(streamed_chars)
+                finally:
+                    if sse_handle is not None:
+                        sse_handle.close()
                 response_payload = _reconstruct_stream_payload(
                     events,
                     model=payload.get("model") if isinstance(payload.get("model"), str) else None,
@@ -325,6 +338,7 @@ def create_chat_completion(
     temperature: float | None = None,
     top_p: float | None = None,
     stream: bool | None = None,
+    sse_event_path: Path | None = None,
     api_key: str | None = None,
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 3600,
@@ -343,6 +357,7 @@ def create_chat_completion(
         api_key=api_key or require_api_key(),
         base_url=base_url,
         timeout_s=timeout_s,
+        sse_event_path=sse_event_path,
     )
     return GrokResponse(
         payload=response_payload,

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
 from typing import Any, Callable, Iterator
 import urllib.error
 import urllib.request
@@ -332,6 +333,7 @@ def send_messages_request(
     api_version: str = DEFAULT_VERSION,
     timeout_s: float = 60,
     progress_callback: Callable[[int], None] | None = None,
+    sse_event_path: Path | None = None,
 ) -> AnthropicResponse:
     data = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(
@@ -349,25 +351,36 @@ def send_messages_request(
             if payload.get("stream") is True:
                 events: list[dict[str, Any]] = []
                 streamed_chars = 0
-                for event in _iter_sse_events(response):
-                    events.append(event)
-                    if progress_callback is None:
-                        continue
-                    data_payload = event.get("data")
-                    if not isinstance(data_payload, dict):
-                        continue
-                    event_type = event.get("event") or data_payload.get("type")
-                    if event_type != "content_block_delta":
-                        continue
-                    delta = data_payload.get("delta")
-                    if not isinstance(delta, dict):
-                        continue
-                    if delta.get("type") != "text_delta":
-                        continue
-                    text = delta.get("text")
-                    if isinstance(text, str):
-                        streamed_chars += len(text)
-                        progress_callback(streamed_chars)
+                sse_handle = None
+                if sse_event_path is not None:
+                    sse_event_path.parent.mkdir(parents=True, exist_ok=True)
+                    sse_handle = sse_event_path.open("a", encoding="utf-8")
+                try:
+                    for event in _iter_sse_events(response):
+                        events.append(event)
+                        if sse_handle is not None:
+                            sse_handle.write(json.dumps(event, ensure_ascii=True))
+                            sse_handle.write("\n")
+                        if progress_callback is None:
+                            continue
+                        data_payload = event.get("data")
+                        if not isinstance(data_payload, dict):
+                            continue
+                        event_type = event.get("event") or data_payload.get("type")
+                        if event_type != "content_block_delta":
+                            continue
+                        delta = data_payload.get("delta")
+                        if not isinstance(delta, dict):
+                            continue
+                        if delta.get("type") != "text_delta":
+                            continue
+                        text = delta.get("text")
+                        if isinstance(text, str):
+                            streamed_chars += len(text)
+                            progress_callback(streamed_chars)
+                finally:
+                    if sse_handle is not None:
+                        sse_handle.close()
                 response_payload = _reconstruct_stream_payload(events)
                 output_text = extract_output_text(response_payload)
                 if progress_callback is not None and output_text:

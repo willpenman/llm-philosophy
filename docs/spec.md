@@ -102,7 +102,7 @@ across providers.
 - Preserve raw payloads: store provider request/response exactly as sent/received; avoid
   adapter-only fields in payloads (keep those in derived metadata or text artifacts).
 - Streaming: assemble output text from deltas, and if the provider doesn't return a final
-  payload, reconstruct a payload that mirrors the provider's normal shape.
+  payload, reconstruct a payload that mirrors the provider's normal shape. Provide --debug-sse option to dump to /tmp
 - Reasoning visibility: request the most detailed reasoning summary allowed by the model,
   and document any constraints (e.g., required max output, unsupported sampling).
 - Model metadata: add snapshot model names, aliases, pricing schedule, defaults, and any
@@ -184,6 +184,7 @@ across providers.
 - Documented Grok usage shape and aligned Grok usage extraction/tests with docs.
 - Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
 - Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
+- Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
 
 ## TODO
  - Wire up the Fireworks provider adapter.

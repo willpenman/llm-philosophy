@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 import os
+from pathlib import Path
 from typing import Any, Callable
 
 from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
@@ -232,6 +233,7 @@ def send_generate_content_request(
     api_key: str | None = None,
     stream: bool | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
+    sse_event_path: Path | None = None,
 ) -> GeminiResponse:
     from google import genai
     from google.genai import errors
@@ -245,22 +247,33 @@ def send_generate_content_request(
                 chunks: list[str] = []
                 thought_chunks: list[str] = []
                 last_payload: dict[str, Any] | None = None
-                for chunk in client.models.generate_content_stream(
-                    model=payload["model"],
-                    contents=payload["contents"],
-                    config=payload.get("config"),
-                ):
-                    chunk_payload = _serialize_response(chunk)
-                    for part in _extract_part_entries(chunk_payload):
-                        text = part["text"]
-                        is_thought = part["thought"]
-                        if is_thought:
-                            thought_chunks.append(text)
-                        else:
-                            chunks.append(text)
-                        if stream_text_callback is not None:
-                            stream_text_callback(text)
-                    last_payload = chunk_payload
+                sse_handle = None
+                if sse_event_path is not None:
+                    sse_event_path.parent.mkdir(parents=True, exist_ok=True)
+                    sse_handle = sse_event_path.open("a", encoding="utf-8")
+                try:
+                    for chunk in client.models.generate_content_stream(
+                        model=payload["model"],
+                        contents=payload["contents"],
+                        config=payload.get("config"),
+                    ):
+                        chunk_payload = _serialize_response(chunk)
+                        if sse_handle is not None:
+                            sse_handle.write(json.dumps(chunk_payload, ensure_ascii=True))
+                            sse_handle.write("\n")
+                        for part in _extract_part_entries(chunk_payload):
+                            text = part["text"]
+                            is_thought = part["thought"]
+                            if is_thought:
+                                thought_chunks.append(text)
+                            else:
+                                chunks.append(text)
+                            if stream_text_callback is not None:
+                                stream_text_callback(text)
+                        last_payload = chunk_payload
+                finally:
+                    if sse_handle is not None:
+                        sse_handle.close()
                 output_text = "".join(chunks)
                 thoughts_text = "".join(thought_chunks)
                 response_payload = last_payload or {}
@@ -299,6 +312,7 @@ def create_response(
     thinking_config: dict[str, Any] | None = None,
     tools: list[dict[str, Any]] | None = None,
     stream: bool | None = None,
+    sse_event_path: Path | None = None,
     api_key: str | None = None,
 ) -> GeminiResponse:
     if thinking_config is None and supports_reasoning(model):
@@ -318,4 +332,5 @@ def create_response(
         payload,
         api_key=api_key or require_api_key(),
         stream=stream,
+        sse_event_path=sse_event_path,
     )

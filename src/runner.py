@@ -338,11 +338,14 @@ def run_openai_puzzle(
 
     sse_event_path = None
     if debug_sse:
-        base_dir = _repo_root() / "tmp"
-        timestamp = _format_timestamp(created_at)
-        sse_event_path = (
-            base_dir / f"openai-sse-{model}-{run_id}-{timestamp}.jsonl"
-        )
+        if debug_sse_path is not None:
+            sse_event_path = debug_sse_path
+        else:
+            base_dir = _repo_root() / "tmp"
+            timestamp = _format_timestamp(created_at)
+            sse_event_path = (
+                base_dir / f"openai-sse-{model}-{run_id}-{timestamp}.jsonl"
+            )
         print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     stream_capture: dict[str, Any] | None = {} if stream else None
@@ -449,6 +452,8 @@ def run_grok_puzzle(
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
+    debug_sse: bool = False,
+    debug_sse_path: Path | None = None,
     run_id: str | None = None,
     puzzle_dir: Path | None = None,
     system_path: Path | None = None,
@@ -461,6 +466,9 @@ def run_grok_puzzle(
     provider = "grok"
     special_settings_label = normalize_special_settings(special_settings)
 
+    if debug_sse and not stream:
+        raise ValueError("debug_sse requires stream=True")
+
     request_payload = build_chat_completion_request(
         system_prompt=system_prompt.text,
         user_prompt=puzzle.text,
@@ -471,17 +479,20 @@ def run_grok_puzzle(
         stream=stream,
     )
 
-    store = ResponseStore(responses_dir or _default_responses_dir())
-    request_path = store.record_request(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        puzzle_name=puzzle.name,
-        puzzle_version=puzzle.version,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-    )
+    store: ResponseStore | None = None
+    request_path: Path | None = None
+    if not debug_sse:
+        store = ResponseStore(responses_dir or _default_responses_dir())
+        request_path = store.record_request(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            puzzle_name=puzzle.name,
+            puzzle_version=puzzle.version,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+        )
 
     if dry_run:
         return RunResult(
@@ -509,11 +520,24 @@ def run_grok_puzzle(
     def _collect_delta(delta: str) -> None:
         streamed_chunks.append(delta)
 
+    sse_event_path = None
+    if debug_sse:
+        if debug_sse_path is not None:
+            sse_event_path = debug_sse_path
+        else:
+            base_dir = _repo_root() / "tmp"
+            timestamp = _format_timestamp(created_at)
+            sse_event_path = (
+                base_dir / f"grok-sse-{model}-{run_id}-{timestamp}.jsonl"
+            )
+        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+
     response_payload = send_chat_completion_request(
         request_payload,
         api_key=api_key or require_grok_api_key(),
         progress_callback=progress_callback if stream else None,
         stream_text_callback=_collect_delta if stream else None,
+        sse_event_path=sse_event_path,
     )
     if stream and isinstance(max_tokens, int):
         print("", flush=True)
@@ -542,30 +566,32 @@ def run_grok_puzzle(
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
     derived["model_alias"] = display_grok_model_name(model)
-    stored_text = store.record_response(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        model_alias=display_grok_model_name(model),
-        provider_alias=display_grok_provider_name(provider),
-        puzzle_name=puzzle.name,
-        puzzle_title_prefix="Philosophy problem",
-        puzzle_version=puzzle.version,
-        puzzle_title=puzzle.title,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-        response_payload=response_payload,
-        input_text=input_text,
-        output_text=output_text,
-        derived=derived,
-    )
+    stored_text = None
+    if store is not None:
+        stored_text = store.record_response(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            model_alias=display_grok_model_name(model),
+            provider_alias=display_grok_provider_name(provider),
+            puzzle_name=puzzle.name,
+            puzzle_title_prefix="Philosophy problem",
+            puzzle_version=puzzle.version,
+            puzzle_title=puzzle.title,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+            response_payload=response_payload,
+            input_text=input_text,
+            output_text=output_text,
+            derived=derived,
+        )
     _print_run_summary(
         response_payload=response_payload if isinstance(response_payload, dict) else None,
         tokens=usage_breakdown,
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
-        response_text_path=stored_text.path,
+        response_text_path=stored_text.path if stored_text else None,
     )
     return RunResult(
         run_id=run_id,
@@ -573,8 +599,8 @@ def run_grok_puzzle(
         response_payload=response_payload,
         output_text=output_text,
         request_path=request_path,
-        response_text_path=stored_text.path,
-        sse_event_path=None,
+        response_text_path=stored_text.path if stored_text else None,
+        sse_event_path=sse_event_path,
     )
 
 
@@ -590,6 +616,8 @@ def run_gemini_puzzle(
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
+    debug_sse: bool = False,
+    debug_sse_path: Path | None = None,
     run_id: str | None = None,
     puzzle_dir: Path | None = None,
     system_path: Path | None = None,
@@ -608,6 +636,9 @@ def run_gemini_puzzle(
         top_k=top_k,
     )
 
+    if debug_sse and not stream:
+        raise ValueError("debug_sse requires stream=True")
+
     if thinking_config is None and gemini_supports_reasoning(model):
         thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
 
@@ -622,17 +653,20 @@ def run_gemini_puzzle(
         thinking_config=thinking_config,
     )
 
-    store = ResponseStore(responses_dir or _default_responses_dir())
-    request_path = store.record_request(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        puzzle_name=puzzle.name,
-        puzzle_version=puzzle.version,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-    )
+    store: ResponseStore | None = None
+    request_path: Path | None = None
+    if not debug_sse:
+        store = ResponseStore(responses_dir or _default_responses_dir())
+        request_path = store.record_request(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            puzzle_name=puzzle.name,
+            puzzle_version=puzzle.version,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+        )
 
     if dry_run:
         return RunResult(
@@ -665,11 +699,24 @@ def run_gemini_puzzle(
         streamed_chars["total"] += len(delta)
         progress_callback(streamed_chars["total"])
 
+    sse_event_path = None
+    if debug_sse:
+        if debug_sse_path is not None:
+            sse_event_path = debug_sse_path
+        else:
+            base_dir = _repo_root() / "tmp"
+            timestamp = _format_timestamp(created_at)
+            sse_event_path = (
+                base_dir / f"gemini-sse-{model}-{run_id}-{timestamp}.jsonl"
+            )
+        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+
     response = send_generate_content_request(
         request_payload,
         api_key=api_key or require_gemini_api_key(),
         stream=stream,
         stream_text_callback=_collect_delta if stream else None,
+        sse_event_path=sse_event_path,
     )
     if stream and isinstance(max_tokens, int):
         print("", flush=True)
@@ -696,31 +743,33 @@ def run_gemini_puzzle(
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
     derived["model_alias"] = display_gemini_model_name(model)
-    stored_text = store.record_response(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        model_alias=display_gemini_model_name(model),
-        provider_alias=display_gemini_provider_name(provider),
-        puzzle_name=puzzle.name,
-        puzzle_title_prefix="Philosophy problem",
-        puzzle_version=puzzle.version,
-        puzzle_title=puzzle.title,
-        special_settings=special_settings_label,
-        special_settings_display=special_settings_display,
-        request_payload=request_payload,
-        response_payload=response.payload,
-        input_text=input_text,
-        output_text=output_text,
-        derived=derived,
-    )
+    stored_text = None
+    if store is not None:
+        stored_text = store.record_response(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            model_alias=display_gemini_model_name(model),
+            provider_alias=display_gemini_provider_name(provider),
+            puzzle_name=puzzle.name,
+            puzzle_title_prefix="Philosophy problem",
+            puzzle_version=puzzle.version,
+            puzzle_title=puzzle.title,
+            special_settings=special_settings_label,
+            special_settings_display=special_settings_display,
+            request_payload=request_payload,
+            response_payload=response.payload,
+            input_text=input_text,
+            output_text=output_text,
+            derived=derived,
+        )
     _print_run_summary(
         response_payload=response.payload if isinstance(response.payload, dict) else None,
         tokens=usage_breakdown,
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
-        response_text_path=stored_text.path,
+        response_text_path=stored_text.path if stored_text else None,
     )
     return RunResult(
         run_id=run_id,
@@ -728,8 +777,8 @@ def run_gemini_puzzle(
         response_payload=response.payload,
         output_text=output_text,
         request_path=request_path,
-        response_text_path=stored_text.path,
-        sse_event_path=None,
+        response_text_path=stored_text.path if stored_text else None,
+        sse_event_path=sse_event_path,
     )
 
 
@@ -745,6 +794,8 @@ def run_anthropic_puzzle(
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
+    debug_sse: bool = False,
+    debug_sse_path: Path | None = None,
     run_id: str | None = None,
     puzzle_dir: Path | None = None,
     system_path: Path | None = None,
@@ -756,6 +807,9 @@ def run_anthropic_puzzle(
     run_id = run_id or uuid4().hex
     provider = "anthropic"
     special_settings_label = normalize_special_settings(special_settings)
+
+    if debug_sse and not stream:
+        raise ValueError("debug_sse requires stream=True")
 
     if thinking is None and anthropic_supports_reasoning(model):
         budget_tokens = anthropic_default_thinking_budget_for_model(model)
@@ -774,17 +828,20 @@ def run_anthropic_puzzle(
         stream=stream,
     )
 
-    store = ResponseStore(responses_dir or _default_responses_dir())
-    request_path = store.record_request(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        puzzle_name=puzzle.name,
-        puzzle_version=puzzle.version,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-    )
+    store: ResponseStore | None = None
+    request_path: Path | None = None
+    if not debug_sse:
+        store = ResponseStore(responses_dir or _default_responses_dir())
+        request_path = store.record_request(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            puzzle_name=puzzle.name,
+            puzzle_version=puzzle.version,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+        )
 
     if dry_run:
         return RunResult(
@@ -808,10 +865,23 @@ def run_anthropic_puzzle(
         suffix="total possible",
     )
 
+    sse_event_path = None
+    if debug_sse:
+        if debug_sse_path is not None:
+            sse_event_path = debug_sse_path
+        else:
+            base_dir = _repo_root() / "tmp"
+            timestamp = _format_timestamp(created_at)
+            sse_event_path = (
+                base_dir / f"anthropic-sse-{model}-{run_id}-{timestamp}.jsonl"
+            )
+        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+
     response = send_messages_request(
         request_payload,
         api_key=api_key or require_anthropic_api_key(),
         progress_callback=progress_callback if stream else None,
+        sse_event_path=sse_event_path,
     )
     if stream and isinstance(max_tokens, int):
         print("", flush=True)
@@ -840,30 +910,32 @@ def run_anthropic_puzzle(
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
     derived["model_alias"] = display_anthropic_model_name(model)
-    stored_text = store.record_response(
-        run_id=run_id,
-        created_at=created_at,
-        provider=provider,
-        model=model,
-        model_alias=display_anthropic_model_name(model),
-        provider_alias=display_anthropic_provider_name(provider),
-        puzzle_name=puzzle.name,
-        puzzle_title_prefix="Philosophy problem",
-        puzzle_version=puzzle.version,
-        puzzle_title=puzzle.title,
-        special_settings=special_settings_label,
-        request_payload=request_payload,
-        response_payload=response.payload,
-        input_text=input_text,
-        output_text=output_text,
-        derived=derived,
-    )
+    stored_text = None
+    if store is not None:
+        stored_text = store.record_response(
+            run_id=run_id,
+            created_at=created_at,
+            provider=provider,
+            model=model,
+            model_alias=display_anthropic_model_name(model),
+            provider_alias=display_anthropic_provider_name(provider),
+            puzzle_name=puzzle.name,
+            puzzle_title_prefix="Philosophy problem",
+            puzzle_version=puzzle.version,
+            puzzle_title=puzzle.title,
+            special_settings=special_settings_label,
+            request_payload=request_payload,
+            response_payload=response.payload,
+            input_text=input_text,
+            output_text=output_text,
+            derived=derived,
+        )
     _print_run_summary(
         response_payload=response.payload if isinstance(response.payload, dict) else None,
         tokens=usage_breakdown,
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
-        response_text_path=stored_text.path,
+        response_text_path=stored_text.path if stored_text else None,
     )
     return RunResult(
         run_id=run_id,
@@ -871,6 +943,6 @@ def run_anthropic_puzzle(
         response_payload=response.payload,
         output_text=output_text,
         request_path=request_path,
-        response_text_path=stored_text.path,
-        sse_event_path=None,
+        response_text_path=stored_text.path if stored_text else None,
+        sse_event_path=sse_event_path,
     )

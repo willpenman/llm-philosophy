@@ -60,17 +60,15 @@ def main() -> None:
     parser.add_argument("--special-settings", default=None)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
-        "--debug-openai-sse",
+        "--debug-sse",
         action="store_true",
-        help="Capture raw OpenAI SSE events to a debug file and skip request/response storage.",
+        help="Capture raw SSE/stream events to a debug file and skip request/response storage.",
     )
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
 
     if args.provider == "gemini":
-        if args.debug_openai_sse:
-            raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
         model = args.model
         result = run_gemini_puzzle(
             puzzle_name=args.name,
@@ -81,6 +79,7 @@ def main() -> None:
             top_k=args.top_k,
             special_settings=args.special_settings,
             dry_run=args.dry_run,
+            debug_sse=args.debug_sse,
         )
     elif args.provider == "openai":
         model = args.model
@@ -91,11 +90,9 @@ def main() -> None:
             temperature=args.temperature,
             special_settings=args.special_settings,
             dry_run=args.dry_run,
-            debug_sse=args.debug_openai_sse,
+            debug_sse=args.debug_sse,
         )
     elif args.provider == "anthropic":
-        if args.debug_openai_sse:
-            raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
         model = args.model
         result = run_anthropic_puzzle(
             puzzle_name=args.name,
@@ -106,10 +103,9 @@ def main() -> None:
             top_k=args.top_k,
             special_settings=args.special_settings,
             dry_run=args.dry_run,
+            debug_sse=args.debug_sse,
         )
     elif args.provider == "grok":
-        if args.debug_openai_sse:
-            raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
         model = args.model
         result = run_grok_puzzle(
             puzzle_name=args.name,
@@ -119,6 +115,7 @@ def main() -> None:
             top_p=args.top_p,
             special_settings=args.special_settings,
             dry_run=args.dry_run,
+            debug_sse=args.debug_sse,
         )
     else:
         model = args.model
@@ -137,8 +134,6 @@ def main() -> None:
                 f"Model {model} matches multiple providers; pass --provider to select."
             )
         if gemini_supported:
-            if args.debug_openai_sse:
-                raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
             result = run_gemini_puzzle(
                 puzzle_name=args.name,
                 model=model,
@@ -148,10 +143,9 @@ def main() -> None:
                 top_k=args.top_k,
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
+                debug_sse=args.debug_sse,
             )
         elif anthropic_supported:
-            if args.debug_openai_sse:
-                raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
             result = run_anthropic_puzzle(
                 puzzle_name=args.name,
                 model=model,
@@ -161,6 +155,7 @@ def main() -> None:
                 top_k=args.top_k,
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
+                debug_sse=args.debug_sse,
             )
         elif openai_supported:
             result = run_openai_puzzle(
@@ -170,11 +165,9 @@ def main() -> None:
                 temperature=args.temperature,
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
-                debug_sse=args.debug_openai_sse,
+                debug_sse=args.debug_sse,
             )
         elif grok_supported:
-            if args.debug_openai_sse:
-                raise ValueError("--debug-openai-sse only applies to OpenAI runs.")
             result = run_grok_puzzle(
                 puzzle_name=args.name,
                 model=model,
@@ -183,6 +176,7 @@ def main() -> None:
                 top_p=args.top_p,
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
+                debug_sse=args.debug_sse,
             )
         else:
             raise ValueError(
