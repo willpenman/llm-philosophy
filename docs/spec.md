@@ -183,6 +183,7 @@ across providers.
 - Added a Grok provider adapter (Chat Completions), request/stream reconstruction, and static request/cost tests.
 - Documented Grok usage shape and aligned Grok usage extraction/tests with docs.
 - Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
+- Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
 
 ## TODO
  - Wire up the Fireworks provider adapter.

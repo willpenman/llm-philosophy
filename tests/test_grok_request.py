@@ -24,6 +24,26 @@ def test_build_chat_completion_request_includes_system_and_user() -> None:
     assert payload["messages"][1]["role"] == "user"
 
 
+def test_build_chat_completion_request_uses_grok3_default_max_output_tokens() -> None:
+    payload = build_chat_completion_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="grok-3",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 16384
+
+
+def test_build_chat_completion_request_uses_grok41_default_max_output_tokens() -> None:
+    payload = build_chat_completion_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="grok-4-1-fast-reasoning",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 256000
+
+
 def test_build_chat_completion_request_includes_optional_params() -> None:
     payload = build_chat_completion_request(
         system_prompt="System text",
@@ -44,6 +64,7 @@ def test_build_chat_completion_request_includes_optional_params() -> None:
     ("model", "alias", "input_cost", "output_cost"),
     [
         ("grok-4-1-fast-reasoning", "Grok 4.1 Fast Reasoning", 0.20, 0.50),
+        ("grok-3", "Grok 3", 3.0, 15.0),
     ],
 )
 def test_price_schedule_for_model_includes_units(

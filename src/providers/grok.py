@@ -15,13 +15,15 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 DEFAULT_BASE_URL = "https://api.x.ai/v1/chat/completions"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
-    "grok-4-1-fast-reasoning": {"max_output_tokens": None},
+    "grok-4-1-fast-reasoning": {"max_output_tokens": 256000},
+    "grok-3": {"max_output_tokens": 16384},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 
 MODEL_ALIASES: dict[str, str] = {
     "grok-4-1-fast-reasoning": "Grok 4.1 Fast Reasoning",
+    "grok-3": "Grok 3",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
@@ -32,6 +34,7 @@ REASONING_MODELS: set[str] = {"grok-4-1-fast-reasoning"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
+    "grok-3": {"input": 3.0, "output": 15.0},
 }
 
 

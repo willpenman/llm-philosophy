@@ -62,5 +62,24 @@ def test_grok_accepts_system_prompt_live(
         model=model,
         max_output_tokens=16,
         stream=False,
+    ) 
+    assert "OK" in response.output_text.upper()
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["grok-3", "grok-4-1-fast-reasoning"])
+def test_grok_accepts_temperature_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
+    _skip_if_live_disabled()
+    response = _create_completion_or_skip_on_server_error(
+        request=request,
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=16,
+        temperature=0.2,
+        stream=False,
     )
     assert "OK" in response.output_text.upper()
+
