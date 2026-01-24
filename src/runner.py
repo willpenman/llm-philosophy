@@ -68,6 +68,7 @@ from src.providers.fireworks import (
     provider_for_model as fireworks_provider_for_model,
     require_api_key as require_fireworks_api_key,
     resolve_model as resolve_fireworks_model,
+    storage_model_name as fireworks_storage_model_name,
     send_response_request as send_fireworks_response_request,
 )
 from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
@@ -478,6 +479,7 @@ def run_fireworks_puzzle(
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     model_id = resolve_fireworks_model(model)
+    storage_model = fireworks_storage_model_name(model_id)
     provider = fireworks_provider_for_model(model_id)
     special_settings_label = normalize_special_settings(special_settings)
 
@@ -503,7 +505,7 @@ def run_fireworks_puzzle(
             run_id=run_id,
             created_at=created_at,
             provider=provider,
-            model=model,
+            model=storage_model,
             puzzle_name=puzzle.name,
             puzzle_version=puzzle.version,
             special_settings=special_settings_label,
@@ -544,7 +546,7 @@ def run_fireworks_puzzle(
             base_dir = _repo_root() / "tmp"
             timestamp = _format_timestamp(created_at)
             sse_event_path = (
-                base_dir / f"fireworks-sse-{model_id}-{run_id}-{timestamp}.jsonl"
+                base_dir / f"fireworks-sse-{storage_model}-{run_id}-{timestamp}.jsonl"
             )
         print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
@@ -590,8 +592,8 @@ def run_fireworks_puzzle(
             run_id=run_id,
             created_at=created_at,
             provider=provider,
-            model=model_id,
-            model_alias=display_fireworks_model_name(model_id),
+            model=storage_model,
+            model_alias=display_fireworks_model_name(storage_model),
             provider_alias=display_fireworks_provider_name(provider),
             puzzle_name=puzzle.name,
             puzzle_title_prefix="Philosophy problem",

@@ -22,6 +22,10 @@ CANONICAL_MODELS: dict[str, str] = {
     "deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2",
 }
 
+REVERSE_CANONICAL_MODELS: dict[str, str] = {
+    canonical: alias for alias, canonical in CANONICAL_MODELS.items()
+}
+
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {"max_output_tokens": 64000},
 }
@@ -71,6 +75,12 @@ def provider_for_model(model: str) -> str:
 
 def resolve_model(model: str) -> str:
     return CANONICAL_MODELS.get(model, model)
+
+
+def storage_model_name(model: str) -> str:
+    if model in CANONICAL_MODELS:
+        return model
+    return REVERSE_CANONICAL_MODELS.get(model, model)
 
 
 def price_schedule_for_model(model: str) -> dict[str, Any] | None:
