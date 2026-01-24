@@ -180,8 +180,12 @@ across providers.
 - Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
 - Added Claude Haiku 3 model support plus a live test that thinking is rejected.
 - Moved provider adapters under `src/providers` and updated scripts to run as modules without `sys.path` edits.
+- Added a Grok provider adapter (Chat Completions), request/stream reconstruction, and static request/cost tests.
+- Documented Grok usage shape and aligned Grok usage extraction/tests with docs.
+- Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
 
 ## TODO
  - Wire up the Fireworks provider adapter.
  - Run live Anthropic tests for Opus 4.5 (thinking enabled, temperature/top_k rejection, streaming capture).
  - Run live Anthropic test to confirm Haiku 3 max output errors above 4,000.
+ - Run live Grok tests once service stabilizes (system prompt acceptance, streaming capture, parameter rejection, usage shape, max output defaults).

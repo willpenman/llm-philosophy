@@ -13,6 +13,11 @@ from src.providers.gemini import (
     display_model_name as display_gemini_model_name,
     display_provider_name as display_gemini_provider_name,
 )
+from src.providers.grok import (
+    SUPPORTED_MODELS as GROK_MODELS,
+    display_model_name as display_grok_model_name,
+    display_provider_name as display_grok_provider_name,
+)
 from src.providers.openai import (
     SUPPORTED_MODELS as OPENAI_MODELS,
     display_model_name as display_openai_model_name,
@@ -42,6 +47,11 @@ def main() -> None:
     for model in sorted(ANTHROPIC_MODELS):
         grouped[display_anthropic_provider_name("anthropic")].append(
             _format_model_name(model, display_anthropic_model_name(model))
+        )
+
+    for model in sorted(GROK_MODELS):
+        grouped[display_grok_provider_name("grok")].append(
+            _format_model_name(model, display_grok_model_name(model))
         )
 
     for provider in sorted(grouped.keys()):

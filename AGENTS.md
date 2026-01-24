@@ -11,7 +11,7 @@ Build a small Python framework for running philosophy-style LLM evaluations with
   - Document any long-term insights about agent abilities and directions here
   - Document progress and todos in spec.md. Remove pre-existing todos that have already been done or are deprecated
   - Document model-specific parameter availability in the provider-speicfic file.
-  - Reserve README for public-facing notes, e.g. model support, features, etc.
+  - Amend README for public-facing notes, e.g. model support, features, etc.
 
 ## Puzzle focus
 - Puzzles are meant to be specific to LLM ontology and contemporary model behavior, not restating classic philosophical puzzles.
