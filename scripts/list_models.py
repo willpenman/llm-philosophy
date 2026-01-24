@@ -24,7 +24,7 @@ from src.providers.openai import (
     display_provider_name as display_openai_provider_name,
 )
 from src.providers.fireworks import (
-    SUPPORTED_MODELS as FIREWORKS_MODELS,
+    CANONICAL_MODELS as FIREWORKS_CANONICAL_MODELS,
     display_model_name as display_fireworks_model_name,
     display_provider_name as display_fireworks_provider_name,
     provider_for_model as fireworks_provider_for_model,
@@ -60,7 +60,8 @@ def main() -> None:
             _format_model_name(model, display_grok_model_name(model))
         )
 
-    for model in sorted(FIREWORKS_MODELS):
+    fireworks_models = sorted(FIREWORKS_CANONICAL_MODELS.keys())
+    for model in fireworks_models:
         provider = fireworks_provider_for_model(model)
         grouped[display_fireworks_provider_name(provider)].append(
             _format_model_name(model, display_fireworks_model_name(model))

@@ -19,7 +19,7 @@ def test_build_response_request_includes_system_and_user() -> None:
     payload = build_response_request(
         system_prompt="System text",
         user_prompt="User text",
-        model="accounts/fireworks/models/deepseek-v3p2",
+        model="deepseek-v3p2",
         max_output_tokens=16,
     )
     assert payload["model"] == "accounts/fireworks/models/deepseek-v3p2"
@@ -31,7 +31,7 @@ def test_build_response_request_uses_default_max_output_tokens() -> None:
     payload = build_response_request(
         system_prompt="System text",
         user_prompt="User text",
-        model="accounts/fireworks/models/deepseek-v3p2",
+        model="deepseek-v3p2",
         max_output_tokens=None,
     )
     assert payload["max_output_tokens"] == 64000
@@ -41,7 +41,7 @@ def test_build_response_request_includes_temperature_top_p_when_set() -> None:
     payload = build_response_request(
         system_prompt="System text",
         user_prompt="User text",
-        model="accounts/fireworks/models/deepseek-v3p2",
+        model="deepseek-v3p2",
         max_output_tokens=32,
         temperature=0.2,
         top_p=0.9,
@@ -51,18 +51,18 @@ def test_build_response_request_includes_temperature_top_p_when_set() -> None:
 
 
 def test_price_schedule_for_model_includes_units() -> None:
-    schedule = price_schedule_for_model("accounts/fireworks/models/deepseek-v3p2")
+    schedule = price_schedule_for_model("deepseek-v3p2")
     assert schedule is not None
     assert schedule["unit"] == "per_million_tokens"
     assert schedule["input"] == 0.56
     assert schedule["output"] == 1.68
-    assert display_model_name("accounts/fireworks/models/deepseek-v3p2") == "DeepSeek V3.2"
+    assert display_model_name("deepseek-v3p2") == "DeepSeek V3.2"
 
 
 def test_provider_for_model_uses_maker() -> None:
-    provider = provider_for_model("accounts/fireworks/models/deepseek-v3p2")
+    provider = provider_for_model("deepseek-v3p2")
     assert provider == "deepseek"
-    assert display_provider_name(provider) == "DeepSeek AI"
+    assert display_provider_name(provider) == "DeepSeek AI (via Fireworks)"
 
 
 def test_extract_usage_breakdown_reads_fireworks_usage() -> None:
@@ -89,7 +89,7 @@ def test_calculate_cost_breakdown_uses_fireworks_rates() -> None:
         }
     }
     breakdown = calculate_cost_breakdown(
-        payload, model="accounts/fireworks/models/deepseek-v3p2"
+        payload, model="deepseek-v3p2"
     )
     assert breakdown is not None
     assert breakdown.input_cost == pytest.approx(0.0000056)

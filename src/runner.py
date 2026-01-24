@@ -67,6 +67,7 @@ from src.providers.fireworks import (
     price_schedule_for_model as fireworks_price_schedule_for_model,
     provider_for_model as fireworks_provider_for_model,
     require_api_key as require_fireworks_api_key,
+    resolve_model as resolve_fireworks_model,
     send_response_request as send_fireworks_response_request,
 )
 from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
@@ -457,7 +458,7 @@ def run_openai_puzzle(
 def run_fireworks_puzzle(
     *,
     puzzle_name: str,
-    model: str = "accounts/fireworks/models/deepseek-v3p2",
+    model: str = "deepseek-v3p2",
     max_output_tokens: int | None = None,
     temperature: float | None = None,
     top_p: float | None = None,
@@ -476,7 +477,8 @@ def run_fireworks_puzzle(
     system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
-    provider = fireworks_provider_for_model(model)
+    model_id = resolve_fireworks_model(model)
+    provider = fireworks_provider_for_model(model_id)
     special_settings_label = normalize_special_settings(special_settings)
 
     if debug_sse and not stream:
@@ -485,7 +487,7 @@ def run_fireworks_puzzle(
     request_payload = build_fireworks_response_request(
         system_prompt=system_prompt.text,
         user_prompt=puzzle.text,
-        model=model,
+        model=model_id,
         max_output_tokens=max_output_tokens,
         temperature=temperature,
         top_p=top_p,
@@ -521,7 +523,7 @@ def run_fireworks_puzzle(
 
     request_started_at = created_at
     print(
-        f"requesting puzzle={puzzle.name} model={model}",
+        f"requesting puzzle={puzzle.name} model={model_id}",
         flush=True,
     )
     max_tokens = request_payload.get("max_output_tokens")
@@ -542,7 +544,7 @@ def run_fireworks_puzzle(
             base_dir = _repo_root() / "tmp"
             timestamp = _format_timestamp(created_at)
             sse_event_path = (
-                base_dir / f"fireworks-sse-{model}-{run_id}-{timestamp}.jsonl"
+                base_dir / f"fireworks-sse-{model_id}-{run_id}-{timestamp}.jsonl"
             )
         print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
@@ -567,7 +569,7 @@ def run_fireworks_puzzle(
         else None
     )
     cost_breakdown = (
-        fireworks_calculate_cost_breakdown(response_payload, model=model)
+        fireworks_calculate_cost_breakdown(response_payload, model=model_id)
         if isinstance(response_payload, dict)
         else None
     )
@@ -578,18 +580,18 @@ def run_fireworks_puzzle(
             "request_completed_at": request_completed_at,
         }
     }
-    price_schedule = fireworks_price_schedule_for_model(model)
+    price_schedule = fireworks_price_schedule_for_model(model_id)
     if price_schedule is not None:
         derived["price_schedule"] = price_schedule
-    derived["model_alias"] = display_fireworks_model_name(model)
+    derived["model_alias"] = display_fireworks_model_name(model_id)
     stored_text = None
     if store is not None:
         stored_text = store.record_response(
             run_id=run_id,
             created_at=created_at,
             provider=provider,
-            model=model,
-            model_alias=display_fireworks_model_name(model),
+            model=model_id,
+            model_alias=display_fireworks_model_name(model_id),
             provider_alias=display_fireworks_provider_name(provider),
             puzzle_name=puzzle.name,
             puzzle_title_prefix="Philosophy problem",

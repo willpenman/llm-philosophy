@@ -43,7 +43,7 @@ def test_fireworks_accepts_system_prompt_live() -> None:
     response = create_response(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
-        model="accounts/fireworks/models/deepseek-v3p2",
+        model="deepseek-v3p2",
         max_output_tokens=16,
     )
     assert "OK" in response.output_text.upper()
@@ -58,7 +58,7 @@ def test_fireworks_streaming_captures_output_live() -> None:
             "Write a short paragraph about model introspection. "
             "End with the word END."
         ),
-        model="accounts/fireworks/models/deepseek-v3p2",
+        model="deepseek-v3p2",
         max_output_tokens=512,
         stream=True,
     )

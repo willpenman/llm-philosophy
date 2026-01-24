@@ -8,13 +8,14 @@
 
 ## Provider identity
 - Fireworks is the API platform, but we store runs under each model maker when available.
-- Example: DeepSeek models are stored under provider `deepseek` (displayed as DeepSeek AI).
+- Example: DeepSeek models are stored under provider `deepseek` (displayed as DeepSeek AI (via Fireworks)).
 
 ## Models
-- accounts/fireworks/models/deepseek-v3p2 (DeepSeek V3.2)
+- deepseek-v3p2 (DeepSeek V3.2)
+  - Canonical ID: accounts/fireworks/models/deepseek-v3p2
   - Context length: 160k tokens (model page).
   - Pricing (serverless): $0.56 / 1M input, $0.28 / 1M cached input, $1.68 / 1M output.
-  - Max output tokens: not listed on Fireworks model page; we set a max of 64k from DeepSeek's own website.
+  - Max output tokens: not listed on Fireworks model page; we use a 64k estimate (unverified).
 
 ## Model parameter availability
 - Source: Fireworks Responses API docs + model page.

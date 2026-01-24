@@ -18,11 +18,15 @@ from src.providers.openai import (
 
 DEFAULT_BASE_URL = "https://api.fireworks.ai/inference/v1"
 
+CANONICAL_MODELS: dict[str, str] = {
+    "deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2",
+}
+
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {"max_output_tokens": 64000},
 }
 
-SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
+SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.keys())
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {
@@ -34,6 +38,7 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
 
 MODEL_ALIASES: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "DeepSeek V3.2",
+    "deepseek-v3p2": "DeepSeek V3.2",
 }
 
 MODEL_PROVIDERS: dict[str, str] = {
@@ -41,7 +46,7 @@ MODEL_PROVIDERS: dict[str, str] = {
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
-    "deepseek": "DeepSeek AI",
+    "deepseek": "DeepSeek AI (via Fireworks)",
     "fireworks": "Fireworks",
 }
 
@@ -60,11 +65,16 @@ def require_api_key(env_var: str = "FIREWORKS_API_KEY") -> str:
 
 
 def provider_for_model(model: str) -> str:
-    return MODEL_PROVIDERS.get(model, "fireworks")
+    model_id = CANONICAL_MODELS.get(model, model)
+    return MODEL_PROVIDERS.get(model_id, "fireworks")
+
+
+def resolve_model(model: str) -> str:
+    return CANONICAL_MODELS.get(model, model)
 
 
 def price_schedule_for_model(model: str) -> dict[str, Any] | None:
-    schedule = PRICE_SCHEDULES_USD_PER_MILLION.get(model)
+    schedule = PRICE_SCHEDULES_USD_PER_MILLION.get(resolve_model(model))
     if schedule is None:
         return None
     return {
@@ -108,13 +118,14 @@ def build_response_request(
     stream: bool | None = None,
     stream_options: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    model_id = resolve_model(model)
     if max_output_tokens is None:
-        defaults = MODEL_DEFAULTS.get(model, {})
+        defaults = MODEL_DEFAULTS.get(model_id, {})
         max_output_tokens = defaults.get("max_output_tokens")
     return build_openai_response_request(
         system_prompt=system_prompt,
         user_prompt=user_prompt,
-        model=model,
+        model=model_id,
         max_output_tokens=max_output_tokens,
         temperature=temperature,
         top_p=top_p,
@@ -142,7 +153,7 @@ def extract_usage_breakdown(payload: dict[str, Any]) -> TokenBreakdown | None:
 
 
 def calculate_cost_breakdown(payload: dict[str, Any], *, model: str) -> CostBreakdown | None:
-    schedule = price_schedule_for_model(model)
+    schedule = price_schedule_for_model(resolve_model(model))
     if schedule is None:
         return None
     tokens = extract_usage_breakdown(payload)
