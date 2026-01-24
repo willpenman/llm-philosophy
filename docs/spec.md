@@ -185,6 +185,7 @@ across providers.
 - Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
 - Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
 - Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
+- Grok now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 
 ## TODO
  - Wire up the Fireworks provider adapter.

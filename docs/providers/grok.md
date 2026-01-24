@@ -4,6 +4,9 @@
   `prompt_tokens_details.text_tokens` and mostly shows up as `cached_tokens` (650 for no-system-prompt, 150
   when there is a system prompt). This inflates prompt token counts beyond the visible text.
   We do not yet model cached-token pricing; current cost estimates will overstate input cost.
+- NOTE: Grok streaming currently omits usage stats in SSE chunks (contra docs). We default to non-streaming
+  to retain usage data and since no model has so far pushed to high token outputs. If connections drop, users can rerun with `--streaming true`.
+    - Actual SSE chunks (Jan 2026, incl 4.1): `{"id": "881b35e0-6d73-ccd5-74c4-5c7fa318adf0", "object": "chat.completion.chunk", "created": 1769224571, "model": "grok-4-1-fast-reasoning", "choices": [{"index": 0, "delta": {"content": " rebellion"}}], "system_fingerprint": "fp_8c17c6cdd4"} ... {"id": "881b35e0-6d73-ccd5-74c4-5c7fa318adf0", "object": "chat.completion.chunk", "created": 1769224572, "model": "grok-4-1-fast-reasoning", "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}], "system_fingerprint": "fp_8c17c6cdd4"}`
 
 - API: Chat Completions (`POST https://api.x.ai/v1/chat/completions`)
 - Auth: `XAI_API_KEY`

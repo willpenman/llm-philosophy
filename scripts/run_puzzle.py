@@ -58,6 +58,12 @@ def main() -> None:
     parser.add_argument("--top-p", type=float, default=None)
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument("--special-settings", default=None)
+    parser.add_argument(
+        "--streaming",
+        choices=["true", "false"],
+        default=None,
+        help="Override streaming behavior (true/false).",
+    )
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument(
         "--debug-sse",
@@ -67,6 +73,9 @@ def main() -> None:
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
+    stream_override = None
+    if args.streaming is not None:
+        stream_override = args.streaming == "true"
 
     if args.provider == "gemini":
         model = args.model
@@ -80,6 +89,7 @@ def main() -> None:
             special_settings=args.special_settings,
             dry_run=args.dry_run,
             debug_sse=args.debug_sse,
+            stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "openai":
         model = args.model
@@ -91,6 +101,7 @@ def main() -> None:
             special_settings=args.special_settings,
             dry_run=args.dry_run,
             debug_sse=args.debug_sse,
+            stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "anthropic":
         model = args.model
@@ -104,6 +115,7 @@ def main() -> None:
             special_settings=args.special_settings,
             dry_run=args.dry_run,
             debug_sse=args.debug_sse,
+            stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "grok":
         model = args.model
@@ -116,6 +128,7 @@ def main() -> None:
             special_settings=args.special_settings,
             dry_run=args.dry_run,
             debug_sse=args.debug_sse,
+            stream=stream_override if stream_override is not None else False,
         )
     else:
         model = args.model
@@ -144,6 +157,7 @@ def main() -> None:
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
                 debug_sse=args.debug_sse,
+                stream=stream_override if stream_override is not None else True,
             )
         elif anthropic_supported:
             result = run_anthropic_puzzle(
@@ -156,6 +170,7 @@ def main() -> None:
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
                 debug_sse=args.debug_sse,
+                stream=stream_override if stream_override is not None else True,
             )
         elif openai_supported:
             result = run_openai_puzzle(
@@ -166,6 +181,7 @@ def main() -> None:
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
                 debug_sse=args.debug_sse,
+                stream=stream_override if stream_override is not None else True,
             )
         elif grok_supported:
             result = run_grok_puzzle(
@@ -177,6 +193,7 @@ def main() -> None:
                 special_settings=args.special_settings,
                 dry_run=args.dry_run,
                 debug_sse=args.debug_sse,
+                stream=stream_override if stream_override is not None else False,
             )
         else:
             raise ValueError(

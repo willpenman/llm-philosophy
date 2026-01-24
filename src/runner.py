@@ -449,7 +449,7 @@ def run_grok_puzzle(
     max_output_tokens: int | None = None,
     temperature: float | None = None,
     top_p: float | None = None,
-    stream: bool = True,
+    stream: bool = False,
     special_settings: str | None = None,
     dry_run: bool = False,
     debug_sse: bool = False,
@@ -510,6 +510,12 @@ def run_grok_puzzle(
         f"requesting puzzle={puzzle.name} model={model}",
         flush=True,
     )
+    if not stream:
+        print(
+            "Streaming turned off for Grok, in order to retain usage stats. "
+            "If connections drop, turn on with --streaming true.",
+            flush=True,
+        )
     max_tokens = request_payload.get("max_tokens")
     if stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
