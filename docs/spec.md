@@ -127,8 +127,13 @@ across providers.
 - Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support).
 - Add/extend static tests for request assembly defaults and pricing/alias display.
 - Update live tests by extending parameterized model lists where behavior matches; add model-specific live tests for divergent behaviors (e.g., rejects reasoning or accepts sampling).
-- Keep live tests grouped by behavior and use `-k` to run just the new model’s parameterized case when validating.
+- Keep live tests grouped by behavior and use `-k` to run just the new model's parameterized case when validating.
 - Update provider docs with parameter support (system prompt, temperature/top_p, reasoning, tools, max output constraints); conduct live tests and record results as such.
+
+### Fireworks-specific (open-weights models)
+- Add alias→canonical mapping in `CANONICAL_MODELS` (e.g., `"deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2"`).
+- Add to `MODEL_DEFAULTS`, `PRICE_SCHEDULES_USD_PER_MILLION`, `MODEL_ALIASES`, `MODEL_PROVIDERS`.
+- If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="medium"`).
 
 ## Testing guidance
 - Use `pytest` for lightweight tests around loaders and request assembly.
@@ -172,7 +177,9 @@ across providers.
 - Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
 - OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
 - OpenAI adapter now uses the openai-python SDK for Responses (supports custom base_url).
-- Added a Fireworks Responses adapter (OpenAI-compatible) with DeepSeek V3.2 support, pricing metadata, and request/live tests.
+- Added initial Fireworks Responses adapter (OpenAI-compatible) with DeepSeek V3.2 support, pricing metadata, and request/live tests.
+- Migrated Fireworks to native SDK (Chat Completions API) to access `reasoning_content`—Responses API silently ignores `reasoning_effort`.
+- Fireworks requires explicit `reasoning_effort` param to populate `reasoning_content` (despite docs saying "default reasoning on").
 - Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
 - Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
 - Documented provider onboarding best practices and required coverage in the spec.
@@ -190,4 +197,5 @@ across providers.
 - Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 
 ## TODO
-- Verify Fireworks Responses parameter support (temperature/top_p/tools) and max output token limits for DeepSeek V3.2.
+- Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
+- Add live tests for Fireworks reasoning content capture.

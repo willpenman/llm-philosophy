@@ -58,7 +58,7 @@ from src.providers.grok import (
     send_chat_completion_request,
 )
 from src.providers.fireworks import (
-    build_response_request as build_fireworks_response_request,
+    build_chat_completion_request as build_fireworks_chat_completion_request,
     calculate_cost_breakdown as fireworks_calculate_cost_breakdown,
     display_model_name as display_fireworks_model_name,
     display_provider_name as display_fireworks_provider_name,
@@ -69,7 +69,7 @@ from src.providers.fireworks import (
     require_api_key as require_fireworks_api_key,
     resolve_model as resolve_fireworks_model,
     storage_model_name as fireworks_storage_model_name,
-    send_response_request as send_fireworks_response_request,
+    send_chat_completion_request as send_fireworks_chat_completion_request,
 )
 from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
 from src.puzzles import Puzzle, load_puzzle
@@ -463,7 +463,7 @@ def run_fireworks_puzzle(
     max_output_tokens: int | None = None,
     temperature: float | None = None,
     top_p: float | None = None,
-    seed: int | None = None,
+    reasoning_effort: str | None = None,
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
@@ -486,14 +486,14 @@ def run_fireworks_puzzle(
     if debug_sse and not stream:
         raise ValueError("debug_sse requires stream=True")
 
-    request_payload = build_fireworks_response_request(
+    request_payload = build_fireworks_chat_completion_request(
         system_prompt=system_prompt.text,
         user_prompt=puzzle.text,
         model=model_id,
         max_output_tokens=max_output_tokens,
         temperature=temperature,
         top_p=top_p,
-        seed=seed,
+        reasoning_effort=reasoning_effort,
         stream=stream,
     )
 
@@ -528,10 +528,10 @@ def run_fireworks_puzzle(
         f"requesting puzzle={puzzle.name} model={model_id}",
         flush=True,
     )
-    max_tokens = request_payload.get("max_output_tokens")
+    max_tokens = request_payload.get("max_tokens")
     if stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
-    progress_callback = _build_progress_callback(max_tokens, suffix="tokens")
+    progress_callback = _build_progress_callback(max_tokens, suffix="chars")
 
     streamed_chunks: list[str] = []
 
@@ -551,7 +551,7 @@ def run_fireworks_puzzle(
         print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     stream_capture: dict[str, Any] | None = {} if stream else None
-    response_payload = send_fireworks_response_request(
+    response_payload = send_fireworks_chat_completion_request(
         request_payload,
         api_key=api_key or require_fireworks_api_key(),
         progress_callback=progress_callback if stream else None,
