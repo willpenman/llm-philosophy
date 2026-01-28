@@ -9,7 +9,8 @@ across providers.
 - Keep specs lightweight; record detailed conventions here, not in README.
 - Prefer append-only storage with clear provenance and timestamps.
 - Preserve provider payloads verbatim when available; for streaming responses without a final payload, record a reconstructed payload derived from the assembled output text and metadata. Normalize only when it adds clear value (e.g. we don't store SSE events).
-- Treat prompts as fixtures; avoid runtime mutation.
+- Treat prompts as fixtures; avoid runtime mutation except for appending model-specific
+  output-length guidance to the system prompt.
 - Favor minimal modules and simple data shapes over heavy abstractions.
 
 ## Architecture overview
@@ -47,7 +48,8 @@ across providers.
 - Each prompt is a `.py` module that exposes a single prompt string plus optional metadata.
 - System prompt remains a single paragraph.
 - Puzzles must supply non-empty text and stable names.
-- Avoid mutating prompts or puzzles at runtime.
+- Avoid mutating prompts or puzzles at runtime, except for the system prompt's appended
+  output-length guidance derived from model max output tokens.
 
 ## Response storage conventions
 - Append-only JSONL files partitioned by provider/model, not by run.
@@ -195,6 +197,7 @@ across providers.
 - Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
 - Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
 - Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
+- Added a model-specific output-length guidance sentence that appends to the system prompt at runtime.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.

@@ -261,9 +261,16 @@ def _gemini_special_settings(
 
 
 def _load_fixtures(
-    puzzle_name: str, puzzle_dir: Path | None, system_path: Path | None
+    puzzle_name: str,
+    puzzle_dir: Path | None,
+    system_path: Path | None,
+    *,
+    model: str | None = None,
+    max_output_tokens: int | None = None,
 ) -> tuple[SystemPrompt, Puzzle]:
-    system_prompt = load_system_prompt(system_path)
+    system_prompt = load_system_prompt(
+        system_path, model=model, max_output_tokens=max_output_tokens
+    )
     puzzle = load_puzzle(puzzle_name, puzzle_dir)
     return system_prompt, puzzle
 
@@ -287,7 +294,13 @@ def run_openai_puzzle(
     responses_dir: Path | None = None,
     api_key: str | None = None,
 ) -> RunResult:
-    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    system_prompt, puzzle = _load_fixtures(
+        puzzle_name,
+        puzzle_dir,
+        system_path,
+        model=model,
+        max_output_tokens=max_output_tokens,
+    )
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     provider = "openai"
@@ -475,7 +488,13 @@ def run_fireworks_puzzle(
     responses_dir: Path | None = None,
     api_key: str | None = None,
 ) -> RunResult:
-    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    system_prompt, puzzle = _load_fixtures(
+        puzzle_name,
+        puzzle_dir,
+        system_path,
+        model=model,
+        max_output_tokens=max_output_tokens,
+    )
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     model_id = resolve_fireworks_model(model)
@@ -643,7 +662,13 @@ def run_grok_puzzle(
     responses_dir: Path | None = None,
     api_key: str | None = None,
 ) -> RunResult:
-    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    system_prompt, puzzle = _load_fixtures(
+        puzzle_name,
+        puzzle_dir,
+        system_path,
+        model=model,
+        max_output_tokens=max_output_tokens,
+    )
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     provider = "grok"
@@ -813,7 +838,13 @@ def run_gemini_puzzle(
     responses_dir: Path | None = None,
     api_key: str | None = None,
 ) -> RunResult:
-    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    system_prompt, puzzle = _load_fixtures(
+        puzzle_name,
+        puzzle_dir,
+        system_path,
+        model=model,
+        max_output_tokens=max_output_tokens,
+    )
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     provider = "gemini"
@@ -991,7 +1022,13 @@ def run_anthropic_puzzle(
     responses_dir: Path | None = None,
     api_key: str | None = None,
 ) -> RunResult:
-    system_prompt, puzzle = _load_fixtures(puzzle_name, puzzle_dir, system_path)
+    system_prompt, puzzle = _load_fixtures(
+        puzzle_name,
+        puzzle_dir,
+        system_path,
+        model=model,
+        max_output_tokens=max_output_tokens,
+    )
     created_at = utc_now_iso()
     run_id = run_id or uuid4().hex
     provider = "anthropic"
