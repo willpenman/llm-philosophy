@@ -9,6 +9,11 @@ from pathlib import Path
 import re
 from typing import Any
 
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Pt
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 
 @dataclass(frozen=True)
 class StoredText:
@@ -49,7 +54,7 @@ def _format_display_date(created_at: str) -> str:
     return timestamp.strftime("%b %d, %Y")
 
 
-def _text_filename(
+def _docx_filename(
     special_settings: str,
     puzzle_name: str,
     puzzle_version: str | None,
@@ -58,7 +63,74 @@ def _text_filename(
     version = puzzle_version or "unknown"
     settings = normalize_special_settings(special_settings)
     timestamp = _format_filename_timestamp(created_at)
-    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.txt"
+    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.docx"
+
+
+def _add_page_number(paragraph) -> None:
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    run = paragraph.add_run()
+    field = OxmlElement("w:fldSimple")
+    field.set(qn("w:instr"), "PAGE")
+    run._r.append(field)
+
+
+def _add_text_paragraphs(document: Document, text: str) -> None:
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    for line in normalized.split("\n"):
+        # "Normal" is default, but this keeps us explicit
+        document.add_paragraph(line, style="Normal")
+
+
+def write_response_docx(
+    *,
+    path: Path,
+    puzzle_prefix: str,
+    display_name: str,
+    puzzle_version: str | None,
+    model_display: str,
+    provider_display: str,
+    settings_display: str,
+    display_date: str,
+    input_text: str,
+    output_text: str,
+) -> None:
+    document = Document()
+    document.core_properties.title = display_name
+    # remove default 'after paragraph' spacing of 10pt, since models typically use 2 line breaks
+    for style_name in ("Normal",):
+        try:
+            style = document.styles[style_name]
+        except KeyError:
+            continue
+        paragraph_format = style.paragraph_format
+        paragraph_format.space_after = Pt(0)
+
+    title_paragraph = document.add_paragraph(display_name, style="Title")
+    title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+    version_suffix = f" (v{puzzle_version})" if puzzle_version else ""
+    headers = [
+        f"{puzzle_prefix}: {display_name}{version_suffix}",
+        f"LLM: {model_display} ({provider_display}){settings_display}",
+        f"Completed: {display_date}",
+    ]
+    for header in headers:
+        paragraph = document.add_paragraph(header)
+        paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.paragraph_format.space_after = Pt(0)
+
+    document.add_heading(f"Input given to {model_display}", level=1)
+    _add_text_paragraphs(document, input_text)
+    document.add_page_break()
+    document.add_heading(f"{model_display}'s Output", level=1)
+    _add_text_paragraphs(document, output_text)
+
+    footer = document.sections[0].footer
+    footer_paragraph = footer.paragraphs[0]
+    footer_paragraph.text = ""
+    _add_page_number(footer_paragraph)
+
+    document.save(path)
 
 
 def _base_record(
@@ -162,7 +234,7 @@ class ResponseStore:
 
         text_dir = self._provider_dir(provider, model) / "texts"
         text_dir.mkdir(parents=True, exist_ok=True)
-        filename = _text_filename(
+        filename = _docx_filename(
             special_settings=special_settings,
             puzzle_name=puzzle_name,
             puzzle_version=puzzle_version,
@@ -192,5 +264,16 @@ class ResponseStore:
                 output_text,
             ]
         )
-        text_path.write_text(text_body, encoding="utf-8")
+        write_response_docx(
+            path=text_path,
+            puzzle_prefix=puzzle_prefix,
+            display_name=display_name,
+            puzzle_version=puzzle_version,
+            model_display=model_display,
+            provider_display=provider_display,
+            settings_display=settings_display,
+            display_date=display_date,
+            input_text=input_text,
+            output_text=output_text,
+        )
         return StoredText(path=text_path, text=text_body)

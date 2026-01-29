@@ -41,7 +41,7 @@ across providers.
 - Record price schedules (input/output pricing) to enable cost computation.
 - Gemini 3 Pro pricing uses input-length tiers; we assume prompts stay under the 200k input threshold and record a single input/output rate.
 - Keep request/response pairs in JSONL for aggregation.
-- Generate a readable text file that is only input/output text (one file per response).
+- Generate a readable document file that is only input/output text (one file per response).
 - Leave room for analysis workflows (possibly in a separate repo linked by run IDs).
 
 ## Prompt and puzzle fixtures
@@ -55,19 +55,19 @@ across providers.
 - Append-only JSONL files partitioned by provider/model, not by run.
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.
 - `responses/<provider>/<model>/responses.jsonl` for full provider responses plus metadata.
-- `responses/<provider>/<model>/texts/` for raw response text files (one per response).
+- `responses/<provider>/<model>/texts/` for response `.docx` files (one per response).
 - `run_id` is a correlation ID stored inside each JSONL record; use it for batch lookup.
-- Text filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.txt` (UTC).
-- Text file contents are standalone:
-  `{puzzle_label}: {full_puzzle_name}`
-  `Model: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings}]`
-  `Completed: {date in "Mmm dd, yyyy" (UTC)}`
-
-  `---- INPUT ----`
-  `{input text, with role labels}`
-
-  `---- {model_alias_or_snapshot}'S OUTPUT ----`
-  `{output text}`
+- Docx filenames: `{special_settings}-{puzzle_name}-v{puzzle_version}-{timestamp}.docx` (UTC).
+- Docx structure mirrors the prior text artifact:
+  - Document title: `{full_puzzle_name}`
+  - Title paragraph (style `Title`): `{full_puzzle_name}`
+  - Centered header lines:
+    `{puzzle_label}: {full_puzzle_name} (v{puzzle_version})`
+    `LLM: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings}]`
+    `Completed: {date in "Mmm dd, yyyy" (UTC)}`
+  - Heading 1: `Input given to {model_alias_or_snapshot}`, followed by the full input text (system + user) as-is.
+  - Heading 1: `{model_alias_or_snapshot}'s Output`, followed by the full output text as-is.
+  - Page numbers enabled.
 - `special_settings` captures non-default parameters (provider-specific if needed).
 
 ## JSONL schema
@@ -198,6 +198,7 @@ across providers.
 - Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
 - Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 - Added a model-specific output-length guidance sentence that appends to the system prompt at runtime.
+- Added .docx response artifacts with centered headers, H1 input/output sections, and page numbers; added a backfill script to convert legacy .txt files.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
