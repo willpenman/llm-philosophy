@@ -66,9 +66,10 @@ across providers.
     `LLM: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings}]`
     `Completed: {date in "Mmm dd, yyyy" (UTC)}`
   - Heading 1: `Input given to {model_alias_or_snapshot}`, followed by the full input text (system + user) as-is.
-  - Heading 1: `{model_alias_or_snapshot}'s Output`, followed by the full output text as-is.
+  - Page break; Heading 1: `{model_alias_or_snapshot}'s Output`, followed by the full output text as-is.
   - Page numbers enabled.
 - `special_settings` captures non-default parameters (provider-specific if needed).
+- If anything changes (e.g. adding price reporting, thought summaries, etc.), use `backfill_docx.py` to apply it to all existing texts.
 
 ## JSONL schema
 - Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`,
@@ -199,6 +200,7 @@ across providers.
 - Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
 - Added a model-specific output-length guidance sentence that appends to the system prompt at runtime.
 - Added .docx response artifacts with centered headers, H1 input/output sections, and page numbers; added a backfill script to convert legacy .txt files.
+- Added a model release registry (`docs/model_release_registry.md`) and a README timeline table by year/provider.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
