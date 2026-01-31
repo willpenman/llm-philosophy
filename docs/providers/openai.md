@@ -44,7 +44,7 @@
   - gpt-4-1106-preview (shutdown 3/26/26)
   - gpt-4-0613
   - gpt-4-0314 (shutdown 3/26/26)
-  - gpt-4-0125 (i.e. 4 turbo preview - deprecated, shuts down 3/26/26)
+  - gpt-4-0125 (i.e. 4 turbo preview (?) - deprecated, shuts down 3/26/26)
 - oss-120b
 - oss-20b
 
@@ -71,6 +71,10 @@
   - Supported: `system`/`user` input items, `max_output_tokens`, `temperature`, `top_p` (docs and live confirmation).
   - Not supported: `reasoning` (docs and live confirmation).
   - Constraints: `max_output_tokens` upper bound expected 64k output (per docs; unconfirmed).
+- gpt-4-0613:
+  - Supported: `system`/`user` input items, `max_output_tokens`, `temperature`, `top_p`, `tools` (expected based on model generation).
+  - Not supported: `reasoning` (predates reasoning models).
+  - Constraints: `max_output_tokens=8192`.
 - TODO: determine if `max_output_tokens` ever outputs an error for being too high; if so, what is the error point for o3 (and how does it relate to the 'true' max tokens, which are recorded as 100k by OAI).
 
 ## Reasoning effort defaults (docs excerpt)
@@ -85,3 +89,4 @@
 - o3-2025-04-16: input $2.00 / output $8.00 per million tokens.
 - gpt-4o-2024-05-13: input $2.50 / output $10.00 per million tokens.
 - gpt-5.2-2025-12-11: input $1.75 / output $14.00 per million tokens.
+- gpt-4-0613: input $30.00 / output $60.00 per million tokens.

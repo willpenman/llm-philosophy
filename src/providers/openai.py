@@ -19,6 +19,7 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
     "gpt-5.2-2025-12-11": {"max_output_tokens": 128000},
+    "gpt-4-0613": {"max_output_tokens": 8192},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
@@ -27,12 +28,14 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
     "gpt-5.2-2025-12-11": {"input": 1.75, "output": 14.0},
+    "gpt-4-0613": {"input": 30.0, "output": 60.0},
 }
 
 MODEL_ALIASES: dict[str, str] = {
     "o3-2025-04-16": "o3",
     "gpt-4o-2024-05-13": "4o",
     "gpt-5.2-2025-12-11": "GPT 5.2",
+    "gpt-4-0613": "GPT-4 update 1",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {

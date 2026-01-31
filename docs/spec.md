@@ -46,7 +46,7 @@ across providers.
 
 ## Prompt and puzzle fixtures
 - Each prompt is a `.py` module that exposes a single prompt string plus optional metadata.
-- System prompt remains a single paragraph.
+- System prompt is a single paragraph, with per-max-output-class length enumeration ("about 40,000 words").
 - Puzzles must supply non-empty text and stable names.
 - Avoid mutating prompts or puzzles at runtime, except for the system prompt's appended
   output-length guidance derived from model max output tokens.
@@ -126,17 +126,20 @@ across providers.
     and tools where supported.
 
 ## Adding a model to an existing provider
-- Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not used (e.g. `gemini-2.5-flash`), make a note of that.
-- Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support).
-- Add/extend static tests for request assembly defaults and pricing/alias display.
-- Update live tests by extending parameterized model lists where behavior matches; add model-specific live tests for divergent behaviors (e.g., rejects reasoning or accepts sampling).
-- Keep live tests grouped by behavior and use `-k` to run just the new model's parameterized case when validating.
-- Update provider docs with parameter support (system prompt, temperature/top_p, reasoning, tools, max output constraints); conduct live tests and record results as such.
+- All open-weights models are run through Fireworks; see below.
+- Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not available (e.g. `gemini-2.5-flash`), make a note of that.
+- Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
+- Add/extend static tests for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
+- Update live tests by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
+- Keep live tests grouped by behavior (see comments in code). 
+- Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
+- Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support)
+- Update model_release_registry and README with our system's support for that model.
 
 ### Fireworks-specific (open-weights models)
 - Add alias→canonical mapping in `CANONICAL_MODELS` (e.g., `"deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2"`).
 - Add to `MODEL_DEFAULTS`, `PRICE_SCHEDULES_USD_PER_MILLION`, `MODEL_ALIASES`, `MODEL_PROVIDERS`.
-- If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="medium"`).
+- If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="hight"`).
 
 ## Testing guidance
 - Use `pytest` for lightweight tests around loaders and request assembly.
@@ -201,6 +204,10 @@ across providers.
 - Added a model-specific output-length guidance sentence that appends to the system prompt at runtime.
 - Added .docx response artifacts with centered headers, H1 input/output sections, and page numbers; added a backfill script to convert legacy .txt files.
 - Added a model release registry (`docs/model_release_registry.md`) and a README timeline table by year/provider.
+- Expanded the model release registry and README timeline with additional Meta, Mistral, and Qwen entries (unsupported).
+- Backfilled older Meta/Qwen history and added a 2022 column with ChatGPT to the README timeline.
+- Added Moonshot AI (Kimi) entries to the model release registry and README timeline.
+- Added a 2026 column and Kimi K2.5 entry to the model release registry and README timeline.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.

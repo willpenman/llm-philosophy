@@ -121,7 +121,7 @@ def default_reasoning_effort_for_model(model: str) -> str | None:
     """
     model_id = resolve_model(model)
     if model_id in REASONING_MODELS or model in REASONING_MODELS:
-        return "medium"
+        return "high"
     return None
 
 
