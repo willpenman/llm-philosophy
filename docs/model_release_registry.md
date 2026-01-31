@@ -26,7 +26,7 @@ Columns:
 | Anthropic | Claude 3 Sonnet (`claude-3-sonnet-20240229`) | 2024-03-04 | no (retired 2025-07-21) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired July 21, 2025. |
 | Anthropic | Claude 3 Haiku (`claude-3-haiku-20240307`) | 2024-03-13 | yes | https://www.anthropic.com/news/claude-3-haiku | Announcement + API availability. |
 | OpenAI | GPT-5.2 (`gpt-5.2-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Announcement + API availability. |
-| OpenAI | GPT-5.2 Pro (`gpt-5.2-pro`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Pro availability listed in announcement. |
+| OpenAI | GPT-5.2 Pro (`gpt-5.2-pro-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Pro availability listed in announcement. |
 | OpenAI | GPT-5.2-Codex (`gpt-5.2-codex`) | 2025-12-18 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex-only release. |
 | OpenAI | GPT-5.1 (`gpt-5.1`) | 2025-11-13 | yes | https://openai.com/index/gpt-5-1-for-developers/ | API release. |
 | OpenAI | GPT-5.1-Codex (`gpt-5.1-codex`) | 2025-11-13 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex release note. |
