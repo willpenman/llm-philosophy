@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
+from httpx import Timeout
 from openai import APIConnectionError, APIStatusError, OpenAI, OpenAIError
 
 from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
@@ -19,6 +20,7 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
     "gpt-5.2-2025-12-11": {"max_output_tokens": 128000},
+    "gpt-5.2-pro-2025-12-11": {"max_output_tokens": 128000},
     "gpt-4-0613": {"max_output_tokens": 8192},
 }
 
@@ -28,6 +30,7 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
     "gpt-5.2-2025-12-11": {"input": 1.75, "output": 14.0},
+    "gpt-5.2-pro-2025-12-11": {"input": 21.0, "output": 168.0},
     "gpt-4-0613": {"input": 30.0, "output": 60.0},
 }
 
@@ -35,6 +38,7 @@ MODEL_ALIASES: dict[str, str] = {
     "o3-2025-04-16": "o3",
     "gpt-4o-2024-05-13": "4o",
     "gpt-5.2-2025-12-11": "GPT 5.2",
+    "gpt-5.2-pro-2025-12-11": "GPT-5.2 Pro",
     "gpt-4-0613": "GPT-4 update 1",
 }
 
@@ -42,7 +46,7 @@ PROVIDER_ALIASES: dict[str, str] = {
     "openai": "OpenAI",
 }
 
-REASONING_MODELS: set[str] = {"o3-2025-04-16", "gpt-5.2-2025-12-11"}
+REASONING_MODELS: set[str] = {"o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11"}
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -85,6 +89,15 @@ def display_provider_name(provider: str) -> str:
 
 def supports_reasoning(model: str) -> bool:
     return model in REASONING_MODELS
+
+
+def default_reasoning_effort_for_model(model: str) -> str | None:
+    """Return default reasoning effort for the model, or None if not a reasoning model."""
+    if model == "gpt-5.2-pro-2025-12-11":
+        return "xhigh"
+    if model in REASONING_MODELS:
+        return "high"
+    return None
 
 
 def supports_model(model: str) -> bool:
@@ -265,14 +278,33 @@ def send_response_request(
     *,
     api_key: str,
     base_url: str = DEFAULT_BASE_URL,
-    timeout_s: float = 60,
+    timeout_s: float = 600,
+    read_timeout_s: float = 1200,
     progress_callback: Callable[[int], None] | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
     sse_event_path: Path | None = None,
     stream_capture: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    """Send a request to OpenAI's Responses API.
+
+    Args:
+        timeout_s: General timeout for connect/write/pool operations.
+        read_timeout_s: Timeout for reading between streamed chunks. Extended thinking
+            models like GPT-5.2 Pro with "xhigh" reasoning may think for several minutes
+            before sending any output, causing idle periods that exceed typical read
+            timeouts. Default is 1200s (20 minutes) to accommodate this.
+    """
+    # Use httpx Timeout to set separate read timeout for streaming.
+    # The read timeout governs idle time between chunks - critical for models
+    # that do extended thinking before streaming any output.
+    timeout = Timeout(
+        connect=timeout_s,
+        read=read_timeout_s,
+        write=timeout_s,
+        pool=timeout_s,
+    )
     try:
-        client = OpenAI(api_key=api_key, base_url=_normalize_base_url(base_url))
+        client = OpenAI(api_key=api_key, base_url=_normalize_base_url(base_url), timeout=timeout)
         if payload.get("stream") is True:
             streamed_chars = 0
             response_payload: dict[str, Any] | None = None
@@ -283,7 +315,7 @@ def send_response_request(
                 sse_event_path.parent.mkdir(parents=True, exist_ok=True)
                 sse_handle = sse_event_path.open("a", encoding="utf-8")
             try:
-                stream = client.responses.create(**payload, timeout=timeout_s)
+                stream = client.responses.create(**payload)
                 for event in stream:
                     event_payload = _model_dump(event)
                     if sse_handle is not None:
@@ -325,7 +357,7 @@ def send_response_request(
                 stream_capture["reasoning_summary_done_order"] = summary_done_order
                 stream_capture["reasoning_summary_deltas"] = summary_chunks
             return response_payload or {}
-        response = client.responses.create(**payload, timeout=timeout_s)
+        response = client.responses.create(**payload)
         return _model_dump(response)
     except APIStatusError as exc:
         body = exc.body
@@ -392,7 +424,7 @@ def create_response(
     sse_event_path: Path | None = None,
     api_key: str | None = None,
     base_url: str = DEFAULT_BASE_URL,
-    timeout_s: float = 60,
+    timeout_s: float = 600,
 ) -> OpenAIResponse:
     payload = build_response_request(
         system_prompt=system_prompt,

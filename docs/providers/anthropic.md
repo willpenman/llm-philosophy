@@ -42,6 +42,7 @@
 ## Usage fields
 - `usage.input_tokens`, `usage.output_tokens` are provided in message payloads.
 - Prompt caching adds `cache_creation_input_tokens` and `cache_read_input_tokens` fields.
+- `usage` does not break out thinking/reasoning tokens; `output_tokens` includes both thinking and final output.
 
 ## Pricing schedule (draft)
 - Prices tracked per million tokens for base input/output only.

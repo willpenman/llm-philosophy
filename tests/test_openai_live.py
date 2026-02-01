@@ -53,7 +53,7 @@ def _create_response_or_skip_on_server_error(request: pytest.FixtureRequest, **k
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
 )
 def test_openai_accepts_system_prompt_live(
     request: pytest.FixtureRequest, model: str
@@ -89,7 +89,7 @@ def test_openai_accepts_temperature_top_p_live(
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11"])
 def test_openai_rejects_top_p_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"top_p"):
@@ -104,7 +104,7 @@ def test_openai_rejects_top_p_live(model: str) -> None:
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11"])
 def test_openai_rejects_temperature_live(model: str) -> None:
     _skip_if_live_disabled()
     with pytest.raises(RuntimeError, match=r"Unsupported parameter: 'temperature'"):
@@ -122,7 +122,7 @@ def test_openai_rejects_temperature_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
 )
 def test_openai_accepts_tools_live(
     request: pytest.FixtureRequest, model: str
@@ -162,7 +162,24 @@ def test_openai_accepts_reasoning_effort_live(
         reasoning={"effort": effort},
     )
     assert isinstance(response.output_text, str)
-    
+
+@pytest.mark.live
+@pytest.mark.parametrize("effort", ["medium", "high", "xhigh"])
+@pytest.mark.parametrize("model", ["gpt-5.2-pro-2025-12-11"])
+def test_openai_accepts_gpt52_pro_reasoning_effort_live(
+    request: pytest.FixtureRequest, model: str, effort: str
+) -> None:
+    _skip_if_live_disabled()
+    response = _create_response_or_skip_on_server_error(
+        request=request,
+        system_prompt="System.",
+        user_prompt="User.",
+        model=model,
+        max_output_tokens=32,
+        reasoning={"effort": effort},
+    )
+    assert isinstance(response.output_text, str)
+
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["gpt-4o-2024-05-13", "gpt-4-0613"])
 def test_openai_rejects_reasoning_live(model: str) -> None:
@@ -201,7 +218,7 @@ def test_openai_rejects_invalid_reasoning_effort_live(model: str, effort: str) -
 # MAX OUTPUT TOKENS
 # max output tokens seems to not throw an error when too high, this "should" be an error
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11"])
 def test_openai_accepts_high_max_output_tokens_live(
     request: pytest.FixtureRequest, model: str
 ) -> None:
@@ -240,7 +257,7 @@ def test_openai_rejects_too_low_max_output_tokens_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
+    ["o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11", "gpt-4o-2024-05-13", "gpt-4-0613"],
 )
 def test_openai_streaming_captures_long_output_live(
     request: pytest.FixtureRequest, model: str

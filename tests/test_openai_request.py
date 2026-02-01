@@ -7,6 +7,7 @@ import pytest
 from src.providers.openai import (  # noqa: E402
     build_response_request,
     calculate_cost_breakdown,
+    default_reasoning_effort_for_model,
     display_model_name,
     extract_usage_breakdown,
     price_schedule_for_model,
@@ -54,6 +55,16 @@ def test_build_response_request_uses_gpt52_default_max_output_tokens() -> None:
         system_prompt="System text",
         user_prompt="User text",
         model="gpt-5.2-2025-12-11",
+        max_output_tokens=None,
+    )
+    assert payload["max_output_tokens"] == 128000
+
+
+def test_build_response_request_uses_gpt52_pro_default_max_output_tokens() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="gpt-5.2-pro-2025-12-11",
         max_output_tokens=None,
     )
     assert payload["max_output_tokens"] == 128000
@@ -131,6 +142,7 @@ def test_build_response_request_includes_streaming_flags() -> None:
         ("o3-2025-04-16", "o3", 2.0, 8.0),
         ("gpt-4o-2024-05-13", "4o", 2.5, 10.0),
         ("gpt-5.2-2025-12-11", "GPT 5.2", 1.75, 14.0),
+        ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro", 21.0, 168.0),
         ("gpt-4-0613", "GPT-4 update 1", 30.0, 60.0),
     ],
 )
@@ -177,3 +189,10 @@ def test_calculate_cost_breakdown_uses_openai_rates() -> None:
     assert breakdown.reasoning_cost == pytest.approx(0.00004)
     assert breakdown.output_cost == pytest.approx(0.0002)
     assert breakdown.total_cost == pytest.approx(0.00026)
+
+
+def test_default_reasoning_effort_for_model() -> None:
+    assert default_reasoning_effort_for_model("gpt-5.2-pro-2025-12-11") == "xhigh"
+    assert default_reasoning_effort_for_model("o3-2025-04-16") == "high"
+    assert default_reasoning_effort_for_model("gpt-5.2-2025-12-11") == "high"
+    assert default_reasoning_effort_for_model("gpt-4o-2024-05-13") is None

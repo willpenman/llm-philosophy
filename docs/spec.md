@@ -208,6 +208,7 @@ across providers.
 - Backfilled older Meta/Qwen history and added a 2022 column with ChatGPT to the README timeline.
 - Added Moonshot AI (Kimi) entries to the model release registry and README timeline.
 - Added a 2026 column and Kimi K2.5 entry to the model release registry and README timeline.
+- Updated run summaries to show combined reasoning+output tokens/costs when provider usage omits reasoning token splits.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.

@@ -33,6 +33,31 @@ def test_format_cost_line_omits_breakdown_when_total_rounds_to_zero() -> None:
     assert format_cost_line(breakdown) == "Cost: rounds to 0¢"
 
 
+def test_format_cost_line_combines_reasoning_output() -> None:
+    breakdown = CostBreakdown(
+        input_cost=0.004,
+        reasoning_cost=0.0,
+        output_cost=0.0151,
+        total_cost=0.0191,
+    )
+    assert (
+        format_cost_line(breakdown, include_reasoning=False, output_label="reasoning+output")
+        == "Cost: 1.9¢ (0.4¢ input, 1.5¢ reasoning+output)"
+    )
+
+
+def test_format_cost_line_omits_reasoning() -> None:
+    breakdown = CostBreakdown(
+        input_cost=0.004,
+        reasoning_cost=0.002,
+        output_cost=0.0151,
+        total_cost=0.0191,
+    )
+    assert format_cost_line(breakdown, include_reasoning=False) == (
+        "Cost: 1.9¢ (0.4¢ input, 1.5¢ output)"
+    )
+
+
 def test_compute_cost_breakdown_splits_reasoning_from_output() -> None:
     tokens = TokenBreakdown(input_tokens=1000, reasoning_tokens=500, output_tokens=2000)
     schedule = {"input": 2.0, "output": 8.0}

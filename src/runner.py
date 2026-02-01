@@ -11,6 +11,7 @@ from uuid import uuid4
 from src.providers.openai import (
     build_response_request,
     calculate_cost_breakdown as openai_calculate_cost_breakdown,
+    default_reasoning_effort_for_model,
     display_model_name,
     display_provider_name,
     extract_usage_breakdown as openai_extract_usage_breakdown,
@@ -19,7 +20,7 @@ from src.providers.openai import (
     price_schedule_for_model,
     require_api_key,
     send_response_request,
-    supports_reasoning,
+    supports_reasoning as openai_supports_reasoning,
 )
 from src.providers.gemini import (
     build_generate_content_request,
@@ -56,6 +57,7 @@ from src.providers.grok import (
     price_schedule_for_model as grok_price_schedule_for_model,
     require_api_key as require_grok_api_key,
     send_chat_completion_request,
+    supports_reasoning as grok_supports_reasoning,
 )
 from src.providers.fireworks import (
     build_chat_completion_request as build_fireworks_chat_completion_request,
@@ -70,6 +72,7 @@ from src.providers.fireworks import (
     resolve_model as resolve_fireworks_model,
     storage_model_name as fireworks_storage_model_name,
     send_chat_completion_request as send_fireworks_chat_completion_request,
+    supports_reasoning as fireworks_supports_reasoning,
 )
 from src.costs import CostBreakdown, TokenBreakdown, format_cost_line
 from src.puzzles import Puzzle, load_puzzle
@@ -140,6 +143,9 @@ def _format_token_line(
     tokens: TokenBreakdown,
     *,
     max_output_tokens: int | None,
+    supports_reasoning: bool,
+    reasoning_disabled: bool,
+    combine_reasoning_output: bool = False,
 ) -> str | None:
     if (
         tokens.input_tokens is None
@@ -152,21 +158,31 @@ def _format_token_line(
         if isinstance(tokens.input_tokens, int)
         else "unknown"
     )
-    if isinstance(tokens.reasoning_tokens, int):
-        reasoning_label = str(tokens.reasoning_tokens)
-    elif tokens.reasoning_tokens is None:
-        reasoning_label = "0 (disabled)"
-    else:
-        reasoning_label = "unknown"
     output_label = (
         str(tokens.output_tokens)
         if isinstance(tokens.output_tokens, int)
         else "unknown"
     )
-    line = (
-        "Actual tokens: "
-        f"input={input_label}, thinking={reasoning_label}, output={output_label}"
-    )
+    if not supports_reasoning:
+        line = f"Actual tokens: input={input_label}, output={output_label}"
+    elif combine_reasoning_output:
+        line = (
+            "Actual tokens: "
+            f"input={input_label}, reasoning+output={output_label}"
+        )
+    else:
+        if reasoning_disabled:
+            reasoning_label = "0 (disabled)"
+        elif isinstance(tokens.reasoning_tokens, int):
+            reasoning_label = str(tokens.reasoning_tokens)
+        elif tokens.reasoning_tokens is None:
+            reasoning_label = "unknown"
+        else:
+            reasoning_label = "unknown"
+        line = (
+            "Actual tokens: "
+            f"input={input_label}, thinking={reasoning_label}, output={output_label}"
+        )
     if isinstance(tokens.output_tokens, int) and isinstance(max_output_tokens, int):
         if max_output_tokens > 0:
             percent = int(round((tokens.output_tokens / max_output_tokens) * 100))
@@ -181,16 +197,41 @@ def _print_run_summary(
     cost: CostBreakdown | None,
     max_output_tokens: int | None,
     response_text_path: Path | None,
+    supports_reasoning: bool,
+    reasoning_disabled: bool,
+    combine_reasoning_output: bool = False,
 ) -> None:
     if not isinstance(response_payload, dict):
         return
     if response_payload.get("error") is None:
         print("Received complete response with no errors.", flush=True)
-    token_line = _format_token_line(tokens, max_output_tokens=max_output_tokens) if tokens else None
+    token_line = (
+        _format_token_line(
+            tokens,
+            max_output_tokens=max_output_tokens,
+            supports_reasoning=supports_reasoning,
+            reasoning_disabled=reasoning_disabled,
+            combine_reasoning_output=combine_reasoning_output,
+        )
+        if tokens
+        else None
+    )
     if token_line is not None:
         print(token_line, flush=True)
     if cost is not None:
-        print(format_cost_line(cost), flush=True)
+        if not supports_reasoning:
+            print(format_cost_line(cost, include_reasoning=False), flush=True)
+        elif combine_reasoning_output:
+            print(
+                format_cost_line(
+                    cost,
+                    include_reasoning=False,
+                    output_label="reasoning+output",
+                ),
+                flush=True,
+            )
+        else:
+            print(format_cost_line(cost), flush=True)
     if response_text_path is not None:
         relative_path = _format_relative_path(response_text_path)
         print(f"View problem completion at {relative_path}", flush=True)
@@ -305,8 +346,10 @@ def run_openai_puzzle(
     run_id = run_id or uuid4().hex
     provider = "openai"
     special_settings_label = normalize_special_settings(special_settings)
-    if reasoning is None and supports_reasoning(model):
-        reasoning = {"effort": "high", "summary": "detailed"}
+    if reasoning is None:
+        effort = default_reasoning_effort_for_model(model)
+        if effort is not None:
+            reasoning = {"effort": effort, "summary": "detailed"}
 
     if debug_sse and not stream:
         raise ValueError("debug_sse requires stream=True")
@@ -420,6 +463,12 @@ def run_openai_puzzle(
         if isinstance(response_payload, dict)
         else None
     )
+    supports_reasoning = openai_supports_reasoning(model)
+    reasoning_disabled = False
+    if supports_reasoning and isinstance(reasoning, dict):
+        effort = reasoning.get("effort")
+        if isinstance(effort, str) and effort.lower() in {"none", "off", "disabled"}:
+            reasoning_disabled = True
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -457,6 +506,8 @@ def run_openai_puzzle(
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
         response_text_path=stored_text.path if stored_text else None,
+        supports_reasoning=supports_reasoning,
+        reasoning_disabled=reasoning_disabled,
     )
     return RunResult(
         run_id=run_id,
@@ -594,6 +645,12 @@ def run_fireworks_puzzle(
         if isinstance(response_payload, dict)
         else None
     )
+    supports_reasoning = fireworks_supports_reasoning(model_id)
+    reasoning_disabled = (
+        supports_reasoning
+        and isinstance(reasoning_effort, str)
+        and reasoning_effort.lower() in {"none", "off", "disabled"}
+    )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -632,6 +689,8 @@ def run_fireworks_puzzle(
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
         response_text_path=stored_text.path if stored_text else None,
+        supports_reasoning=supports_reasoning,
+        reasoning_disabled=reasoning_disabled,
     )
     return RunResult(
         run_id=run_id,
@@ -769,6 +828,8 @@ def run_grok_puzzle(
         if isinstance(response_payload, dict)
         else None
     )
+    supports_reasoning = grok_supports_reasoning(model)
+    reasoning_disabled = False
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -806,6 +867,8 @@ def run_grok_puzzle(
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
         response_text_path=stored_text.path if stored_text else None,
+        supports_reasoning=supports_reasoning,
+        reasoning_disabled=reasoning_disabled,
     )
     return RunResult(
         run_id=run_id,
@@ -952,6 +1015,8 @@ def run_gemini_puzzle(
         if isinstance(response.payload, dict)
         else None
     )
+    supports_reasoning = gemini_supports_reasoning(model)
+    reasoning_disabled = False
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -990,6 +1055,8 @@ def run_gemini_puzzle(
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
         response_text_path=stored_text.path if stored_text else None,
+        supports_reasoning=supports_reasoning,
+        reasoning_disabled=reasoning_disabled,
     )
     return RunResult(
         run_id=run_id,
@@ -1125,6 +1192,13 @@ def run_anthropic_puzzle(
         if isinstance(response.payload, dict)
         else None
     )
+    supports_reasoning = anthropic_supports_reasoning(model)
+    reasoning_disabled = False
+    combine_reasoning_output = (
+        usage_breakdown is not None
+        and supports_reasoning
+        and usage_breakdown.reasoning_tokens is None
+    )
     input_text = format_input_text(system_prompt.text, puzzle.text)
     derived: dict[str, Any] = {
         "timing": {
@@ -1162,6 +1236,9 @@ def run_anthropic_puzzle(
         cost=cost_breakdown,
         max_output_tokens=max_tokens if isinstance(max_tokens, int) else None,
         response_text_path=stored_text.path if stored_text else None,
+        supports_reasoning=supports_reasoning,
+        reasoning_disabled=reasoning_disabled,
+        combine_reasoning_output=combine_reasoning_output,
     )
     return RunResult(
         run_id=run_id,

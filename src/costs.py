@@ -57,14 +57,24 @@ def format_cost(value: float) -> str:
     return f"${value:.2f}"
 
 
-def format_cost_line(breakdown: CostBreakdown) -> str:
+def format_cost_line(
+    breakdown: CostBreakdown,
+    *,
+    output_label: str = "output",
+    include_reasoning: bool = True,
+) -> str:
     total_label = format_cost(breakdown.total_cost)
     if total_label == "rounds to 0¢":
         return f"Cost: {total_label}"
     input_label = format_cost(breakdown.input_cost)
+    output_cost_label = format_cost(breakdown.output_cost)
+    if not include_reasoning:
+        return (
+            "Cost: "
+            f"{total_label} ({input_label} input, {output_cost_label} {output_label})"
+        )
     reasoning_label = format_cost(breakdown.reasoning_cost)
-    output_label = format_cost(breakdown.output_cost)
     return (
         "Cost: "
-        f"{total_label} ({input_label} input, {reasoning_label} reasoning, {output_label} output)"
+        f"{total_label} ({input_label} input, {reasoning_label} reasoning, {output_cost_label} {output_label})"
     )
