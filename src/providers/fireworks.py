@@ -18,6 +18,9 @@ CANONICAL_MODELS: dict[str, str] = {
     "deepseek-v3-0324": "accounts/fireworks/models/deepseek-v3-0324",
     "qwen3-vl-235b-thinking": "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
     "qwen2p5-vl-32b": "accounts/fireworks/models/qwen2p5-vl-32b-instruct",
+    "kimi-k2p5": "accounts/fireworks/models/kimi-k2p5",
+    "kimi-k2-instruct-0905": "accounts/fireworks/models/kimi-k2-instruct-0905",
+    "llama-v3p3-70b-instruct": "accounts/fireworks/models/llama-v3p3-70b-instruct",
 }
 
 REVERSE_CANONICAL_MODELS: dict[str, str] = {
@@ -29,6 +32,9 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3-0324": {"max_output_tokens": 30000},
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": {"max_output_tokens": 38912},
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": {"max_output_tokens": 128000},
+    "accounts/fireworks/models/kimi-k2p5": {"max_output_tokens": 250000},
+    "accounts/fireworks/models/kimi-k2-instruct-0905": {"max_output_tokens": 250000},
+    "accounts/fireworks/models/llama-v3p3-70b-instruct": {"max_output_tokens": 8192},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.keys())
@@ -38,6 +44,10 @@ REASONING_MODELS: set[str] = {
     "deepseek-v3p2",
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
     "qwen3-vl-235b-thinking",
+    "accounts/fireworks/models/kimi-k2p5",
+    "kimi-k2p5",
+    "accounts/fireworks/models/kimi-k2-instruct-0905",
+    "kimi-k2-instruct-0905",
 }
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
@@ -61,6 +71,21 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
         "input_cached": 0.45,
         "output": 0.90,
     },
+    "accounts/fireworks/models/kimi-k2p5": {
+        "input": 0.60,
+        "input_cached": 0.10,
+        "output": 3.00,
+    },
+    "accounts/fireworks/models/kimi-k2-instruct-0905": {
+        "input": 0.60,
+        "input_cached": 0.30,
+        "output": 2.50,
+    },
+    "accounts/fireworks/models/llama-v3p3-70b-instruct": {
+        "input": 0.90,
+        "input_cached": 0.45,
+        "output": 0.90,
+    },
 }
 
 MODEL_ALIASES: dict[str, str] = {
@@ -72,6 +97,12 @@ MODEL_ALIASES: dict[str, str] = {
     "qwen3-vl-235b-thinking": "Qwen3-VL 235B Thinking",
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "Qwen2.5-VL 32B",
     "qwen2p5-vl-32b": "Qwen2.5-VL 32B",
+    "accounts/fireworks/models/kimi-k2p5": "Kimi K2.5",
+    "kimi-k2p5": "Kimi K2.5",
+    "accounts/fireworks/models/kimi-k2-instruct-0905": "Kimi K2",
+    "kimi-k2-instruct-0905": "Kimi K2",
+    "accounts/fireworks/models/llama-v3p3-70b-instruct": "Llama 3.3 70B",
+    "llama-v3p3-70b-instruct": "Llama 3.3 70B",
 }
 
 MODEL_PROVIDERS: dict[str, str] = {
@@ -79,11 +110,16 @@ MODEL_PROVIDERS: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3-0324": "deepseek",
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "qwen",
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "qwen",
+    "accounts/fireworks/models/kimi-k2p5": "kimi",
+    "accounts/fireworks/models/kimi-k2-instruct-0905": "kimi",
+    "accounts/fireworks/models/llama-v3p3-70b-instruct": "meta",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
     "deepseek": "DeepSeek AI (via Fireworks)",
     "qwen": "Qwen (via Fireworks)",
+    "kimi": "Moonshot AI (via Fireworks)",
+    "meta": "Meta (via Fireworks)",
     "fireworks": "Fireworks",
 }
 

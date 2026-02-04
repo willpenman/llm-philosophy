@@ -35,6 +35,9 @@ def test_build_chat_completion_request_includes_system_and_user() -> None:
         ("deepseek-v3-0324", 30000),
         ("qwen3-vl-235b-thinking", 38912),
         ("qwen2p5-vl-32b", 128000),
+        ("kimi-k2p5", 250000),
+        ("kimi-k2-instruct-0905", 250000),
+        ("llama-v3p3-70b-instruct", 8192),
     ],
 )
 def test_build_chat_completion_request_uses_default_max_output_tokens(
@@ -69,6 +72,9 @@ def test_build_chat_completion_request_includes_temperature_top_p_when_set() -> 
         ("deepseek-v3-0324", 0.90, 0.90, "DeepSeek V3 Update 1"),
         ("qwen3-vl-235b-thinking", 0.22, 0.88, "Qwen3-VL 235B Thinking"),
         ("qwen2p5-vl-32b", 0.90, 0.90, "Qwen2.5-VL 32B"),
+        ("kimi-k2p5", 0.60, 3.00, "Kimi K2.5"),
+        ("kimi-k2-instruct-0905", 0.60, 2.50, "Kimi K2"),
+        ("llama-v3p3-70b-instruct", 0.90, 0.90, "Llama 3.3 70B"),
     ],
 )
 def test_price_schedule_for_model_includes_units(
@@ -92,6 +98,9 @@ def test_price_schedule_for_model_includes_units(
         ("deepseek-v3-0324", "deepseek", "DeepSeek AI (via Fireworks)"),
         ("qwen3-vl-235b-thinking", "qwen", "Qwen (via Fireworks)"),
         ("qwen2p5-vl-32b", "qwen", "Qwen (via Fireworks)"),
+        ("kimi-k2p5", "kimi", "Moonshot AI (via Fireworks)"),
+        ("kimi-k2-instruct-0905", "kimi", "Moonshot AI (via Fireworks)"),
+        ("llama-v3p3-70b-instruct", "meta", "Meta (via Fireworks)"),
     ],
 )
 def test_provider_for_model_uses_maker(

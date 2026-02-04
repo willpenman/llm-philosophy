@@ -35,6 +35,39 @@ Key finding: Even though Fireworks docs say DeepSeek V3.2 has "default reasoning
 - Max output tokens: 30k (per model configuration; unverified).
 - Reasoning: assumed not supported (unverified).
 
+### qwen3-vl-235b-thinking (Qwen3-VL 235B Thinking)
+- Canonical ID: `accounts/fireworks/models/qwen3-vl-235b-a22b-thinking`
+- Pricing (serverless): $0.22 / 1M input, no cached pricing, $0.88 / 1M output.
+- Max output tokens: 38912 (per model configuration).
+- Reasoning: Yes. Must use `reasoning_effort` parameter.
+
+### qwen2p5-vl-32b (Qwen2.5-VL 32B)
+- Canonical ID: `accounts/fireworks/models/qwen2p5-vl-32b-instruct`
+- Pricing (serverless): $0.90 / 1M input, $0.45 / 1M cached input, $0.90 / 1M output.
+- Max output tokens: 128000 (per model configuration).
+- Reasoning: No.
+
+### kimi-k2p5 (Kimi K2.5)
+- Canonical ID: `accounts/fireworks/models/kimi-k2p5`
+- Provider: Moonshot AI
+- Pricing (serverless): $0.60 / 1M input, $0.10 / 1M cached input, $3.00 / 1M output.
+- Max output tokens: 250000.
+- Reasoning: Yes. Must use `reasoning_effort` parameter.
+
+### kimi-k2-instruct-0905 (Kimi K2)
+- Canonical ID: `accounts/fireworks/models/kimi-k2-instruct-0905`
+- Provider: Moonshot AI
+- Pricing (serverless): $0.60 / 1M input, $0.30 / 1M cached input, $2.50 / 1M output.
+- Max output tokens: 250000.
+- Reasoning: Yes. Must use `reasoning_effort` parameter.
+
+### llama-v3p3-70b-instruct (Llama 3.3 70B)
+- Canonical ID: `accounts/fireworks/models/llama-v3p3-70b-instruct`
+- Provider: Meta
+- Pricing (serverless): $0.90 / 1M input, $0.45 / 1M cached input, $0.90 / 1M output.
+- Max output tokens: 8192.
+- Reasoning: No.
+
 ## Adding a new model
 
 1. Add the model to `CANONICAL_MODELS` in `src/providers/fireworks.py` (alias → canonical ID).
@@ -53,6 +86,18 @@ Key finding: Even though Fireworks docs say DeepSeek V3.2 has "default reasoning
 - DeepSeek V3 Update 1 (via Fireworks Chat Completions):
   - Assumed: `messages`, `max_tokens`, `temperature`, `top_p`, `stream` (unverified).
   - Reasoning effort: not supported (assumed; verify with live tests).
+- Qwen3-VL 235B Thinking (via Fireworks Chat Completions):
+  - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `reasoning_effort`, `stream`
+- Qwen2.5-VL 32B (via Fireworks Chat Completions):
+  - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `stream`
+  - Reasoning effort: not supported.
+- Kimi K2.5 (via Fireworks Chat Completions):
+  - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `reasoning_effort`, `stream`
+- Kimi K2 (via Fireworks Chat Completions):
+  - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `reasoning_effort`, `stream`
+- Llama 3.3 70B (via Fireworks Chat Completions):
+  - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `stream`
+  - Reasoning effort: not supported.
 
 ## Response structure
 

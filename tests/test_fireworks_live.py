@@ -45,6 +45,9 @@ def _skip_if_live_disabled() -> None:
         "deepseek-v3-0324",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
+        "kimi-k2p5",
+        "kimi-k2-instruct-0905",
+        "llama-v3p3-70b-instruct",
     ],
 )
 def test_fireworks_accepts_system_prompt_live(model: str) -> None:
@@ -66,6 +69,9 @@ def test_fireworks_accepts_system_prompt_live(model: str) -> None:
         "deepseek-v3-0324",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
+        "kimi-k2p5",
+        "kimi-k2-instruct-0905",
+        "llama-v3p3-70b-instruct",
     ],
 )
 def test_fireworks_streaming_captures_output_live(model: str) -> None:
@@ -92,6 +98,9 @@ def test_fireworks_streaming_captures_output_live(model: str) -> None:
         ("deepseek-v3-0324", True),
         ("qwen3-vl-235b-thinking", True),
         ("qwen2p5-vl-32b", False),
+        ("kimi-k2p5", True),
+        ("kimi-k2-instruct-0905", True),
+        ("llama-v3p3-70b-instruct", False),
     ],
 )
 def test_fireworks_reasoning_effort_acceptance_live(
@@ -126,6 +135,9 @@ def test_fireworks_reasoning_effort_acceptance_live(
         "deepseek-v3-0324",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
+        "kimi-k2p5",
+        "kimi-k2-instruct-0905",
+        "llama-v3p3-70b-instruct",
     ],
 )
 def test_fireworks_temperature_acceptance_live(model: str) -> None:
