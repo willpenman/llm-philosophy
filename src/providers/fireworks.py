@@ -15,6 +15,7 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 CANONICAL_MODELS: dict[str, str] = {
     "deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2",
+    "deepseek-v3-0324": "accounts/fireworks/models/deepseek-v3-0324",
 }
 
 REVERSE_CANONICAL_MODELS: dict[str, str] = {
@@ -23,6 +24,7 @@ REVERSE_CANONICAL_MODELS: dict[str, str] = {
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {"max_output_tokens": 64000},
+    "accounts/fireworks/models/deepseek-v3-0324": {"max_output_tokens": 30000},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.keys())
@@ -37,16 +39,24 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
         "input": 0.56,
         "input_cached": 0.28,
         "output": 1.68,
-    }
+    },
+    "accounts/fireworks/models/deepseek-v3-0324": {
+        "input": 0.90,
+        "input_cached": 0.45,
+        "output": 0.90,
+    },
 }
 
 MODEL_ALIASES: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "DeepSeek V3.2",
     "deepseek-v3p2": "DeepSeek V3.2",
+    "accounts/fireworks/models/deepseek-v3-0324": "DeepSeek V3 Update 1",
+    "deepseek-v3-0324": "DeepSeek V3 Update 1",
 }
 
 MODEL_PROVIDERS: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "deepseek",
+    "accounts/fireworks/models/deepseek-v3-0324": "deepseek",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {

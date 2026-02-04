@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from src.providers.fireworks import (  # noqa: E402
-    build_response_request,
+    build_chat_completion_request,
     calculate_cost_breakdown,
     display_model_name,
     display_provider_name,
@@ -15,30 +15,40 @@ from src.providers.fireworks import (  # noqa: E402
 )
 
 
-def test_build_response_request_includes_system_and_user() -> None:
-    payload = build_response_request(
+def test_build_chat_completion_request_includes_system_and_user() -> None:
+    payload = build_chat_completion_request(
         system_prompt="System text",
         user_prompt="User text",
         model="deepseek-v3p2",
         max_output_tokens=16,
     )
     assert payload["model"] == "accounts/fireworks/models/deepseek-v3p2"
-    assert payload["input"][0]["role"] == "system"
-    assert payload["input"][1]["role"] == "user"
+    assert payload["messages"][0]["role"] == "system"
+    assert payload["messages"][1]["role"] == "user"
+    assert payload["max_tokens"] == 16
 
 
-def test_build_response_request_uses_default_max_output_tokens() -> None:
-    payload = build_response_request(
+@pytest.mark.parametrize(
+    ("model", "expected_max_tokens"),
+    [
+        ("deepseek-v3p2", 64000),
+        ("deepseek-v3-0324", 30000),
+    ],
+)
+def test_build_chat_completion_request_uses_default_max_output_tokens(
+    model: str, expected_max_tokens: int
+) -> None:
+    payload = build_chat_completion_request(
         system_prompt="System text",
         user_prompt="User text",
-        model="deepseek-v3p2",
+        model=model,
         max_output_tokens=None,
     )
-    assert payload["max_output_tokens"] == 64000
+    assert payload["max_tokens"] == expected_max_tokens
 
 
-def test_build_response_request_includes_temperature_top_p_when_set() -> None:
-    payload = build_response_request(
+def test_build_chat_completion_request_includes_temperature_top_p_when_set() -> None:
+    payload = build_chat_completion_request(
         system_prompt="System text",
         user_prompt="User text",
         model="deepseek-v3p2",
@@ -50,17 +60,30 @@ def test_build_response_request_includes_temperature_top_p_when_set() -> None:
     assert payload["top_p"] == 0.9
 
 
-def test_price_schedule_for_model_includes_units() -> None:
-    schedule = price_schedule_for_model("deepseek-v3p2")
+@pytest.mark.parametrize(
+    ("model", "expected_input", "expected_output", "expected_alias"),
+    [
+        ("deepseek-v3p2", 0.56, 1.68, "DeepSeek V3.2"),
+        ("deepseek-v3-0324", 0.90, 0.90, "DeepSeek V3 Update 1"),
+    ],
+)
+def test_price_schedule_for_model_includes_units(
+    model: str,
+    expected_input: float,
+    expected_output: float,
+    expected_alias: str,
+) -> None:
+    schedule = price_schedule_for_model(model)
     assert schedule is not None
     assert schedule["unit"] == "per_million_tokens"
-    assert schedule["input"] == 0.56
-    assert schedule["output"] == 1.68
-    assert display_model_name("deepseek-v3p2") == "DeepSeek V3.2"
+    assert schedule["input"] == expected_input
+    assert schedule["output"] == expected_output
+    assert display_model_name(model) == expected_alias
 
 
-def test_provider_for_model_uses_maker() -> None:
-    provider = provider_for_model("deepseek-v3p2")
+@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+def test_provider_for_model_uses_maker(model: str) -> None:
+    provider = provider_for_model(model)
     assert provider == "deepseek"
     assert display_provider_name(provider) == "DeepSeek AI (via Fireworks)"
 
@@ -96,3 +119,21 @@ def test_calculate_cost_breakdown_uses_fireworks_rates() -> None:
     assert breakdown.reasoning_cost == pytest.approx(0.0)
     assert breakdown.output_cost == pytest.approx(0.0000504)
     assert breakdown.total_cost == pytest.approx(0.000056)
+
+
+def test_calculate_cost_breakdown_uses_v3_0324_rates() -> None:
+    payload = {
+        "usage": {
+            "prompt_tokens": 10,
+            "completion_tokens": 30,
+            "total_tokens": 40,
+        }
+    }
+    breakdown = calculate_cost_breakdown(
+        payload, model="deepseek-v3-0324"
+    )
+    assert breakdown is not None
+    assert breakdown.input_cost == pytest.approx(0.000009)
+    assert breakdown.reasoning_cost == pytest.approx(0.0)
+    assert breakdown.output_cost == pytest.approx(0.000027)
+    assert breakdown.total_cost == pytest.approx(0.000036)

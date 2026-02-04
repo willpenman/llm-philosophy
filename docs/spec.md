@@ -211,8 +211,11 @@ across providers.
 - Updated run summaries to show combined reasoning+output tokens/costs when provider usage omits reasoning token splits.
 - Added Grok 2 Vision (`grok-2-vision-1212`) model metadata, pricing, and tests.
 - Added Grok live tests to verify non-reasoning models reject `reasoning_effort`.
+- Updated model release registry + README timeline to mark deprecated lines based on Fireworks serverless availability and xAI console status.
+- Added DeepSeek V3 Update 1 (`deepseek-v3-0324`) model metadata in the Fireworks adapter, plus request/live test coverage and documentation updates.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
+- Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3 Update 1 (`deepseek-v3-0324`).
 - Add live tests for Fireworks reasoning content capture.
 - Confirm Grok 2 Vision release date/source and live-verify its parameter support.

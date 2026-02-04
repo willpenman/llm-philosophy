@@ -29,6 +29,12 @@ Key finding: Even though Fireworks docs say DeepSeek V3.2 has "default reasoning
 - Max output tokens: 64k (DeepSeek's own description, default is 32k).
 - Reasoning: Yes. Must use `reasoning_effort` parameter; content appears in `message.reasoning_content`.
 
+### deepseek-v3-0324 (DeepSeek V3 Update 1)
+- Canonical ID: `accounts/fireworks/models/deepseek-v3-0324`
+- Pricing (serverless): $0.90 / 1M input, $0.45 / 1M cached input, $0.90 / 1M output.
+- Max output tokens: 30k (per model configuration; unverified).
+- Reasoning: assumed not supported (unverified).
+
 ## Adding a new model
 
 1. Add the model to `CANONICAL_MODELS` in `src/providers/fireworks.py` (alias → canonical ID).
@@ -44,6 +50,9 @@ Key finding: Even though Fireworks docs say DeepSeek V3.2 has "default reasoning
   - Supported: `messages`, `max_tokens`, `temperature`, `top_p`, `reasoning_effort`, `stream`
   - Reasoning effort: `"low"`, `"medium"`, `"high"`, or `"none"` to disable. For DeepSeek, any non-'none' value enables reasoning output (effort levels have no additional effect).
   - Unsupported: `top_k` (not part of Chat Completions schema), `seed` (not verified)
+- DeepSeek V3 Update 1 (via Fireworks Chat Completions):
+  - Assumed: `messages`, `max_tokens`, `temperature`, `top_p`, `stream` (unverified).
+  - Reasoning effort: not supported (assumed; verify with live tests).
 
 ## Response structure
 

@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from src.providers.fireworks import create_response  # noqa: E402
+from src.providers.fireworks import create_chat_completion  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -38,28 +38,77 @@ def _skip_if_live_disabled() -> None:
 
 
 @pytest.mark.live
-def test_fireworks_accepts_system_prompt_live() -> None:
+@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+def test_fireworks_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
-    response = create_response(
+    response = create_chat_completion(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
-        model="deepseek-v3p2",
+        model=model,
         max_output_tokens=16,
     )
     assert "OK" in response.output_text.upper()
 
 
 @pytest.mark.live
-def test_fireworks_streaming_captures_output_live() -> None:
+@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+def test_fireworks_streaming_captures_output_live(model: str) -> None:
     _skip_if_live_disabled()
-    response = create_response(
+    response = create_chat_completion(
         system_prompt="You are a test harness. Follow the user's instructions.",
         user_prompt=(
             "Write a short paragraph about model introspection. "
             "End with the word END."
         ),
-        model="deepseek-v3p2",
-        max_output_tokens=512,
+        model=model,
+        max_output_tokens=1012,
         stream=True,
     )
-    assert response.output_text.strip().endswith("END")
+    normalized = response.output_text.strip().rstrip(".!?")
+    assert normalized.endswith("END")
+
+
+@pytest.mark.live
+@pytest.mark.parametrize(
+    ("model", "accepts_reasoning_effort"),
+    [
+        ("deepseek-v3p2", True),
+        ("deepseek-v3-0324", True),
+    ],
+)
+def test_fireworks_reasoning_effort_acceptance_live(
+    model: str, accepts_reasoning_effort: bool
+) -> None:
+    _skip_if_live_disabled()
+    if accepts_reasoning_effort:
+        response = create_chat_completion(
+            system_prompt="You are a test harness. Reply with OK.",
+            user_prompt="Reply with OK.",
+            model=model,
+            max_output_tokens=512,
+            reasoning_effort="high",
+        )
+        assert "OK" in response.output_text.upper()
+    else:
+        with pytest.raises(RuntimeError):
+            create_chat_completion(
+                system_prompt="You are a test harness. Reply with OK.",
+                user_prompt="Reply with OK.",
+                model=model,
+                max_output_tokens=512,
+                reasoning_effort="high",
+            )
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+def test_fireworks_temperature_acceptance_live(model: str) -> None:
+    _skip_if_live_disabled()
+    response = create_chat_completion(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=32,
+        temperature=0.2,
+    )
+    assert "OK" in response.output_text.upper()

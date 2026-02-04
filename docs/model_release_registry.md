@@ -70,7 +70,7 @@ Columns:
 | Google | Gemini 2.0 Flash Experimental | 2024-12-11 | no (deprecated) | https://blog.google/technology/google-deepmind/google-gemini-ai-update-december-2024/ | Experimental preview. Superseded by GA. |
 | Google | Gemini 1.5 Pro v2 (`gemini-1.5-pro-002`) | 2024-09-24 | no | https://developers.googleblog.com/en/updated-production-ready-gemini-models-reduced-15-pro-pricing-increased-rate-limits-and-more/ | Updated production model. Not supported. |
 | Google | Gemini 1.5 Flash v2 (`gemini-1.5-flash-002`) | 2024-09-24 | no | https://developers.googleblog.com/en/updated-production-ready-gemini-models-reduced-15-pro-pricing-increased-rate-limits-and-more/ | Updated production model. Not supported. |
-| Google | Gemini 1.5 Pro (`gemini-1.5-pro-001`) | 2024-05-24 | no (deprecated) | https://developers.googleblog.com/en/gemini-15-pro-and-15-flash-now-available/ | GA release. Superseded by v2. |
+| Google | Gemini 1.5 Pro (`gemini-1.5-pro-001`) | 2024-05-24 | no (deprecated) | https://ai.google.dev/gemini-api/docs/changelog#09-29-2025 | Deprecation announced 2025-09-29. |
 | Google | Gemini 1.5 Flash (`gemini-1.5-flash-001`) | 2024-05-24 | no (deprecated) | https://developers.googleblog.com/en/gemini-15-pro-and-15-flash-now-available/ | GA release. Superseded by v2. |
 | Google | Gemini 1.0 Pro (`gemini-1.0-pro`) | 2023-12-06 | no (deprecated) | https://blog.google/technology/ai/google-gemini-ai/ | Original Gemini launch. |
 | xAI | Grok 4.1 (`grok-4-1-fast-reasoning`) | 2025-11-17 | yes | https://x.ai/news/grok-4-1/ | Release of Grok 4.1 family; fast-reasoning variant date not separately announced. |
@@ -80,37 +80,37 @@ Columns:
 | xAI | Grok 4 Code (`grok-4-code`) | 2025-07-09 | no | https://x.ai/news/grok-4 | Code-focused variant. Not supported. |
 | xAI | Grok 3 (`grok-3`) | 2025-02-19 | yes | https://x.ai/blog/grok-3 | Grok 3 Beta announcement. |
 | xAI | Grok 2 Vision (`grok-2-vision-1212`) | 2024-12-12 | yes (date unverified) | https://docs.x.ai/docs/release-notes | Date inferred from model suffix; confirm source. |
-| xAI | Grok 2 (`grok-2`) | 2024-08 | no | https://en.wikipedia.org/wiki/Grok_(chatbot) | Not supported. |
-| xAI | Grok 2 mini (`grok-2-mini`) | 2024-08 | no | https://en.wikipedia.org/wiki/Grok_(chatbot) | Lightweight variant. Not supported. |
-| xAI | Grok 1.5 Vision | 2024-04-12 | no | https://x.ai/blog/grok-1.5v | Vision capability preview. Not supported. |
-| xAI | Grok 1.5 | 2024-03-29 | no | https://x.ai/blog/grok-1.5 | Improved reasoning, 128K context. Not supported. |
-| xAI | Grok 1 | 2023-11-04 | no | https://x.ai/blog/grok | Original Grok launch. Not supported. |
+| xAI | Grok 2 (`grok-2`) | 2024-08 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
+| xAI | Grok 2 mini (`grok-2-mini`) | 2024-08 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
+| xAI | Grok 1.5 Vision | 2024-04-12 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
+| xAI | Grok 1.5 | 2024-03-29 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
+| xAI | Grok 1 | 2023-11-04 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
 | DeepSeek | DeepSeek V3.2 (`deepseek-v3p2`) | 2025-12-01 | yes | https://api-docs.deepseek.com/news/news251201 | Open-source release announcement. |
 | DeepSeek | DeepSeek V3.2-Speciale | 2025-12-01 | no | https://api-docs.deepseek.com/news/news251201 | Advanced reasoning variant. Not supported. |
 | DeepSeek | DeepSeek V3.2-Exp | 2025-09-29 | no (deprecated) | https://api-docs.deepseek.com/news/news250929 | Experimental. Superseded by V3.2. |
 | DeepSeek | DeepSeek V3.1 | 2025-08 | no | https://en.wikipedia.org/wiki/DeepSeek | Hybrid V3+R1 model. Not supported. |
 | DeepSeek | DeepSeek R1-0528 (`deepseek-reasoner`) | 2025-05-28 | no | https://api-docs.deepseek.com/updates/ | Updated R1 with function calling. Not supported. |
-| DeepSeek | DeepSeek V3-0324 | 2025-03-24 | no | https://api-docs.deepseek.com/updates/ | MIT License release. Not supported. |
-| DeepSeek | DeepSeek R1 | 2025-01-20 | no | https://en.wikipedia.org/wiki/DeepSeek | Reasoning model. Not supported. |
+| DeepSeek | DeepSeek V3-0324 (`deepseek-v3-0324`) | 2025-03-24 | yes | https://api-docs.deepseek.com/updates/ | MIT License release. Supported via Fireworks serverless. |
+| DeepSeek | DeepSeek R1 | 2025-01-20 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | DeepSeek | DeepSeek V3 | 2024-12-26 | no (deprecated) | https://en.wikipedia.org/wiki/DeepSeek | 671B MoE model. Superseded by V3.2. |
-| DeepSeek | DeepSeek V2.5 | 2024-09 | no | https://en.wikipedia.org/wiki/DeepSeek | Not supported. |
-| DeepSeek | DeepSeek Coder V2 | 2024-07 | no | https://en.wikipedia.org/wiki/DeepSeek | 236B coding model. Not supported. |
-| DeepSeek | DeepSeek V2 | 2024-05 | no | https://en.wikipedia.org/wiki/DeepSeek | First MoE architecture. Not supported. |
-| DeepSeek | DeepSeek LLM | 2023-12 | no | https://en.wikipedia.org/wiki/DeepSeek | First general-purpose model. Not supported. |
-| DeepSeek | DeepSeek Coder | 2023-11 | no | https://en.wikipedia.org/wiki/DeepSeek | First open-source coding model. Not supported. |
+| DeepSeek | DeepSeek V2.5 | 2024-09 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| DeepSeek | DeepSeek Coder V2 | 2024-07 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| DeepSeek | DeepSeek V2 | 2024-05 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| DeepSeek | DeepSeek LLM | 2023-12 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| DeepSeek | DeepSeek Coder | 2023-11 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Moonshot AI | Kimi K2.5 | 2026-01-27 | yes | https://techcrunch.com/2026/01/27/chinas-moonshot-releases-a-new-open-source-model-kimi-k2-5-and-a-coding-agent/ | Open-source K2.5 release. Not supported. |
 | Moonshot AI | Kimi K2 Thinking (`kimi-k2-thinking`) | 2025-11-06 | yes | https://platform.moonshot.ai/blog/posts/changelog | K2 Think release on Kimi Open Platform. Not supported. |
 | Moonshot AI | Kimi K2 (`kimi-k2-0711-preview`) | 2025-07-11 | preview | https://platform.moonshot.ai/blog/posts/changelog | K2 preview release on Kimi Open Platform. Not supported. |
-| Moonshot AI | Kimi K1.5 | 2025-01-20 | yes | https://en.wikipedia.org/wiki/Moonshot_AI | Announced as K1.5 release. Not supported. |
-| Moonshot AI | Kimi (chatbot) | 2023-10 | yes | https://en.wikipedia.org/wiki/Moonshot_AI | Initial chatbot launch. Not supported. |
-| Meta (open weights) | Llama 4 Scout | 2025-04-05 | yes | https://www.cnbc.com/2025/04/05/meta-debuts-new-llama-4-models-but-most-powerful-ai-model-is-still-to-come.html | Not supported. |
-| Meta (open weights) | Llama 4 Maverick | 2025-04-05 | yes | https://www.cnbc.com/2025/04/05/meta-debuts-new-llama-4-models-but-most-powerful-ai-model-is-still-to-come.html | Not supported. |
+| Moonshot AI | Kimi K1.5 | 2025-01-20 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Moonshot AI | Kimi (chatbot) | 2023-10 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 4 Scout | 2025-04-05 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 4 Maverick | 2025-04-05 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Meta (open weights) | Llama 3.3 70B | 2024-12-06 | yes | https://techcommunity.microsoft.com/blog/machinelearningblog/microsoft-azure-ai-foundry-welcomes-meta-llama-3-3-70b-model/4355199 | Not supported. |
-| Meta (open weights) | Llama 3.2 | 2024-09-25 | yes | https://about.fb.com/ltam/news/2024/09/llama-3-2-revolucionando-la-ia-y-la-vision-de-vanguardia-con-modelos-abiertos-y-personalizables/ | Newsroom announcement (Spanish). |
-| Meta (open weights) | Llama 3.1 | 2024-07-23 | yes | https://about.fb.com/br/news/2024/07/apresentando-o-llama-3-1-nossos-modelos-mais-capazes-ate-o-momento/ | Newsroom announcement (Portuguese). |
-| Meta (open weights) | Llama 3 | 2024-04-18 | yes | https://about.fb.com/news/2024/04/meta-ai-assistant-built-with-llama-3/ | Meta AI update built on Llama 3. |
-| Meta (open weights) | Llama 2 | 2023-07-18 | yes | https://about.fb.com/news/2023/07/llama-2/ | Announcement + availability. |
-| Meta (open weights) | Llama 1 (LLaMA) | 2023-02-27 | yes (research access) | https://www.sciencestack.ai/paper/2302.13971v1 | arXiv preprint posted. |
+| Meta (open weights) | Llama 3.2 | 2024-09-25 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 3.1 | 2024-07-23 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 3 | 2024-04-18 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 2 | 2023-07-18 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Meta (open weights) | Llama 1 (LLaMA) | 2023-02-27 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Mistral (open weights) | Mistral Small 3.1 | 2025-03-17 | yes | https://mistral.ai/news/mistral-small-3-1 | Not supported. |
 | Mistral (open weights) | Mistral Small 3 | 2025-01-30 | yes | https://mistral.ai/en/news/mistral-small-3 | Not supported. |
 | Mistral (open weights) | Mistral Large 2 | 2024-07-24 | yes | https://mistral.ai/en/news/mistral-large-2407 | Research license release. Not supported. |
@@ -119,11 +119,11 @@ Columns:
 | Mistral (open weights) | Mistral 7B | 2023-09-27 | no (retired 2025-03-30) | https://legal.mistral.ai/ai-governance/models/mistral-7-b | Model lifecycle table. |
 | Qwen (open weights) | Qwen3 | 2025-04-29 | yes | https://www.alibabagroup.com/document-1853940226976645120 | Not supported. |
 | Qwen (open weights) | Qwen2.5-VL | 2025-01-26 | yes | https://qwenlm.github.io/blog/qwen2.5-vl/ | Not supported. |
-| Qwen (open weights) | Qwen2.5-Coder | 2024-10-21 | yes | https://qwen2.org/qwen2-5-coder/ | Not supported. |
-| Qwen (open weights) | Qwen2.5 | 2024-09-19 | yes | https://qwenlm.github.io/blog/qwen2.5/ | Announcement. |
-| Qwen (open weights) | Qwen2 | 2024-06-07 | yes | https://qwenlm.github.io/blog/qwen2/ | Announcement. |
-| Qwen (open weights) | Qwen1.5 | 2024-02-04 | yes | https://qwenlm.github.io/blog/qwen1.5/ | Announcement. |
-| Qwen (open weights) | Qwen-1.8B | 2023-11-30 | yes | https://qwenlm.github.io/blog/qwen/ | Initial model release table. |
-| Qwen (open weights) | Qwen-72B | 2023-11-30 | yes | https://qwenlm.github.io/blog/qwen/ | Initial model release table. |
-| Qwen (open weights) | Qwen-14B | 2023-09-25 | yes | https://qwenlm.github.io/blog/qwen/ | Initial model release table. |
-| Qwen (open weights) | Qwen-7B | 2023-08-03 | yes | https://qwenlm.github.io/blog/qwen/ | Initial model release table. |
+| Qwen (open weights) | Qwen2.5-Coder | 2024-10-21 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen2.5 | 2024-09-19 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen2 | 2024-06-07 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen1.5 | 2024-02-04 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen-1.8B | 2023-11-30 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen-72B | 2023-11-30 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen-14B | 2023-09-25 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Qwen (open weights) | Qwen-7B | 2023-08-03 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
