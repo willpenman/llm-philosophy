@@ -16,6 +16,8 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 CANONICAL_MODELS: dict[str, str] = {
     "deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2",
     "deepseek-v3-0324": "accounts/fireworks/models/deepseek-v3-0324",
+    "qwen3-vl-235b-thinking": "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
+    "qwen2p5-vl-32b": "accounts/fireworks/models/qwen2p5-vl-32b-instruct",
 }
 
 REVERSE_CANONICAL_MODELS: dict[str, str] = {
@@ -25,6 +27,8 @@ REVERSE_CANONICAL_MODELS: dict[str, str] = {
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {"max_output_tokens": 64000},
     "accounts/fireworks/models/deepseek-v3-0324": {"max_output_tokens": 30000},
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": {"max_output_tokens": 38912},
+    "accounts/fireworks/models/qwen2p5-vl-32b-instruct": {"max_output_tokens": 128000},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.keys())
@@ -32,6 +36,8 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.k
 REASONING_MODELS: set[str] = {
     "accounts/fireworks/models/deepseek-v3p2",
     "deepseek-v3p2",
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
+    "qwen3-vl-235b-thinking",
 }
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
@@ -45,6 +51,16 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
         "input_cached": 0.45,
         "output": 0.90,
     },
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": {
+        "input": 0.22,
+        "input_cached": None,
+        "output": 0.88,
+    },
+    "accounts/fireworks/models/qwen2p5-vl-32b-instruct": {
+        "input": 0.90,
+        "input_cached": 0.45,
+        "output": 0.90,
+    },
 }
 
 MODEL_ALIASES: dict[str, str] = {
@@ -52,15 +68,22 @@ MODEL_ALIASES: dict[str, str] = {
     "deepseek-v3p2": "DeepSeek V3.2",
     "accounts/fireworks/models/deepseek-v3-0324": "DeepSeek V3 Update 1",
     "deepseek-v3-0324": "DeepSeek V3 Update 1",
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "Qwen3-VL 235B Thinking",
+    "qwen3-vl-235b-thinking": "Qwen3-VL 235B Thinking",
+    "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "Qwen2.5-VL 32B",
+    "qwen2p5-vl-32b": "Qwen2.5-VL 32B",
 }
 
 MODEL_PROVIDERS: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "deepseek",
     "accounts/fireworks/models/deepseek-v3-0324": "deepseek",
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "qwen",
+    "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "qwen",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
     "deepseek": "DeepSeek AI (via Fireworks)",
+    "qwen": "Qwen (via Fireworks)",
     "fireworks": "Fireworks",
 }
 

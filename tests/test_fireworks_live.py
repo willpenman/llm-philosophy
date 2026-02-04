@@ -38,7 +38,15 @@ def _skip_if_live_disabled() -> None:
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "deepseek-v3p2",
+        "deepseek-v3-0324",
+        "qwen3-vl-235b-thinking",
+        "qwen2p5-vl-32b",
+    ],
+)
 def test_fireworks_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
     response = create_chat_completion(
@@ -51,7 +59,15 @@ def test_fireworks_accepts_system_prompt_live(model: str) -> None:
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "deepseek-v3p2",
+        "deepseek-v3-0324",
+        "qwen3-vl-235b-thinking",
+        "qwen2p5-vl-32b",
+    ],
+)
 def test_fireworks_streaming_captures_output_live(model: str) -> None:
     _skip_if_live_disabled()
     response = create_chat_completion(
@@ -74,6 +90,8 @@ def test_fireworks_streaming_captures_output_live(model: str) -> None:
     [
         ("deepseek-v3p2", True),
         ("deepseek-v3-0324", True),
+        ("qwen3-vl-235b-thinking", True),
+        ("qwen2p5-vl-32b", False),
     ],
 )
 def test_fireworks_reasoning_effort_acceptance_live(
@@ -101,7 +119,15 @@ def test_fireworks_reasoning_effort_acceptance_live(
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
+@pytest.mark.parametrize(
+    "model",
+    [
+        "deepseek-v3p2",
+        "deepseek-v3-0324",
+        "qwen3-vl-235b-thinking",
+        "qwen2p5-vl-32b",
+    ],
+)
 def test_fireworks_temperature_acceptance_live(model: str) -> None:
     _skip_if_live_disabled()
     response = create_chat_completion(

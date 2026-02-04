@@ -33,6 +33,8 @@ def test_build_chat_completion_request_includes_system_and_user() -> None:
     [
         ("deepseek-v3p2", 64000),
         ("deepseek-v3-0324", 30000),
+        ("qwen3-vl-235b-thinking", 38912),
+        ("qwen2p5-vl-32b", 128000),
     ],
 )
 def test_build_chat_completion_request_uses_default_max_output_tokens(
@@ -65,6 +67,8 @@ def test_build_chat_completion_request_includes_temperature_top_p_when_set() -> 
     [
         ("deepseek-v3p2", 0.56, 1.68, "DeepSeek V3.2"),
         ("deepseek-v3-0324", 0.90, 0.90, "DeepSeek V3 Update 1"),
+        ("qwen3-vl-235b-thinking", 0.22, 0.88, "Qwen3-VL 235B Thinking"),
+        ("qwen2p5-vl-32b", 0.90, 0.90, "Qwen2.5-VL 32B"),
     ],
 )
 def test_price_schedule_for_model_includes_units(
@@ -81,11 +85,21 @@ def test_price_schedule_for_model_includes_units(
     assert display_model_name(model) == expected_alias
 
 
-@pytest.mark.parametrize("model", ["deepseek-v3p2", "deepseek-v3-0324"])
-def test_provider_for_model_uses_maker(model: str) -> None:
+@pytest.mark.parametrize(
+    ("model", "expected_provider", "expected_provider_alias"),
+    [
+        ("deepseek-v3p2", "deepseek", "DeepSeek AI (via Fireworks)"),
+        ("deepseek-v3-0324", "deepseek", "DeepSeek AI (via Fireworks)"),
+        ("qwen3-vl-235b-thinking", "qwen", "Qwen (via Fireworks)"),
+        ("qwen2p5-vl-32b", "qwen", "Qwen (via Fireworks)"),
+    ],
+)
+def test_provider_for_model_uses_maker(
+    model: str, expected_provider: str, expected_provider_alias: str
+) -> None:
     provider = provider_for_model(model)
-    assert provider == "deepseek"
-    assert display_provider_name(provider) == "DeepSeek AI (via Fireworks)"
+    assert provider == expected_provider
+    assert display_provider_name(provider) == expected_provider_alias
 
 
 def test_extract_usage_breakdown_reads_fireworks_usage() -> None:

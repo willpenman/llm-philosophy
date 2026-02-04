@@ -117,7 +117,9 @@ Columns:
 | Mistral (open weights) | Mixtral 8x22B | 2024-04-17 | yes | https://mistral.ai/news/mixtral-8x22b | Announcement. |
 | Mistral (open weights) | Mixtral 8x7B | 2023-12-11 | no (retired 2025-03-30) | https://legal.mistral.ai/ai-governance/models/mixtral-8-7b | Model lifecycle table. |
 | Mistral (open weights) | Mistral 7B | 2023-09-27 | no (retired 2025-03-30) | https://legal.mistral.ai/ai-governance/models/mistral-7-b | Model lifecycle table. |
+| Qwen (open weights) | Qwen3-VL 235B Thinking (`qwen3-vl-235b-thinking`) | 2025-09-21 | yes | https://huggingface.co/Qwen/Qwen3-VL-235B-A22B-Thinking/tree/main | Supported via Fireworks serverless. Commit history shows Sep 21 release. |
 | Qwen (open weights) | Qwen3 | 2025-04-29 | yes | https://www.alibabagroup.com/document-1853940226976645120 | Not supported. |
+| Qwen (open weights) | Qwen2.5-VL 32B (`qwen2p5-vl-32b`) | 2025-01-26 | yes | https://qwenlm.github.io/blog/qwen2.5-vl/ | Supported via Fireworks serverless. |
 | Qwen (open weights) | Qwen2.5-VL | 2025-01-26 | yes | https://qwenlm.github.io/blog/qwen2.5-vl/ | Not supported. |
 | Qwen (open weights) | Qwen2.5-Coder | 2024-10-21 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Qwen (open weights) | Qwen2.5 | 2024-09-19 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
