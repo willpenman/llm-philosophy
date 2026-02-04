@@ -7,10 +7,16 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from src.providers.grok import create_chat_completion  # noqa: E402
+from src.providers.grok import (  # noqa: E402
+    build_chat_completion_request,
+    create_chat_completion,
+    require_api_key,
+    send_chat_completion_request,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,6 +55,18 @@ def _create_completion_or_skip_on_server_error(request: pytest.FixtureRequest, *
         raise
 
 
+def _payload_with_reasoning_effort(model: str) -> dict[str, Any]:
+    payload = build_chat_completion_request(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=16,
+        stream=False,
+    )
+    payload["reasoning_effort"] = "medium"
+    return payload
+
+
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["grok-4-1-fast-reasoning"])
 def test_grok_accepts_system_prompt_live(
@@ -67,7 +85,7 @@ def test_grok_accepts_system_prompt_live(
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["grok-3", "grok-4-1-fast-reasoning"])
+@pytest.mark.parametrize("model", ["grok-3", "grok-4-1-fast-reasoning", "grok-2-vision-1212"])
 def test_grok_accepts_temperature_live(
     request: pytest.FixtureRequest, model: str
 ) -> None:
@@ -83,3 +101,23 @@ def test_grok_accepts_temperature_live(
     )
     assert "OK" in response.output_text.upper()
 
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["grok-3", "grok-2-vision-1212"])
+def test_grok_rejects_reasoning_effort_live(
+    request: pytest.FixtureRequest, model: str
+) -> None:
+    _skip_if_live_disabled()
+    payload = _payload_with_reasoning_effort(model)
+    try:
+        send_chat_completion_request(payload, api_key=require_api_key())
+    except RuntimeError as exc:
+        message = str(exc)
+        if "server_error" in message or "Internal Server Error" in message:
+            pytest.skip(
+                f"Grok server error in {request.node.nodeid}; retry live test."
+            )
+        if "reasoning" not in message and "reasoning_effort" not in message:
+            raise
+    else:
+        raise AssertionError("Expected reasoning_effort to be rejected.")

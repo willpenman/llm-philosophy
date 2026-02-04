@@ -18,6 +18,7 @@ DEFAULT_BASE_URL = "https://api.x.ai/v1/chat/completions"
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "grok-4-1-fast-reasoning": {"max_output_tokens": 256000},
     "grok-3": {"max_output_tokens": 16384},
+    "grok-2-vision-1212": {"max_output_tokens": 131072},
 }
 
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
@@ -25,6 +26,7 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 MODEL_ALIASES: dict[str, str] = {
     "grok-4-1-fast-reasoning": "Grok 4.1 Fast Reasoning",
     "grok-3": "Grok 3",
+    "grok-2-vision-1212": "Grok 2",
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
@@ -36,6 +38,7 @@ REASONING_MODELS: set[str] = {"grok-4-1-fast-reasoning"}
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "grok-4-1-fast-reasoning": {"input": 0.20, "output": 0.50},
     "grok-3": {"input": 3.0, "output": 15.0},
+    "grok-2-vision-1212": {"input": 2.0, "output": 10.0},
 }
 
 

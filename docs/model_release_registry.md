@@ -79,6 +79,7 @@ Columns:
 | xAI | Grok 4 (`grok-4`) | 2025-07-09 | no | https://x.ai/news/grok-4 | Flagship release with tool use. Not supported. |
 | xAI | Grok 4 Code (`grok-4-code`) | 2025-07-09 | no | https://x.ai/news/grok-4 | Code-focused variant. Not supported. |
 | xAI | Grok 3 (`grok-3`) | 2025-02-19 | yes | https://x.ai/blog/grok-3 | Grok 3 Beta announcement. |
+| xAI | Grok 2 Vision (`grok-2-vision-1212`) | 2024-12-12 | yes (date unverified) | https://docs.x.ai/docs/release-notes | Date inferred from model suffix; confirm source. |
 | xAI | Grok 2 (`grok-2`) | 2024-08 | no | https://en.wikipedia.org/wiki/Grok_(chatbot) | Not supported. |
 | xAI | Grok 2 mini (`grok-2-mini`) | 2024-08 | no | https://en.wikipedia.org/wiki/Grok_(chatbot) | Lightweight variant. Not supported. |
 | xAI | Grok 1.5 Vision | 2024-04-12 | no | https://x.ai/blog/grok-1.5v | Vision capability preview. Not supported. |
@@ -116,7 +117,6 @@ Columns:
 | Mistral (open weights) | Mixtral 8x22B | 2024-04-17 | yes | https://mistral.ai/news/mixtral-8x22b | Announcement. |
 | Mistral (open weights) | Mixtral 8x7B | 2023-12-11 | no (retired 2025-03-30) | https://legal.mistral.ai/ai-governance/models/mixtral-8-7b | Model lifecycle table. |
 | Mistral (open weights) | Mistral 7B | 2023-09-27 | no (retired 2025-03-30) | https://legal.mistral.ai/ai-governance/models/mistral-7-b | Model lifecycle table. |
-| Google (open weights) | Gemma 2 | 2024-06-27 | yes | https://blog.google/technology/developers/google-gemma-2/ | Announcement. |
 | Qwen (open weights) | Qwen3 | 2025-04-29 | yes | https://www.alibabagroup.com/document-1853940226976645120 | Not supported. |
 | Qwen (open weights) | Qwen2.5-VL | 2025-01-26 | yes | https://qwenlm.github.io/blog/qwen2.5-vl/ | Not supported. |
 | Qwen (open weights) | Qwen2.5-Coder | 2024-10-21 | yes | https://qwen2.org/qwen2-5-coder/ | Not supported. |
