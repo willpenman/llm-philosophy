@@ -68,7 +68,7 @@ def _extract_input_text(provider: str, request_payload: dict[str, Any]) -> tuple
             system_text = _extract_text_from_blocks(config.get("system_instruction"))
         user_text = _extract_text_from_blocks(request_payload.get("contents"))
         return system_text, user_text
-    if provider in {"fireworks", "deepseek"}:
+    if provider in {"fireworks", "deepseek", "kimi", "qwen", "meta"}:
         messages = request_payload.get("messages", [])
         system_text = ""
         user_text = ""
@@ -117,7 +117,7 @@ def _display_names(provider: str, model: str) -> tuple[str, str]:
             gemini.display_model_name(model),
             gemini.display_provider_name(provider),
         )
-    if provider in {"fireworks", "deepseek"}:
+    if provider in {"fireworks", "deepseek", "kimi", "qwen", "meta"}:
         return (
             fireworks.display_model_name(model),
             fireworks.display_provider_name(provider),
@@ -137,7 +137,7 @@ def _extract_output_text(provider: str, response_payload: dict[str, Any]) -> str
         return openai.extract_output_text(response_payload)
     if provider == "gemini":
         return gemini.extract_output_text(response_payload)
-    if provider in {"fireworks", "deepseek"}:
+    if provider in {"fireworks", "deepseek", "kimi", "qwen", "meta"}:
         return fireworks.extract_output_text(response_payload)
     if provider == "grok":
         return grok.extract_output_text(response_payload)
@@ -148,14 +148,16 @@ def _docx_path(
     base_dir: Path,
     provider: str,
     model: str,
-    special_settings: str,
-    puzzle_name: str,
-    puzzle_version: str | None,
+    model_display: str,
+    puzzle_title: str,
     created_at: str,
 ) -> Path:
-    version = puzzle_version or "unknown"
+    """Generate path for docx file with human-readable filename.
+
+    Format: "{Model} response - {Puzzle Title} {Timestamp}.docx"
+    """
     timestamp = _format_filename_timestamp(created_at)
-    filename = f"{special_settings}-{puzzle_name}-v{version}-{timestamp}.docx"
+    filename = f"{model_display} response - {puzzle_title} {timestamp}.docx"
     return base_dir / provider / model / "texts" / filename
 
 
@@ -188,26 +190,25 @@ def backfill_from_jsonl(root: Path) -> int:
                     continue
 
                 system_text, user_text = _extract_input_text(provider, request_payload)
-                input_text = f"System:\n{system_text}\n\nUser:\n{user_text}"
+                input_text = f"System\n{system_text}\n\nUser\n{user_text}"
                 output_text = _extract_output_text(provider, response_payload)
 
+                puzzle = load_puzzle(puzzle_name, ROOT / "prompts" / "puzzles")
+                display_name = puzzle.title or puzzle_name
                 model_display, provider_display = _display_names(provider, model)
                 settings_display = (
                     ""
                     if normalize_special_settings(special_settings) == "default"
                     else f", {special_settings}"
                 )
-                puzzle = load_puzzle(puzzle_name, ROOT / "prompts" / "puzzles")
-                display_name = puzzle.title or puzzle_name
                 puzzle_prefix = "Philosophy problem"
                 display_date = _format_display_date(created_at)
                 docx_path = _docx_path(
                     root / "responses",
                     provider,
                     model,
-                    special_settings,
-                    puzzle_name,
-                    puzzle_version,
+                    model_display,
+                    display_name,
                     created_at,
                 )
                 docx_path.parent.mkdir(parents=True, exist_ok=True)

@@ -63,9 +63,10 @@ across providers.
   - Title paragraph (style `Title`): `{full_puzzle_name}`
   - Centered header lines:
     `{puzzle_label}: {full_puzzle_name} (v{puzzle_version})`
-    `LLM: {model_alias_or_snapshot} ({provider_alias_or_name})[, {special_settings}]`
-    `Completed: {date in "Mmm dd, yyyy" (UTC)}`
+    `LLM: {model_display} ({provider_alias_or_name})[, {special_settings}]`
+    `Completed by {model_display}: {date in "Mmm dd, yyyy" (UTC)}`
   - Heading 1: `Input given to {model_alias_or_snapshot}`, followed by the full input text (system + user) as-is.
+  - Heading 2: `System` and `User` labels
   - Page break; Heading 1: `{model_alias_or_snapshot}'s Output`, followed by the full output text as-is.
   - Page numbers enabled.
 - `special_settings` captures non-default parameters (provider-specific if needed).

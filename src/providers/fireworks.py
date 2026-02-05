@@ -290,7 +290,11 @@ def calculate_cost_breakdown(payload: dict[str, Any], *, model: str) -> CostBrea
 
 
 def extract_output_text(payload: dict[str, Any]) -> str:
-    """Extract the main output text from a chat completion response."""
+    """Extract the main output text from a chat completion response.
+
+    For Qwen models that use </think> tags, exclude thinking content
+    and return only the main response after the tag.
+    """
     choices = payload.get("choices")
     if not isinstance(choices, list):
         return ""
@@ -302,6 +306,11 @@ def extract_output_text(payload: dict[str, Any]) -> str:
             continue
         content = message.get("content")
         if isinstance(content, str):
+            # Check if this is a Qwen model response with </think> tag
+            think_end = content.find("</think>")
+            if think_end != -1:
+                # Return everything after </think>, stripping leading whitespace
+                return content[think_end + len("</think>"):].lstrip()
             return content
     return ""
 

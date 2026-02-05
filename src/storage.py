@@ -39,13 +39,7 @@ def normalize_special_settings(value: str | None) -> str:
 
 
 def format_input_text(system_text: str, puzzle_text: str) -> str:
-    return f"System:\n{system_text}\n\nUser:\n{puzzle_text}"
-
-
-def _format_filename_timestamp(created_at: str) -> str:
-    timestamp = datetime.fromisoformat(created_at)
-    timestamp = timestamp.astimezone(timezone.utc)
-    return timestamp.strftime("%Y-%m-%dT%H%M%SZ")
+    return f"System\n{system_text}\n\nUser\n{puzzle_text}"
 
 
 def _format_display_date(created_at: str) -> str:
@@ -54,16 +48,37 @@ def _format_display_date(created_at: str) -> str:
     return timestamp.strftime("%b %d, %Y")
 
 
+def _format_filename_timestamp(created_at: str) -> str:
+    """Format timestamp for filenames to guarantee uniqueness.
+
+    Returns format like: 2026-01-16T181411Z
+    """
+    timestamp = datetime.fromisoformat(created_at)
+    timestamp = timestamp.astimezone(timezone.utc)
+    return timestamp.strftime("%Y-%m-%dT%H%M%SZ")
+
+
+def _simplify_provider_display(provider_display: str) -> str:
+    """Simplify provider names for display in documents.
+
+    Removes '(via Fireworks)' and similar intermediary suffixes.
+    Example: 'Qwen (via Fireworks)' -> 'Qwen'
+    """
+    return re.sub(r'\s*\(via [^)]+\)\s*$', '', provider_display).strip()
+
+
 def _docx_filename(
-    special_settings: str,
-    puzzle_name: str,
-    puzzle_version: str | None,
+    model_display: str,
+    puzzle_title: str,
     created_at: str,
 ) -> str:
-    version = puzzle_version or "unknown"
-    settings = normalize_special_settings(special_settings)
+    """Generate a human-readable filename for docx files.
+
+    Format: "{Model} response - {Puzzle Title} {Timestamp}.docx"
+    Example: "Qwen2.5-VL 32B response - LLM Panopticon 2026-01-16T181411Z.docx"
+    """
     timestamp = _format_filename_timestamp(created_at)
-    return f"{settings}-{puzzle_name}-v{version}-{timestamp}.docx"
+    return f"{model_display} response - {puzzle_title} {timestamp}.docx"
 
 
 def _add_page_number(paragraph) -> None:
@@ -75,10 +90,15 @@ def _add_page_number(paragraph) -> None:
 
 
 def _add_text_paragraphs(document: Document, text: str) -> None:
+    """Add text paragraphs, treating 'System' and 'User' as h2 headings."""
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
     for line in normalized.split("\n"):
-        # "Normal" is default, but this keeps us explicit
-        document.add_paragraph(line, style="Normal")
+        # Style "System" and "User" labels as headings
+        if line in ("System", "User"):
+            document.add_heading(line, level=2)
+        else:
+            # "Normal" is default, but this keeps us explicit
+            document.add_paragraph(line, style="Normal")
 
 
 def write_response_docx(
@@ -109,9 +129,10 @@ def write_response_docx(
     title_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     version_suffix = f" (v{puzzle_version})" if puzzle_version else ""
+    simplified_provider = _simplify_provider_display(provider_display)
     headers = [
         f"{puzzle_prefix}: {display_name}{version_suffix}",
-        f"LLM: {model_display} ({provider_display}){settings_display}",
+        f"LLM: {model_display} (by {simplified_provider}){settings_display}",
         f"Completed: {display_date}",
     ]
     for header in headers:
@@ -234,15 +255,14 @@ class ResponseStore:
 
         text_dir = self._provider_dir(provider, model) / "texts"
         text_dir.mkdir(parents=True, exist_ok=True)
+        display_name = puzzle_title or puzzle_name
+        model_display = model_alias or model
         filename = _docx_filename(
-            special_settings=special_settings,
-            puzzle_name=puzzle_name,
-            puzzle_version=puzzle_version,
+            model_display=model_display,
+            puzzle_title=display_name,
             created_at=created_at,
         )
         text_path = text_dir / filename
-        display_name = puzzle_title or puzzle_name
-        model_display = model_alias or model
         provider_display = provider_alias or provider
         settings_display = (
             ""
@@ -255,7 +275,7 @@ class ResponseStore:
             [
                 f"{puzzle_prefix}: {display_name}",
                 f"Model: {model_display} ({provider_display}){settings_display}",
-                f"Completed: {display_date}",
+                f"Completed by {model_display}: {display_date}",
                 "",
                 "---- INPUT ----",
                 input_text,
