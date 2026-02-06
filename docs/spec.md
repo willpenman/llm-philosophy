@@ -214,9 +214,11 @@ across providers.
 - Added Grok live tests to verify non-reasoning models reject `reasoning_effort`.
 - Updated model release registry + README timeline to mark deprecated lines based on Fireworks serverless availability and xAI console status.
 - Added DeepSeek V3 Update 1 (`deepseek-v3-0324`) model metadata in the Fireworks adapter, plus request/live test coverage and documentation updates.
+- Added Claude Opus 4.6 (`claude-opus-4-6`) model metadata, adaptive thinking defaults, and Anthropic adapter test coverage.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3 Update 1 (`deepseek-v3-0324`).
 - Add live tests for Fireworks reasoning content capture.
 - Confirm Grok 2 Vision release date/source and live-verify its parameter support.
+- Run the new Anthropic live tests to verify Opus 4.6 adaptive thinking + temperature rejection.

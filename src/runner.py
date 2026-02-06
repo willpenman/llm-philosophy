@@ -37,7 +37,7 @@ from src.providers.gemini import (
 from src.providers.anthropic import (
     build_messages_request,
     calculate_cost_breakdown as anthropic_calculate_cost_breakdown,
-    default_thinking_budget_for_model as anthropic_default_thinking_budget_for_model,
+    default_thinking_config_for_model as anthropic_default_thinking_config_for_model,
     display_model_name as display_anthropic_model_name,
     display_provider_name as display_anthropic_provider_name,
     extract_output_text as extract_anthropic_output_text,
@@ -1072,7 +1072,7 @@ def run_gemini_puzzle(
 def run_anthropic_puzzle(
     *,
     puzzle_name: str,
-    model: str = "claude-opus-4-5-20251101",
+    model: str = "claude-opus-4-6",
     max_output_tokens: int | None = None,
     temperature: float | None = None,
     top_p: float | None = None,
@@ -1105,9 +1105,7 @@ def run_anthropic_puzzle(
         raise ValueError("debug_sse requires stream=True")
 
     if thinking is None and anthropic_supports_reasoning(model):
-        budget_tokens = anthropic_default_thinking_budget_for_model(model)
-        if budget_tokens is not None:
-            thinking = {"type": "enabled", "budget_tokens": budget_tokens}
+        thinking = anthropic_default_thinking_config_for_model(model)
 
     request_payload = build_messages_request(
         system_prompt=system_prompt.text,

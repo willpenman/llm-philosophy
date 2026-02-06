@@ -43,3 +43,4 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 - Cost modeling needs to support multi-tier pricing (modality, service tier, long-output tiers like Gemini) beyond simple input/output rates.
 - Streaming responses may surface reasoning summaries only in SSE events for some models; keep tooling to capture raw events for audits.
 - Model parameter support can shift even on snapshot models; rely on live verification over assumptions.
+- Anthropic is shifting from manual thinking budgets to adaptive thinking on newer Opus models; keep per-model thinking defaults flexible.

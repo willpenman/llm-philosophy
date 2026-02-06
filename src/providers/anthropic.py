@@ -17,6 +17,7 @@ DEFAULT_BASE_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_VERSION = "2023-06-01"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
+    "claude-opus-4-6": {"max_output_tokens": 128000},
     "claude-opus-4-5-20251101": {"max_output_tokens": 64000, "thinking_budget_tokens": 20000},
     "claude-3-haiku-20240307": {"max_output_tokens": 4000},
 }
@@ -24,6 +25,7 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 
 MODEL_ALIASES: dict[str, str] = {
+    "claude-opus-4-6": "Claude Opus 4.6",
     "claude-opus-4-5-20251101": "Claude Opus 4.5",
     "claude-3-haiku-20240307": "Claude Haiku 3",
 }
@@ -32,9 +34,12 @@ PROVIDER_ALIASES: dict[str, str] = {
     "anthropic": "Anthropic",
 }
 
-REASONING_MODELS: set[str] = {"claude-opus-4-5-20251101"}
+ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-6"}
+MANUAL_THINKING_MODELS: set[str] = {"claude-opus-4-5-20251101"}
+REASONING_MODELS: set[str] = ADAPTIVE_THINKING_MODELS | MANUAL_THINKING_MODELS
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
+    "claude-opus-4-6": {"input": 5.0, "output": 25.0},
     "claude-opus-4-5-20251101": {"input": 5.0, "output": 25.0},
     "claude-3-haiku-20240307": {"input": 0.25, "output": 1.25},
 }
@@ -84,6 +89,17 @@ def supports_model(model: str) -> bool:
 def default_thinking_budget_for_model(model: str) -> int | None:
     defaults = MODEL_DEFAULTS.get(model, {})
     return defaults.get("thinking_budget_tokens")
+
+
+def default_thinking_config_for_model(model: str) -> dict[str, Any] | None:
+    if model in ADAPTIVE_THINKING_MODELS:
+        return {"type": "adaptive"}
+    if model in MANUAL_THINKING_MODELS:
+        budget_tokens = default_thinking_budget_for_model(model)
+        if budget_tokens is None:
+            return None
+        return {"type": "enabled", "budget_tokens": budget_tokens}
+    return None
 
 
 def extract_usage_breakdown(payload: dict[str, Any]) -> TokenBreakdown | None:
@@ -143,16 +159,30 @@ def build_messages_request(
         raise ValueError("Anthropic thinking is incompatible with temperature or top_k")
     if thinking is not None:
         thinking_type = thinking.get("type")
-        if thinking_type != "enabled":
-            raise ValueError("Anthropic thinking.type must be 'enabled' when provided")
-        budget_tokens = thinking.get("budget_tokens")
-        if not isinstance(budget_tokens, int):
-            raise ValueError("Anthropic thinking.budget_tokens must be an integer")
-        if budget_tokens <= 0:
-            raise ValueError("Anthropic thinking.budget_tokens must be positive")
-        if budget_tokens >= max_output_tokens:
+        if thinking_type == "adaptive":
+            if model not in ADAPTIVE_THINKING_MODELS:
+                raise ValueError("Anthropic thinking.type 'adaptive' is not supported")
+            budget_tokens = thinking.get("budget_tokens")
+            if budget_tokens is not None:
+                raise ValueError("Anthropic adaptive thinking forbids budget_tokens")
+            effort = thinking.get("effort")
+            if effort is not None and not isinstance(effort, str):
+                raise ValueError("Anthropic adaptive thinking.effort must be a string")
+        elif thinking_type == "enabled":
+            if model in ADAPTIVE_THINKING_MODELS:
+                raise ValueError("Anthropic thinking.type must be 'adaptive' for this model")
+            budget_tokens = thinking.get("budget_tokens")
+            if not isinstance(budget_tokens, int):
+                raise ValueError("Anthropic thinking.budget_tokens must be an integer")
+            if budget_tokens <= 0:
+                raise ValueError("Anthropic thinking.budget_tokens must be positive")
+            if budget_tokens >= max_output_tokens:
+                raise ValueError(
+                    "Anthropic thinking.budget_tokens must be less than max_tokens"
+                )
+        else:
             raise ValueError(
-                "Anthropic thinking.budget_tokens must be less than max_tokens"
+                "Anthropic thinking.type must be 'enabled' or 'adaptive' when provided"
             )
 
     payload: dict[str, Any] = {

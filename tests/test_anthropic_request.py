@@ -30,6 +30,14 @@ def test_build_messages_request_uses_default_max_output_tokens() -> None:
     payload = build_messages_request(
         system_prompt="System text",
         user_prompt="User text",
+        model="claude-opus-4-6",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 128000
+
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
         model="claude-opus-4-5-20251101",
         max_output_tokens=None,
     )
@@ -69,6 +77,8 @@ def test_build_messages_request_includes_optional_params() -> None:
         ({"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
         ({"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
         ({"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
+        ({"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
+        ({"type": "adaptive", "effort": 123}, "effort"),
     ],
 )
 def test_build_messages_request_rejects_invalid_thinking_config(
@@ -84,9 +94,43 @@ def test_build_messages_request_rejects_invalid_thinking_config(
         )
 
 
+def test_build_messages_request_rejects_adaptive_thinking_for_manual_model() -> None:
+    with pytest.raises(ValueError, match="adaptive"):
+        build_messages_request(
+            system_prompt="System text",
+            user_prompt="User text",
+            model="claude-opus-4-5-20251101",
+            max_output_tokens=128,
+            thinking={"type": "adaptive"},
+        )
+
+
+def test_build_messages_request_accepts_adaptive_thinking_for_opus_46() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-6",
+        max_output_tokens=128,
+        thinking={"type": "adaptive"},
+    )
+    assert payload["thinking"] == {"type": "adaptive"}
+
+
+def test_build_messages_request_accepts_temperature_for_opus_46() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-6",
+        max_output_tokens=128,
+        temperature=0.2,
+    )
+    assert payload["temperature"] == 0.2
+
+
 @pytest.mark.parametrize(
     ("model", "alias", "input_cost", "output_cost"),
     [
+        ("claude-opus-4-6", "Claude Opus 4.6", 5.0, 25.0),
         ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),
         ("claude-3-haiku-20240307", "Claude Haiku 3", 0.25, 1.25),
     ],
