@@ -12,6 +12,11 @@ across providers.
 - Treat prompts as fixtures; avoid runtime mutation except for appending model-specific
   output-length guidance to the system prompt.
 - Favor minimal modules and simple data shapes over heavy abstractions.
+- Track puzzle versions in fixtures; 1.0 means "locked for publication." Pre-1.0 versions
+  allow iteration on wording, scoring methodology, and analysis. This is a practical decision:
+  we don't separately version prompt text, system prompt, and scoring criteria, even though
+  changes to each have different implications. Full audit trail lives in git history and
+  stored request payloads.
 
 ## Architecture overview
 - Prompts are Python modules that define system prompts and puzzles.
