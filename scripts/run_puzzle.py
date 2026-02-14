@@ -1,4 +1,4 @@
-"""Run a single puzzle with a provider adapter."""
+"""Run a single puzzle with a provider adapter, or all models with --model ALL."""
 
 from __future__ import annotations
 
@@ -18,6 +18,13 @@ from src.runner import (
     run_openai_puzzle,
     run_fireworks_puzzle,
 )
+from src.batch_runner import (
+    enumerate_all_models,
+    filter_models,
+    run_batch,
+    ExecutionMode,
+)
+from src.puzzles import load_puzzle
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -39,21 +46,75 @@ def _optional_path(value: str | None) -> Path | None:
     return Path(value)
 
 
+def _run_batch_mode(args: argparse.Namespace) -> None:
+    """Handle batch execution when --model ALL or multiple models are specified."""
+    # Load puzzle to get version
+    puzzle = load_puzzle(args.name)
+
+    # Get all available models
+    all_specs = enumerate_all_models()
+
+    # Determine provider filter
+    provider_filter = args.providers
+    if provider_filter is None and args.provider is not None:
+        provider_filter = [args.provider]
+
+    # Filter models based on args
+    specs = filter_models(all_specs, args.model, provider_filter)
+
+    if not specs:
+        print("No models match the specified filters.")
+        return
+
+    # Parse execution mode
+    mode = ExecutionMode(args.mode)
+
+    # Run batch
+    run_batch(
+        puzzle_name=args.name,
+        puzzle_version=puzzle.version,
+        specs=specs,
+        mode=mode,
+        responses_dir=ROOT / "responses",
+        resume=args.resume,
+        dry_run=args.dry_run,
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Run one puzzle against a single provider model."
+        description="Run one puzzle against a single provider model, or all models with --model ALL."
     )
     parser.add_argument("name", help="Puzzle name (filename without .py)")
     parser.add_argument(
         "--model",
+        nargs="+",
         required=True,
-        help="Model name (used to select provider automatically)",
+        help="Model name(s), or ALL to run all models",
     )
     parser.add_argument(
         "--provider",
         default=None,
         choices=["openai", "gemini", "anthropic", "grok", "fireworks"],
-        help="Override provider selection",
+        help="Override provider selection (single model) or filter providers (batch mode)",
+    )
+    parser.add_argument(
+        "--providers",
+        nargs="+",
+        choices=["openai", "gemini", "anthropic", "grok", "fireworks"],
+        default=None,
+        help="Filter to specific providers (batch mode only)",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["sequential", "parallel-provider", "parallel-all"],
+        default="sequential",
+        help="Execution mode for batch runs (default: sequential)",
+    )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Skip models that already have responses for this puzzle+version",
     )
     parser.add_argument("--max-output-tokens", type=int, default=None)
     parser.add_argument("--temperature", type=float, default=None)
@@ -75,12 +136,21 @@ def main() -> None:
     args = parser.parse_args()
 
     _load_dotenv(ROOT / ".env")
+
+    # Check if this is a batch run (--model ALL or multiple models)
+    is_batch = "ALL" in args.model or len(args.model) > 1
+    if is_batch:
+        _run_batch_mode(args)
+        return
+
     stream_override = None
     if args.streaming is not None:
         stream_override = args.streaming == "true"
 
+    # Single model mode - use the first (and only) model
+    model = args.model[0]
+
     if args.provider == "gemini":
-        model = args.model
         result = run_gemini_puzzle(
             puzzle_name=args.name,
             model=model,
@@ -94,7 +164,6 @@ def main() -> None:
             stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "openai":
-        model = args.model
         result = run_openai_puzzle(
             puzzle_name=args.name,
             model=model,
@@ -106,7 +175,6 @@ def main() -> None:
             stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "anthropic":
-        model = args.model
         result = run_anthropic_puzzle(
             puzzle_name=args.name,
             model=model,
@@ -120,7 +188,6 @@ def main() -> None:
             stream=stream_override if stream_override is not None else True,
         )
     elif args.provider == "grok":
-        model = args.model
         result = run_grok_puzzle(
             puzzle_name=args.name,
             model=model,
@@ -133,7 +200,6 @@ def main() -> None:
             stream=stream_override if stream_override is not None else False,
         )
     elif args.provider == "fireworks":
-        model = args.model
         result = run_fireworks_puzzle(
             puzzle_name=args.name,
             model=model,
@@ -146,7 +212,6 @@ def main() -> None:
             stream=stream_override if stream_override is not None else True,
         )
     else:
-        model = args.model
         openai_supported = openai_supports_model(model)
         gemini_supported = gemini_supports_model(model)
         anthropic_supported = anthropic_supports_model(model)

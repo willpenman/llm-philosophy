@@ -198,6 +198,7 @@ across providers.
 - Added provider-specific usage/cost extraction helpers and richer run summaries with token usage, cost formatting, and completion links.
 - Added an Anthropic Messages adapter with Opus 4.5 defaults, streaming reconstruction, and usage/cost helpers.
 - Added Anthropic request assembly tests and wired Anthropic into the run/list scripts.
+- Added a union merge driver for `responses/**/responses.jsonl` to reduce merge conflicts for append-only logs.
 - Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
 - Added Claude Haiku 3 model support plus a live test that thinking is rejected.
 - Moved provider adapters under `src/providers` and updated scripts to run as modules without `sys.path` edits.
