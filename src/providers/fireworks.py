@@ -15,7 +15,7 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 CANONICAL_MODELS: dict[str, str] = {
     "deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2",
-    "deepseek-v3-0324": "accounts/fireworks/models/deepseek-v3-0324",
+    "deepseek-v3p1": "accounts/fireworks/models/deepseek-v3p1",
     "qwen3-vl-235b-thinking": "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
     "qwen2p5-vl-32b": "accounts/fireworks/models/qwen2p5-vl-32b-instruct",
     "kimi-k2p5": "accounts/fireworks/models/kimi-k2p5",
@@ -29,7 +29,7 @@ REVERSE_CANONICAL_MODELS: dict[str, str] = {
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "accounts/fireworks/models/deepseek-v3p2": {"max_output_tokens": 64000},
-    "accounts/fireworks/models/deepseek-v3-0324": {"max_output_tokens": 30000},
+    "accounts/fireworks/models/deepseek-v3p1": {"max_output_tokens": 30000},
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": {"max_output_tokens": 38912},
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": {"max_output_tokens": 128000},
     "accounts/fireworks/models/kimi-k2p5": {"max_output_tokens": 250000},
@@ -42,6 +42,8 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys()) | set(CANONICAL_MODELS.k
 REASONING_MODELS: set[str] = {
     "accounts/fireworks/models/deepseek-v3p2",
     "deepseek-v3p2",
+    "accounts/fireworks/models/deepseek-v3p1",
+    "deepseek-v3p1",
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking",
     "qwen3-vl-235b-thinking",
     "accounts/fireworks/models/kimi-k2p5",
@@ -56,10 +58,10 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
         "input_cached": 0.28,
         "output": 1.68,
     },
-    "accounts/fireworks/models/deepseek-v3-0324": {
-        "input": 0.90,
-        "input_cached": 0.45,
-        "output": 0.90,
+    "accounts/fireworks/models/deepseek-v3p1": {
+        "input": 0.56,
+        "input_cached": 0.28,
+        "output": 1.68,
     },
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": {
         "input": 0.22,
@@ -91,8 +93,8 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
 MODEL_ALIASES: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "DeepSeek V3.2",
     "deepseek-v3p2": "DeepSeek V3.2",
-    "accounts/fireworks/models/deepseek-v3-0324": "DeepSeek V3 Update 1",
-    "deepseek-v3-0324": "DeepSeek V3 Update 1",
+    "accounts/fireworks/models/deepseek-v3p1": "DeepSeek V3.1",
+    "deepseek-v3p1": "DeepSeek V3.1",
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "Qwen3-VL 235B Thinking",
     "qwen3-vl-235b-thinking": "Qwen3-VL 235B Thinking",
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "Qwen2.5-VL 32B",
@@ -107,7 +109,7 @@ MODEL_ALIASES: dict[str, str] = {
 
 MODEL_PROVIDERS: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "deepseek",
-    "accounts/fireworks/models/deepseek-v3-0324": "deepseek",
+    "accounts/fireworks/models/deepseek-v3p1": "deepseek",
     "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "qwen",
     "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "qwen",
     "accounts/fireworks/models/kimi-k2p5": "kimi",

@@ -42,7 +42,7 @@ def _skip_if_live_disabled() -> None:
     "model",
     [
         "deepseek-v3p2",
-        "deepseek-v3-0324",
+        "deepseek-v3p1",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
         "kimi-k2p5",
@@ -66,7 +66,7 @@ def test_fireworks_accepts_system_prompt_live(model: str) -> None:
     "model",
     [
         "deepseek-v3p2",
-        "deepseek-v3-0324",
+        "deepseek-v3p1",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
         "kimi-k2p5",
@@ -95,7 +95,7 @@ def test_fireworks_streaming_captures_output_live(model: str) -> None:
     ("model", "accepts_reasoning_effort"),
     [
         ("deepseek-v3p2", True),
-        ("deepseek-v3-0324", True),
+        ("deepseek-v3p1", True),
         ("qwen3-vl-235b-thinking", True),
         ("qwen2p5-vl-32b", False),
         ("kimi-k2p5", True),
@@ -132,7 +132,7 @@ def test_fireworks_reasoning_effort_acceptance_live(
     "model",
     [
         "deepseek-v3p2",
-        "deepseek-v3-0324",
+        "deepseek-v3p1",
         "qwen3-vl-235b-thinking",
         "qwen2p5-vl-32b",
         "kimi-k2p5",

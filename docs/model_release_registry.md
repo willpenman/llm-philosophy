@@ -26,6 +26,7 @@ Columns:
 | Anthropic | Claude 3 Opus (`claude-3-opus-20240229`) | 2024-03-04 | no (retired 2026-01-05) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired January 5, 2026. |
 | Anthropic | Claude 3 Sonnet (`claude-3-sonnet-20240229`) | 2024-03-04 | no (retired 2025-07-21) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired July 21, 2025. |
 | Anthropic | Claude 3 Haiku (`claude-3-haiku-20240307`) | 2024-03-13 | yes | https://www.anthropic.com/news/claude-3-haiku | Announcement + API availability. |
+| OpenAI | GPT-5.3 Codex (`gpt-5.3-codex`) | 2026-02-05 | yes (Codex) | https://openai.com/index/introducing-gpt-5-3-codex/ | Announcement. |
 | OpenAI | GPT-5.2 (`gpt-5.2-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Announcement + API availability. |
 | OpenAI | GPT-5.2 Pro (`gpt-5.2-pro-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Pro availability listed in announcement. |
 | OpenAI | GPT-5.2-Codex (`gpt-5.2-codex`) | 2025-12-18 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex-only release. |
@@ -60,6 +61,7 @@ Columns:
 | OpenAI | GPT-3.5 Turbo (`gpt-3.5-turbo`) | 2023-03-01 | yes | https://openai.com/blog/introducing-chatgpt-and-whisper-apis | ChatGPT API launch with initial 0301 checkpoint, (early 2023, shut down Sept 2024 - note that the updated date of 2024 in the blog post is misleading). Later upgrades: 0613 (mid-2023, shut down Sept 2024), 1106 (late 2023) and 0125 (early 2024). |
 | OpenAI | babbage-002 (`babbage-002`) | 2023-08-22 | deprecated | https://platform.openai.com/docs/models/babbage-002 | Release date supplied by maintainer. |
 | OpenAI | ChatGPT (GPT-3.5) | 2022-11-30 | no | https://openai.com/hu-HU/index/chatgpt/ | Research preview launch. Not an API model. |
+| Google | Gemini Deep Think 3 | 2026-02-12 | no | https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-deep-think/ | Not available via API. |
 | Google | Gemini 3 Deep Think | 2025-12-04 | no | https://blog.google/products/gemini/gemini-3-deep-think/ | AI Ultra subscribers only. Not supported. |
 | Google | Gemini 3 Pro Preview (`gemini-3-pro-preview`) | 2025-11-18 | preview | https://ai.google.dev/gemini-api/docs/changelog | Changelog launch note. |
 | Google | Gemini 2.5 Flash-Lite (`gemini-2.5-flash-lite`) | 2025-07-22 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | Stable version release. Not supported. |
