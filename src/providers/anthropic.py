@@ -39,7 +39,6 @@ PROVIDER_ALIASES: dict[str, str] = {
 ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
 MANUAL_THINKING_MODELS: set[str] = {"claude-opus-4-5-20251101"}
 REASONING_MODELS: set[str] = ADAPTIVE_THINKING_MODELS | MANUAL_THINKING_MODELS
-NO_TEMPERATURE_MODELS: set[str] = {"claude-sonnet-4-6"}
 MAX_EFFORT_OUTPUT_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
@@ -167,8 +166,6 @@ def build_messages_request(
         max_output_tokens = defaults.get("max_output_tokens")
     if max_output_tokens is None:
         raise ValueError("max_output_tokens must be set for Anthropic requests")
-    if temperature is not None and model in NO_TEMPERATURE_MODELS:
-        raise ValueError("Anthropic temperature is not supported for this model")
     if thinking is not None and (temperature is not None or top_k is not None):
         raise ValueError("Anthropic thinking is incompatible with temperature or top_k")
     if thinking is not None:
