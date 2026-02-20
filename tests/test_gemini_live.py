@@ -74,10 +74,13 @@ def _has_thoughts(payload: dict[str, object]) -> bool:
 
 # SYSTEM PROMPT
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])
+@pytest.mark.parametrize(
+    "model",
+    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+)
 def test_gemini_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
-    max_output_tokens = 150 if model == "gemini-3-pro-preview" else 16
+    max_output_tokens = 150
     response = create_response(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
@@ -89,10 +92,13 @@ def test_gemini_accepts_system_prompt_live(model: str) -> None:
 
 # TEMPERATURE, TOP_P, TOP_K
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])
+@pytest.mark.parametrize(
+    "model",
+    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+)
 def test_gemini_accepts_sampling_params_live(model: str) -> None:
     _skip_if_live_disabled()
-    max_output_tokens = 150 if model == "gemini-3-pro-preview" else 16
+    max_output_tokens = 150
     response = create_response(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
@@ -138,7 +144,7 @@ def test_gemini_rejects_thinking_config_live(model: str) -> None:
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-3-pro-preview"])
+@pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 @pytest.mark.parametrize("thinking_level", ["LOW", "HIGH"])
 def test_gemini_accepts_thinking_levels_live(
     model: str, thinking_level: str
@@ -156,14 +162,14 @@ def test_gemini_accepts_thinking_levels_live(
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-3-pro-preview"])
+@pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 def test_gemini_accepts_thinking_budget_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = build_generate_content_request(
         system_prompt="You are a test harness. Reply with OK.",
         user_prompt="Reply with OK.",
         model=model,
-        max_output_tokens=16,
+        max_output_tokens=150,
     )
     payload["config"]["thinking_config"] = {"thinking_budget": 256}
     response = send_generate_content_request(payload)
@@ -171,7 +177,7 @@ def test_gemini_accepts_thinking_budget_live(model: str) -> None:
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-3-pro-preview"])
+@pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 def test_gemini_include_thoughts_returns_payload_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = build_generate_content_request(
@@ -205,7 +211,10 @@ def test_gemini_accepts_max_output_tokens_8192_live(model: str) -> None:
 
 # STREAMING
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])
+@pytest.mark.parametrize(
+    "model",
+    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+)
 def test_gemini_streaming_captures_long_output_live(model: str) -> None:
     _skip_if_live_disabled()
     response = create_response(

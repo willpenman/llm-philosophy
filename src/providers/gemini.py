@@ -14,16 +14,19 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 MODEL_ALIASES: dict[str, str] = {
     "gemini-2.0-flash-lite-001": "Gemini 2.0 Flash Lite",
     "gemini-3-pro-preview": "Gemini 3 Pro Preview",
+    "gemini-3.1-pro-preview": "Gemini 3.1 Pro",
 }
 
 SUPPORTED_MODELS: set[str] = {
     "gemini-2.0-flash-lite-001",
     "gemini-3-pro-preview",
+    "gemini-3.1-pro-preview",
 }
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "gemini-2.0-flash-lite-001": {"max_output_tokens": 8192},
     "gemini-3-pro-preview": {"max_output_tokens": 65536},
+    "gemini-3.1-pro-preview": {"max_output_tokens": 65536},
 }
 
 MODEL_DEFAULT_TEMPERATURES: dict[str, float] = {
@@ -33,13 +36,14 @@ MODEL_DEFAULT_TEMPERATURES: dict[str, float] = {
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
     "gemini-3-pro-preview": {"input": 2.0, "output": 12.0},
+    "gemini-3.1-pro-preview": {"input": 2.0, "output": 12.0},
 }
 
 PROVIDER_ALIASES: dict[str, str] = {
     "gemini": "Gemini",
 }
 
-REASONING_MODELS: set[str] = {"gemini-3-pro-preview"}
+REASONING_MODELS: set[str] = {"gemini-3-pro-preview", "gemini-3.1-pro-preview"}
 
 
 @dataclass(frozen=True)

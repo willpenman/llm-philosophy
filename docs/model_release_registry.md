@@ -62,6 +62,7 @@ Columns:
 | OpenAI | babbage-002 (`babbage-002`) | 2023-08-22 | deprecated | https://platform.openai.com/docs/models/babbage-002 | Release date supplied by maintainer. |
 | OpenAI | ChatGPT (GPT-3.5) | 2022-11-30 | no | https://openai.com/hu-HU/index/chatgpt/ | Research preview launch. Not an API model. |
 | Google | Gemini Deep Think 3 | 2026-02-12 | no | https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-deep-think/ | Not available via API, AI Ultra subscribers only. |
+| Google | Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`) | 2026-02-19 | preview | https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ | Announcement. |
 | Google | Gemini 3 Pro Preview (`gemini-3-pro-preview`) | 2025-11-18 | preview | https://ai.google.dev/gemini-api/docs/changelog | Changelog launch note. |
 | Google | Gemini 2.5 Flash-Lite (`gemini-2.5-flash-lite`) | 2025-07-22 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | Stable version release. Not supported. |
 | Google | Gemini 2.5 Pro (`gemini-2.5-pro`) | 2025-06-17 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | GA release. Not supported. |

@@ -57,6 +57,7 @@ def test_build_generate_content_request_omits_empty_tools() -> None:
     [
         ("gemini-2.0-flash-lite-001", "Gemini 2.0 Flash Lite", 0.075, 0.30),
         ("gemini-3-pro-preview", "Gemini 3 Pro Preview", 2.0, 12.0),
+        ("gemini-3.1-pro-preview", "Gemini 3.1 Pro", 2.0, 12.0),
     ],
 )
 def test_price_schedule_for_model_includes_units(

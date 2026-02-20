@@ -7,6 +7,7 @@
 ## Models
 - gemini-2.0-flash-lite-001 (stable)
 - gemini-3-pro-preview (preview; reasoning/thinking enabled)
+- gemini-3.1-pro-preview (preview; reasoning/thinking enabled)
 
 ## Model parameter availability
 - Source: `google-genai` README (generate_content + config examples).
@@ -29,11 +30,17 @@
   - Storage note: we do not persist adapter convenience fields like `output_text`/`thoughts_text` in the response payload; the response payload keeps the `candidates[].content.parts` shape as the canonical record.
   - Thought capture note: reconstructed thought parts remain inside `response.candidates[].content.parts` (not `derived`), since this mirrors the provider payload shape.
   - Versions: preview only (`gemini-3-pro-preview`).
+- gemini-3.1-pro-preview:
+  - Supported: `system_instruction` (system prompt), `max_output_tokens`,
+    `temperature`, `thinking_config` (`thinking_level`, `thinking_budget`, `include_thoughts`)
+  - Reasoning/thinking enabled.
+  - Versions: preview only (`gemini-3.1-pro-preview`).
 
 ## Pricing schedule (draft)
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
 - gemini-2.0-flash-lite-001: input $0.075 / output $0.30 per million tokens.
 - gemini-3-pro-preview: input $2.00 / output $12.00 per million tokens.
+- gemini-3.1-pro-preview: input $2.00 / output $12.00 per million tokens.
 
 ## Pricing tier note
 - Gemini 3 Pro uses an input-length tiered schedule, but we assume prompts stay under the 200k input threshold and keep a single input/output rate for pricing.

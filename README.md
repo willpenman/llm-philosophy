@@ -34,7 +34,7 @@ When a puzzle is fully developed, it is given to all of the LLMs, and their resp
 |----------|-----------|---------|
 | Anthropic | Claude Opus 4.6 ([LLM Panopticon](responses/anthropic/claude-opus-4-6/texts/Claude%20Opus%204.6%20response%20-%20LLM%20Panopticon%202026-02-13T214102Z.docx)) | Claude Haiku 3 ([LLM Panopticon](responses/anthropic/claude-3-haiku-20240307/texts/Claude%20Haiku%203%20response%20-%20LLM%20Panopticon%202026-02-13T201435Z.docx)) |
 | DeepSeek | DeepSeek V3.2 ([LLM Panopticon](responses/deepseek/deepseek-v3p2/texts/DeepSeek%20V3.2%20response%20-%20LLM%20Panopticon%202026-02-13T201436Z.docx)) | DeepSeek V3.1 ([LLM Panopticon](responses/deepseek/deepseek-v3p1/texts/DeepSeek%20V3.1%20response%20-%20LLM%20Panopticon%202026-02-14T185015Z.docx)) |
-| Gemini | Gemini 3 Pro Preview ([LLM Panopticon](responses/gemini/gemini-3-pro-preview/texts/Gemini%203%20Pro%20Preview%20response%20-%20LLM%20Panopticon%202026-02-13T201500Z.docx)) | Gemini 2.0 Flash Lite ([LLM Panopticon](responses/gemini/gemini-2.0-flash-lite-001/texts/Gemini%202.0%20Flash%20Lite%20response%20-%20LLM%20Panopticon%202026-02-13T201435Z.docx)) |
+| Gemini | Gemini 3.1 Pro ([LLM Panopticon]()) | Gemini 2.0 Flash Lite ([LLM Panopticon](responses/gemini/gemini-2.0-flash-lite-001/texts/Gemini%202.0%20Flash%20Lite%20response%20-%20LLM%20Panopticon%202026-02-13T201435Z.docx)) |
 | Meta | - | Llama 3.3 70B ([LLM Panopticon](responses/meta/llama-v3p3-70b-instruct/texts/Llama%203.3%2070B%20response%20-%20LLM%20Panopticon%202026-02-13T201817Z.docx)) |
 | Moonshot AI | Kimi K2.5 ([LLM Panopticon](responses/kimi/kimi-k2p5/texts/Kimi%20K2.5%20response%20-%20LLM%20Panopticon%202026-02-13T201728Z.docx)) | Kimi K2 ([LLM Panopticon](responses/kimi/kimi-k2-instruct-0905/texts/Kimi%20K2%20response%20-%20LLM%20Panopticon%202026-02-13T201556Z.docx)) |
 | OpenAI | GPT 5.2 Pro ([LLM Panopticon](responses/openai/gpt-5.2-pro-2025-12-11/texts/GPT-5.2%20Pro%20response%20-%20LLM%20Panopticon%202026-02-13T201640Z.docx)) | GPT-4 update 1 ([LLM Panopticon](responses/openai/gpt-4-0613/texts/GPT-4%20update%201%20response%20-%20LLM%20Panopticon%202026-02-13T201435Z.docx)) |
@@ -170,7 +170,7 @@ The supported models are a subset of *all* models that have been released. Provi
     </tr>
     <tr>
       <td valign="top">Google</td>
-      <td valign="top">Gemini 3 Deep Think* (Feb 12)</td>
+      <td valign="top"><strong>Gemini 3.1 Pro Preview (Feb 19)</strong><br><br>Gemini 3 Deep Think* (Feb 12)</td>
       <td valign="top"><strong>Gemini 3 Pro Preview (Nov 18)</strong><br><br>Gemini 2.5 Flash-Lite (Jul 22)<br><br>Gemini 2.5 Pro (Jun 17)<br>Gemini 2.5 Flash (Jun 17)<br><br><strong>Gemini 2.0 Flash Lite (Feb 25)</strong><br><br>Gemini 2.0 Pro (Feb 5)<br>Gemini 2.0 Flash (Feb 5)</td>
       <td valign="top"><del>Gemini 2.0 Flash Experimental (Dec 11)</del><br><br><del>Gemini 1.5 Pro v2 (Sep 24)</del><br><del>Gemini 1.5 Flash v2 (Sep 24)</del><br><br><del>Gemini 1.5 Pro (May 24)</del><br><del>Gemini 1.5 Flash (May 24)</del></td>
       <td valign="top"><del>Gemini 1.0 Pro (Dec 6)</del></td>
