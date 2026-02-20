@@ -162,7 +162,7 @@ The supported models are a subset of *all* models that have been released. Provi
     </tr>
     <tr>
       <td valign="top">Anthropic</td>
-      <td valign="top"><strong>Claude Opus 4.6 (Feb 5)</strong></td>
+      <td valign="top"><strong>Claude Sonnet 4.6 (Feb 17)</strong><br><br><strong>Claude Opus 4.6 (Feb 5)</strong></td>
       <td valign="top"><strong>Claude Opus 4.5 (Nov 24)</strong><br><br>Claude Haiku 4.5 (Oct 15)<br><br>Claude Sonnet 4.5 (Sep 29)<br><br>Claude Opus 4.1 (Aug 5)<br><br><del>Claude Opus 4 (May 22)</del><br>Claude Sonnet 4 (May 22)<br><br><del>Claude 3.7 Sonnet (Feb 24)</del></td>
       <td valign="top"><strong>Claude 3 Haiku (Mar 13)</strong><br><br><del>Claude 3.5 Haiku (Oct 22)</del><br><br><del>Claude 3.5 Sonnet v2 (Oct 22)</del><br><br><del>Claude 3.5 Sonnet (Jun 20)</del><br><br><del>Claude 3 Opus (Mar 4)</del><br><del>Claude 3 Sonnet (Mar 4)</del></td>
       <td valign="top"></td>

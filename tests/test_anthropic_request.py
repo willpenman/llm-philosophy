@@ -38,6 +38,14 @@ def test_build_messages_request_uses_default_max_output_tokens() -> None:
     payload = build_messages_request(
         system_prompt="System text",
         user_prompt="User text",
+        model="claude-sonnet-4-6",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 64000
+
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
         model="claude-opus-4-5-20251101",
         max_output_tokens=None,
     )
@@ -62,33 +70,35 @@ def test_build_messages_request_includes_optional_params() -> None:
         top_p=0.95,
         top_k=40,
         thinking=None,
+        output_config={"effort": "max"},
         stream=True,
     )
     assert payload["temperature"] == 0.2
     assert payload["top_p"] == 0.95
     assert payload["top_k"] == 40
+    assert payload["output_config"] == {"effort": "max"}
     assert payload["stream"] is True
 
 
 @pytest.mark.parametrize(
-    ("thinking", "error"),
+    ("model", "thinking", "error"),
     [
-        ({"type": "disabled", "budget_tokens": 1000}, "thinking.type"),
-        ({"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
-        ({"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
-        ({"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
-        ({"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
-        ({"type": "adaptive", "effort": 123}, "effort"),
+        ("claude-opus-4-5-20251101", {"type": "disabled", "budget_tokens": 1000}, "thinking.type"),
+        ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
+        ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
+        ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
+        ("claude-opus-4-6", {"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
+        ("claude-opus-4-6", {"type": "adaptive", "effort": 123}, "effort"),
     ],
 )
 def test_build_messages_request_rejects_invalid_thinking_config(
-    thinking: dict[str, object], error: str
+    model: str, thinking: dict[str, object], error: str
 ) -> None:
     with pytest.raises(ValueError, match=error):
         build_messages_request(
             system_prompt="System text",
             user_prompt="User text",
-            model="claude-opus-4-5-20251101",
+            model=model,
             max_output_tokens=128,
             thinking=thinking,
         )
@@ -116,6 +126,17 @@ def test_build_messages_request_accepts_adaptive_thinking_for_opus_46() -> None:
     assert payload["thinking"] == {"type": "adaptive"}
 
 
+def test_build_messages_request_accepts_adaptive_thinking_for_sonnet_46() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-sonnet-4-6",
+        max_output_tokens=128,
+        thinking={"type": "adaptive"},
+    )
+    assert payload["thinking"] == {"type": "adaptive"}
+
+
 def test_build_messages_request_accepts_temperature_for_opus_46() -> None:
     payload = build_messages_request(
         system_prompt="System text",
@@ -127,10 +148,22 @@ def test_build_messages_request_accepts_temperature_for_opus_46() -> None:
     assert payload["temperature"] == 0.2
 
 
+def test_build_messages_request_rejects_temperature_for_sonnet_46() -> None:
+    with pytest.raises(ValueError, match="temperature"):
+        build_messages_request(
+            system_prompt="System text",
+            user_prompt="User text",
+            model="claude-sonnet-4-6",
+            max_output_tokens=128,
+            temperature=0.2,
+        )
+
+
 @pytest.mark.parametrize(
     ("model", "alias", "input_cost", "output_cost"),
     [
         ("claude-opus-4-6", "Claude Opus 4.6", 5.0, 25.0),
+        ("claude-sonnet-4-6", "Claude Sonnet 4.6", 3.0, 15.0),
         ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),
         ("claude-3-haiku-20240307", "Claude Haiku 3", 0.25, 1.25),
     ],

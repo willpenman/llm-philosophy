@@ -13,6 +13,7 @@ Columns:
 | provider | model | release_date | available | source | notes |
 | --- | --- | --- | --- | --- | --- |
 | Anthropic | Claude Opus 4.6 (`claude-opus-4-6`) | 2026-02-05 | yes | https://www.anthropic.com/news/claude-opus-4-6 | Announcement + API availability. |
+| Anthropic | Claude Sonnet 4.6 (`claude-sonnet-4-6`) | 2026-02-17 | yes | https://www.anthropic.com/news/claude-sonnet-4-6 | Announcement + API availability. |
 | Anthropic | Claude Opus 4.5 (`claude-opus-4-5-20251101`) | 2025-11-24 | yes | https://www.anthropic.com/news/claude-opus-4-5 | Announcement + API availability. |
 | Anthropic | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) | 2025-10-15 | no | https://www.anthropic.com/news/claude-haiku-4-5 | Not supported. |
 | Anthropic | Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`) | 2025-09-29 | no | https://www.anthropic.com/news/claude-sonnet-4-5 | Not supported. |

@@ -37,6 +37,7 @@ from src.providers.gemini import (
 from src.providers.anthropic import (
     build_messages_request,
     calculate_cost_breakdown as anthropic_calculate_cost_breakdown,
+    default_output_config_for_model as anthropic_default_output_config_for_model,
     default_thinking_config_for_model as anthropic_default_thinking_config_for_model,
     display_model_name as display_anthropic_model_name,
     display_provider_name as display_anthropic_provider_name,
@@ -1078,6 +1079,7 @@ def run_anthropic_puzzle(
     top_p: float | None = None,
     top_k: int | None = None,
     thinking: dict[str, Any] | None = None,
+    output_config: dict[str, Any] | None = None,
     stream: bool = True,
     special_settings: str | None = None,
     dry_run: bool = False,
@@ -1106,6 +1108,8 @@ def run_anthropic_puzzle(
 
     if thinking is None and anthropic_supports_reasoning(model):
         thinking = anthropic_default_thinking_config_for_model(model)
+    if output_config is None:
+        output_config = anthropic_default_output_config_for_model(model)
 
     request_payload = build_messages_request(
         system_prompt=system_prompt.text,
@@ -1116,6 +1120,7 @@ def run_anthropic_puzzle(
         top_p=top_p,
         top_k=top_k,
         thinking=thinking,
+        output_config=output_config,
         stream=stream,
     )
 

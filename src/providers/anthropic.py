@@ -18,6 +18,7 @@ DEFAULT_VERSION = "2023-06-01"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "claude-opus-4-6": {"max_output_tokens": 128000},
+    "claude-sonnet-4-6": {"max_output_tokens": 64000},
     "claude-opus-4-5-20251101": {"max_output_tokens": 64000, "thinking_budget_tokens": 20000},
     "claude-3-haiku-20240307": {"max_output_tokens": 4000},
 }
@@ -26,6 +27,7 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 
 MODEL_ALIASES: dict[str, str] = {
     "claude-opus-4-6": "Claude Opus 4.6",
+    "claude-sonnet-4-6": "Claude Sonnet 4.6",
     "claude-opus-4-5-20251101": "Claude Opus 4.5",
     "claude-3-haiku-20240307": "Claude Haiku 3",
 }
@@ -34,12 +36,15 @@ PROVIDER_ALIASES: dict[str, str] = {
     "anthropic": "Anthropic",
 }
 
-ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-6"}
+ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
 MANUAL_THINKING_MODELS: set[str] = {"claude-opus-4-5-20251101"}
 REASONING_MODELS: set[str] = ADAPTIVE_THINKING_MODELS | MANUAL_THINKING_MODELS
+NO_TEMPERATURE_MODELS: set[str] = {"claude-sonnet-4-6"}
+MAX_EFFORT_OUTPUT_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "claude-opus-4-6": {"input": 5.0, "output": 25.0},
+    "claude-sonnet-4-6": {"input": 3.0, "output": 15.0},
     "claude-opus-4-5-20251101": {"input": 5.0, "output": 25.0},
     "claude-3-haiku-20240307": {"input": 0.25, "output": 1.25},
 }
@@ -102,6 +107,12 @@ def default_thinking_config_for_model(model: str) -> dict[str, Any] | None:
     return None
 
 
+def default_output_config_for_model(model: str) -> dict[str, Any] | None:
+    if model in MAX_EFFORT_OUTPUT_MODELS:
+        return {"effort": "max"}
+    return None
+
+
 def extract_usage_breakdown(payload: dict[str, Any]) -> TokenBreakdown | None:
     usage = payload.get("usage")
     if not isinstance(usage, dict):
@@ -148,6 +159,7 @@ def build_messages_request(
     top_p: float | None = None,
     top_k: int | None = None,
     thinking: dict[str, Any] | None = None,
+    output_config: dict[str, Any] | None = None,
     stream: bool | None = None,
 ) -> dict[str, Any]:
     if max_output_tokens is None:
@@ -155,6 +167,8 @@ def build_messages_request(
         max_output_tokens = defaults.get("max_output_tokens")
     if max_output_tokens is None:
         raise ValueError("max_output_tokens must be set for Anthropic requests")
+    if temperature is not None and model in NO_TEMPERATURE_MODELS:
+        raise ValueError("Anthropic temperature is not supported for this model")
     if thinking is not None and (temperature is not None or top_k is not None):
         raise ValueError("Anthropic thinking is incompatible with temperature or top_k")
     if thinking is not None:
@@ -184,6 +198,10 @@ def build_messages_request(
             raise ValueError(
                 "Anthropic thinking.type must be 'enabled' or 'adaptive' when provided"
             )
+    if output_config is not None:
+        effort = output_config.get("effort")
+        if effort is not None and not isinstance(effort, str):
+            raise ValueError("Anthropic output_config.effort must be a string")
 
     payload: dict[str, Any] = {
         "model": model,
@@ -199,6 +217,8 @@ def build_messages_request(
         payload["top_k"] = top_k
     if thinking is not None:
         payload["thinking"] = thinking
+    if output_config is not None:
+        payload["output_config"] = output_config
     if stream is not None:
         payload["stream"] = stream
     return payload

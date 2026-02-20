@@ -221,6 +221,7 @@ across providers.
 - Updated model release registry + README timeline to mark deprecated lines based on Fireworks serverless availability and xAI console status.
 - Added DeepSeek V3 Update 1 (`deepseek-v3-0324`) model metadata in the Fireworks adapter, plus request/live test coverage and documentation updates.
 - Added Claude Opus 4.6 (`claude-opus-4-6`) model metadata, adaptive thinking defaults, and Anthropic adapter test coverage.
+- Added Claude Sonnet 4.6 (`claude-sonnet-4-6`) model metadata, output effort defaults, and Anthropic adapter test coverage.
 - Added Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`) model metadata, pricing, and Gemini request/live test coverage.
 
 ## TODO
