@@ -370,15 +370,12 @@ def load_baseline_responses(baselines_dir: Path) -> dict[tuple[str, str], dict[s
     return responses
 
 
-def embed_all_baseline_responses(
+def embed_baseline_responses_by_prompt(
     baselines_dir: Path,
     cache_dir: Path | None = None,
     embedding_model: str = DEFAULT_MODEL,
-) -> dict[tuple[str, str], np.ndarray]:
-    """Embed all baseline responses, aggregating across prompts.
-
-    For each model, concatenates all baseline responses and pools their embeddings
-    to get a single representative embedding.
+) -> dict[str, dict[tuple[str, str], np.ndarray]]:
+    """Embed baseline responses separately per prompt.
 
     Args:
         baselines_dir: Base baselines/responses directory
@@ -386,7 +383,7 @@ def embed_all_baseline_responses(
         embedding_model: Name of the embedding model
 
     Returns:
-        Dict mapping (provider, model) to pooled embedding
+        Dict mapping prompt_name to {(provider, model): pooled_embedding}
     """
     all_responses = load_baseline_responses(baselines_dir)
 
@@ -397,34 +394,81 @@ def embed_all_baseline_responses(
     model = _get_model(embedding_model)
 
     cache = EmbeddingCache(cache_dir) if cache_dir else None
-    embeddings: dict[tuple[str, str], np.ndarray] = {}
 
-    for (provider, llm_model), prompt_responses in all_responses.items():
-        # Concatenate all responses for this model
-        combined_text = "\n\n".join(prompt_responses.values())
-        content_hash = _content_hash(combined_text)
+    # Collect all prompt names
+    prompt_names: set[str] = set()
+    for prompt_responses in all_responses.values():
+        prompt_names.update(prompt_responses.keys())
 
-        # Check cache
-        if cache:
-            cached = cache.get(
-                provider, llm_model, "baseline", "all",
-                embedding_model, content_hash
-            )
-            if cached is not None:
-                embeddings[(provider, llm_model)] = cached
+    # Build per-prompt embeddings
+    result: dict[str, dict[tuple[str, str], np.ndarray]] = {}
+
+    for prompt_name in prompt_names:
+        prompt_embeddings: dict[tuple[str, str], np.ndarray] = {}
+
+        for (provider, llm_model), prompt_responses in all_responses.items():
+            if prompt_name not in prompt_responses:
                 continue
 
-        # Compute embedding
-        chunk_embeddings, _ = embed_text(combined_text, model=model)
-        pooled = pool_embeddings(chunk_embeddings)
+            text = prompt_responses[prompt_name]
+            content_hash = _content_hash(text)
 
-        # Cache
-        if cache:
-            cache.put(
-                provider, llm_model, "baseline", "all",
-                embedding_model, content_hash, pooled
-            )
+            # Check cache
+            if cache:
+                cached = cache.get(
+                    provider, llm_model, "baseline", prompt_name,
+                    embedding_model, content_hash
+                )
+                if cached is not None:
+                    prompt_embeddings[(provider, llm_model)] = cached
+                    continue
 
-        embeddings[(provider, llm_model)] = pooled
+            # Compute embedding
+            chunk_embeddings, _ = embed_text(text, model=model)
+            pooled = pool_embeddings(chunk_embeddings)
 
-    return embeddings
+            # Cache
+            if cache:
+                cache.put(
+                    provider, llm_model, "baseline", prompt_name,
+                    embedding_model, content_hash, pooled
+                )
+
+            prompt_embeddings[(provider, llm_model)] = pooled
+
+        if prompt_embeddings:
+            result[prompt_name] = prompt_embeddings
+
+    return result
+
+
+def embed_puzzle_responses_by_puzzle(
+    responses_dir: Path,
+    puzzle_names: list[str],
+    cache_dir: Path | None = None,
+    embedding_model: str = DEFAULT_MODEL,
+) -> dict[str, dict[tuple[str, str], np.ndarray]]:
+    """Embed puzzle responses separately per puzzle.
+
+    Args:
+        responses_dir: Base responses directory
+        puzzle_names: List of puzzle names to embed
+        cache_dir: Optional cache directory for embeddings
+        embedding_model: Name of the embedding model
+
+    Returns:
+        Dict mapping puzzle_name to {(provider, model): pooled_embedding}
+    """
+    result: dict[str, dict[tuple[str, str], np.ndarray]] = {}
+
+    for puzzle_name in puzzle_names:
+        embeddings = embed_all_responses(
+            responses_dir=responses_dir,
+            puzzle_name=puzzle_name,
+            cache_dir=cache_dir,
+            embedding_model=embedding_model,
+        )
+        if embeddings:
+            result[puzzle_name] = embeddings
+
+    return result

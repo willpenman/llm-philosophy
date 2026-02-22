@@ -2,6 +2,7 @@
 
 Usage:
     python -m scripts.generate_comparison panopticon
+    python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles
     python -m scripts.generate_comparison panopticon --output analysis/figures/comparison.png
 """
 
@@ -10,9 +11,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from analysis.embeddings import embed_all_responses, embed_all_baseline_responses
+from analysis.embeddings import (
+    embed_baseline_responses_by_prompt,
+    embed_puzzle_responses_by_puzzle,
+)
 from analysis.distances import (
-    compute_distance_matrix,
+    compute_averaged_distance_matrix,
     project_to_2d,
     compute_spread,
     compute_mean_pairwise_distance,
@@ -31,12 +35,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Generate side-by-side baseline vs philosophy comparison."
     )
-    parser.add_argument("puzzle", help="Puzzle name (e.g., panopticon)")
+    parser.add_argument(
+        "puzzles",
+        nargs="+",
+        help="Puzzle name(s) (e.g., panopticon)",
+    )
     parser.add_argument(
         "--output", "-o",
         type=Path,
         default=None,
-        help="Output path for PNG (default: analysis/figures/comparison_{puzzle}.png)",
+        help="Output path for PNG (default: analysis/figures/comparison_{puzzles}.png)",
     )
     parser.add_argument(
         "--no-cache",
@@ -50,39 +58,50 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    puzzle_name = args.puzzle
-    output_path = args.output or (FIGURES_DIR / f"comparison_{puzzle_name}.png")
+    puzzle_names = args.puzzles
+    puzzle_slug = "_".join(puzzle_names)
+    output_path = args.output or (FIGURES_DIR / f"comparison_{puzzle_slug}.png")
     cache_dir = None if args.no_cache else CACHE_DIR
 
-    # Load baseline embeddings
-    print("Loading baseline responses...")
-    baseline_embeddings = embed_all_baseline_responses(
+    # Load baseline embeddings (per-prompt)
+    print("Loading baseline responses (per-prompt)...")
+    baseline_by_prompt = embed_baseline_responses_by_prompt(
         baselines_dir=BASELINES_DIR,
         cache_dir=cache_dir,
     )
 
-    if not baseline_embeddings:
+    if not baseline_by_prompt:
         print("No baseline responses found. Run `python -m scripts.run_baselines --model ALL` first.")
         return
 
-    print(f"Found {len(baseline_embeddings)} models with baselines")
+    # Count models across prompts
+    baseline_models: set[tuple[str, str]] = set()
+    for prompt_embeddings in baseline_by_prompt.values():
+        baseline_models.update(prompt_embeddings.keys())
 
-    # Load philosophy embeddings
-    print(f"\nLoading philosophy responses for '{puzzle_name}'...")
-    philosophy_embeddings = embed_all_responses(
+    print(f"Found {len(baseline_models)} models across {len(baseline_by_prompt)} baseline prompts")
+
+    # Load philosophy embeddings (per-puzzle)
+    print(f"\nLoading philosophy responses for {puzzle_names}...")
+    philosophy_by_puzzle = embed_puzzle_responses_by_puzzle(
         responses_dir=RESPONSES_DIR,
-        puzzle_name=puzzle_name,
+        puzzle_names=puzzle_names,
         cache_dir=cache_dir,
     )
 
-    if not philosophy_embeddings:
-        print(f"No philosophy responses found for puzzle '{puzzle_name}'")
+    if not philosophy_by_puzzle:
+        print(f"No philosophy responses found for puzzles: {puzzle_names}")
         return
 
-    print(f"Found {len(philosophy_embeddings)} models with philosophy responses")
+    # Count models across puzzles
+    philosophy_models: set[tuple[str, str]] = set()
+    for puzzle_embeddings in philosophy_by_puzzle.values():
+        philosophy_models.update(puzzle_embeddings.keys())
+
+    print(f"Found {len(philosophy_models)} models across {len(philosophy_by_puzzle)} puzzles")
 
     # Find common models
-    common_models = set(baseline_embeddings.keys()) & set(philosophy_embeddings.keys())
+    common_models = baseline_models & philosophy_models
     print(f"\n{len(common_models)} models have both baseline and philosophy responses")
 
     if len(common_models) < 2:
@@ -90,19 +109,25 @@ def main() -> None:
         return
 
     # Filter to common models
-    baseline_filtered = {k: v for k, v in baseline_embeddings.items() if k in common_models}
-    philosophy_filtered = {k: v for k, v in philosophy_embeddings.items() if k in common_models}
+    baseline_filtered = {
+        prompt: {k: v for k, v in emb.items() if k in common_models}
+        for prompt, emb in baseline_by_prompt.items()
+    }
+    philosophy_filtered = {
+        puzzle: {k: v for k, v in emb.items() if k in common_models}
+        for puzzle, emb in philosophy_by_puzzle.items()
+    }
 
-    # Compute distances for baselines
-    baseline_distances, baseline_keys = compute_distance_matrix(baseline_filtered)
+    # Compute averaged distances for baselines
+    baseline_distances, baseline_keys = compute_averaged_distance_matrix(baseline_filtered)
     baseline_mean_dist = compute_mean_pairwise_distance(baseline_distances)
     baseline_points = project_to_2d(baseline_distances, baseline_keys)
     baseline_spread = compute_spread(baseline_points)
 
     print(f"\nBaseline: mean distance = {baseline_mean_dist:.4f}, spread = {baseline_spread:.4f}")
 
-    # Compute distances for philosophy
-    philosophy_distances, philosophy_keys = compute_distance_matrix(philosophy_filtered)
+    # Compute averaged distances for philosophy
+    philosophy_distances, philosophy_keys = compute_averaged_distance_matrix(philosophy_filtered)
     philosophy_mean_dist = compute_mean_pairwise_distance(philosophy_distances)
     philosophy_points = project_to_2d(philosophy_distances, philosophy_keys)
     philosophy_spread = compute_spread(philosophy_points)
@@ -114,12 +139,18 @@ def main() -> None:
         ratio = philosophy_mean_dist / baseline_mean_dist
         print(f"\nPhilosophy differentiation is {ratio:.2f}x baseline")
 
+    # Generate title
+    if len(puzzle_names) == 1:
+        philosophy_title = f"Philosophy: {puzzle_names[0].replace('_', ' ').title()}"
+    else:
+        philosophy_title = f"Philosophy: {len(puzzle_names)} puzzles"
+
     # Generate plot
     fig = plot_comparison(
         baseline_points=baseline_points,
         philosophy_points=philosophy_points,
-        baseline_title="Baseline Tasks",
-        philosophy_title=f"Philosophy: {puzzle_name.replace('_', ' ').title()}",
+        baseline_title=f"Baseline Tasks ({len(baseline_by_prompt)} prompts)",
+        philosophy_title=philosophy_title,
         baseline_spread=baseline_spread,
         philosophy_spread=philosophy_spread,
         output_path=output_path,
