@@ -1,9 +1,16 @@
-"""Generate side-by-side comparison of baseline vs philosophy maps.
+"""Generate model similarity visualizations.
 
 Usage:
+    # Side-by-side comparison of baseline vs philosophy responses
     python -m scripts.generate_comparison panopticon
     python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles
-    python -m scripts.generate_comparison panopticon --output analysis/figures/comparison.png
+
+    # Philosophy-only mode (no baseline comparison, no rescaling)
+    python -m scripts.generate_comparison panopticon --philosophy-only
+    python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
+
+    # Custom output path
+    python -m scripts.generate_comparison panopticon --output analysis/figures/custom.png
 """
 
 from __future__ import annotations
@@ -25,7 +32,7 @@ from analysis.distances import (
     save_points,
     load_points,
 )
-from analysis.visualize import plot_comparison
+from analysis.visualize import plot_comparison, plot_model_map
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -33,6 +40,121 @@ RESPONSES_DIR = ROOT / "responses"
 BASELINES_DIR = ROOT / "baselines" / "responses"
 CACHE_DIR = ROOT / "analysis" / "embeddings"
 FIGURES_DIR = ROOT / "analysis" / "figures"
+
+
+def _run_philosophy_only(
+    puzzle_names: list[str],
+    puzzle_slug: str,
+    output_path: Path,
+    cache_dir: Path | None,
+    recompute_points: bool,
+    show: bool,
+) -> None:
+    """Generate philosophy-only map without baseline comparison.
+
+    Filters to models that have both baseline and philosophy responses
+    (same as comparison mode) so the results are directly comparable.
+    No rescaling is applied since there's no baseline to match.
+    """
+    # Check for cached points
+    philosophy_points_cache = CACHE_DIR / f"points_philosophy_only_{puzzle_slug}.json"
+
+    if not recompute_points:
+        philosophy_points = load_points(philosophy_points_cache)
+
+        if philosophy_points is not None:
+            print("Using cached points (use --recompute-points to regenerate)")
+            spread = compute_spread(philosophy_points)
+            mean_dist = compute_mean_pairwise_distance_points(philosophy_points)
+
+            title = f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
+            subtitle = f"Mean distance: {mean_dist:.4f}, Spread: {spread:.4f}"
+
+            fig = plot_model_map(
+                points=philosophy_points,
+                title=title,
+                subtitle=subtitle,
+                output_path=output_path,
+            )
+
+            if show:
+                import matplotlib.pyplot as plt
+                plt.show()
+
+            print("\nDone!")
+            return
+
+    # Load baseline model list (to filter to common models)
+    print("Loading baseline responses (for model filtering)...")
+    baseline_by_prompt = embed_baseline_responses_by_prompt(
+        baselines_dir=BASELINES_DIR,
+        cache_dir=cache_dir,
+    )
+
+    baseline_models: set[tuple[str, str]] = set()
+    for prompt_embeddings in baseline_by_prompt.values():
+        baseline_models.update(prompt_embeddings.keys())
+
+    # Load philosophy embeddings
+    print(f"Loading philosophy responses for {puzzle_names}...")
+    philosophy_by_puzzle = embed_puzzle_responses_by_puzzle(
+        responses_dir=RESPONSES_DIR,
+        puzzle_names=puzzle_names,
+        cache_dir=cache_dir,
+    )
+
+    if not philosophy_by_puzzle:
+        print(f"No philosophy responses found for puzzles: {puzzle_names}")
+        return
+
+    # Count models across puzzles
+    philosophy_models: set[tuple[str, str]] = set()
+    for puzzle_embeddings in philosophy_by_puzzle.values():
+        philosophy_models.update(puzzle_embeddings.keys())
+
+    print(f"Found {len(philosophy_models)} models across {len(philosophy_by_puzzle)} puzzles")
+
+    # Filter to common models (same as comparison mode)
+    common_models = baseline_models & philosophy_models
+    print(f"{len(common_models)} models have both baseline and philosophy responses")
+
+    if len(common_models) < 2:
+        print("Need at least 2 common models for visualization.")
+        return
+
+    philosophy_filtered = {
+        puzzle: {k: v for k, v in emb.items() if k in common_models}
+        for puzzle, emb in philosophy_by_puzzle.items()
+    }
+
+    # Compute averaged distances (no rescaling needed)
+    philosophy_distances, philosophy_keys = compute_averaged_distance_matrix(philosophy_filtered)
+    mean_dist = compute_mean_pairwise_distance(philosophy_distances)
+    philosophy_points = project_to_2d(philosophy_distances, philosophy_keys)
+    spread = compute_spread(philosophy_points)
+
+    print(f"Mean cosine distance: {mean_dist:.4f}, Spread: {spread:.4f}")
+
+    # Cache computed points
+    save_points(philosophy_points, philosophy_points_cache)
+    print(f"Cached points to {philosophy_points_cache}")
+
+    # Generate plot
+    title = f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
+    subtitle = f"Mean distance: {mean_dist:.4f}, Spread: {spread:.4f}"
+
+    fig = plot_model_map(
+        points=philosophy_points,
+        title=title,
+        subtitle=subtitle,
+        output_path=output_path,
+    )
+
+    if show:
+        import matplotlib.pyplot as plt
+        plt.show()
+
+    print("\nDone!")
 
 
 def main() -> None:
@@ -65,14 +187,38 @@ def main() -> None:
         action="store_true",
         help="Recompute MDS projection even if cached points exist",
     )
+    parser.add_argument(
+        "--philosophy-only",
+        action="store_true",
+        help="Show only philosophy map without baseline comparison (no rescaling)",
+    )
     args = parser.parse_args()
 
     puzzle_names = args.puzzles
     puzzle_slug = "_".join(puzzle_names)
-    output_path = args.output or (FIGURES_DIR / f"comparison_{puzzle_slug}.png")
     cache_dir = None if args.no_cache else CACHE_DIR
 
-    # Check for cached points
+    # Default output path depends on mode
+    if args.output:
+        output_path = args.output
+    elif args.philosophy_only:
+        output_path = FIGURES_DIR / f"{puzzle_slug}.png"
+    else:
+        output_path = FIGURES_DIR / f"comparison_{puzzle_slug}.png"
+
+    # Philosophy-only mode: skip baseline loading and rescaling
+    if args.philosophy_only:
+        _run_philosophy_only(
+            puzzle_names=puzzle_names,
+            puzzle_slug=puzzle_slug,
+            output_path=output_path,
+            cache_dir=cache_dir,
+            recompute_points=args.recompute_points,
+            show=args.show,
+        )
+        return
+
+    # Check for cached points (comparison mode)
     baseline_points_cache = CACHE_DIR / "points_baseline.json"
     philosophy_points_cache = CACHE_DIR / f"points_{puzzle_slug}.json"
 
@@ -82,8 +228,6 @@ def main() -> None:
 
         if baseline_points is not None and philosophy_points is not None:
             print("Using cached points (use --recompute-points to regenerate)")
-            baseline_spread = compute_spread(baseline_points)
-            philosophy_spread = compute_spread(philosophy_points)
 
             # Generate plot (use default titles)
             fig = plot_comparison(

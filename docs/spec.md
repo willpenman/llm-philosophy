@@ -253,9 +253,19 @@ rm analysis/embeddings/*__baseline__*
 
 # Run baselines for specific models
 python -m scripts.run_baselines --model gpt-4-0613 gemini-2.0-flash-lite-001 o3-2025-04-16 claude-opus-4-5-20251101
+```
 
-# Generate comparison visualization
+### Generating visualizations
+```bash
+# Side-by-side comparison of baseline vs philosophy responses
+# Points are rescaled so baseline and philosophy maps share the same axis scale
 python -m scripts.generate_comparison panopticon
+python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles averaged
+
+# Philosophy-only mode: show just the philosophy puzzle map(s) without baseline
+# No rescaling is applied since there's no baseline to match
+python -m scripts.generate_comparison panopticon --philosophy-only
+python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 ```
 
 ### Embedding cache
