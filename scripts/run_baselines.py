@@ -183,21 +183,14 @@ def _run_baseline_grok(
         send_chat_completion_request,
         extract_output_text,
         require_api_key,
-        supports_reasoning,
-        default_reasoning_effort_for_model,
     )
 
-    # Use reasoning if available (same as eval)
-    reasoning_effort = None
-    if supports_reasoning(model):
-        reasoning_effort = default_reasoning_effort_for_model(model)
-
+    # Grok reasoning models reason automatically without explicit config
     request = build_chat_completion_request(
         system_prompt=BASELINE_SYSTEM_PROMPT,
         user_prompt=prompt.text,
         model=model,
         max_output_tokens=None,  # Use model default
-        reasoning_effort=reasoning_effort,
         stream=False,
     )
 
@@ -246,23 +239,23 @@ def _run_baseline_fireworks(
 def run_baseline(
     prompt: BaselinePrompt,
     model: str,
-    provider: str | None = None,
+    runner_provider: str | None = None,
 ) -> tuple[str, dict[str, Any]]:
     """Run a single baseline prompt and return output text and response."""
-    provider = provider or _get_provider_for_model(model)
+    runner_provider = runner_provider or _get_provider_for_model(model)
 
-    if provider == "anthropic":
+    if runner_provider == "anthropic":
         return _run_baseline_anthropic(prompt, model)
-    elif provider == "openai":
+    elif runner_provider == "openai":
         return _run_baseline_openai(prompt, model)
-    elif provider == "gemini":
+    elif runner_provider == "gemini":
         return _run_baseline_gemini(prompt, model)
-    elif provider == "grok":
+    elif runner_provider == "grok":
         return _run_baseline_grok(prompt, model)
-    elif provider == "fireworks":
+    elif runner_provider == "fireworks":
         return _run_baseline_fireworks(prompt, model)
     else:
-        raise ValueError(f"Unknown provider for model {model}")
+        raise ValueError(f"Unknown runner provider for model {model}")
 
 
 def save_baseline_response(
@@ -315,20 +308,25 @@ def has_baseline_response(provider: str, model: str, prompt_name: str) -> bool:
 
 def run_all_baselines_for_model(
     model: str,
-    provider: str | None = None,
+    storage_provider: str | None = None,
+    runner_provider: str | None = None,
     resume: bool = True,
     dry_run: bool = False,
 ) -> None:
     """Run all baseline prompts for a single model."""
-    provider = provider or _get_provider_for_model(model)
-    if not provider:
-        print(f"Could not determine provider for {model}")
+    # Determine runner provider (which API to call)
+    runner_provider = runner_provider or _get_provider_for_model(model)
+    if not runner_provider:
+        print(f"Could not determine runner provider for {model}")
         return
 
-    print(f"\nRunning baselines for {model} ({provider})")
+    # Storage provider defaults to runner provider if not specified
+    storage_provider = storage_provider or runner_provider
+
+    print(f"\nRunning baselines for {model} ({storage_provider})")
 
     for prompt in BASELINE_PROMPTS:
-        if resume and has_baseline_response(provider, model, prompt.name):
+        if resume and has_baseline_response(storage_provider, model, prompt.name):
             print(f"  [skip] {prompt.name} (already exists)")
             continue
 
@@ -338,8 +336,8 @@ def run_all_baselines_for_model(
 
         try:
             print(f"  [run] {prompt.name}...", end=" ", flush=True)
-            output_text, response = run_baseline(prompt, model, provider)
-            save_baseline_response(provider, model, prompt, response)
+            output_text, response = run_baseline(prompt, model, runner_provider)
+            save_baseline_response(storage_provider, model, prompt, response)
             print(f"done ({len(output_text)} chars)")
         except Exception as e:
             print(f"ERROR: {e}")
@@ -398,7 +396,8 @@ def main() -> None:
         for spec in specs:
             run_all_baselines_for_model(
                 model=spec.model,
-                provider=spec.provider,
+                storage_provider=spec.provider,
+                runner_provider=spec.runner_provider,
                 resume=resume,
                 dry_run=args.dry_run,
             )

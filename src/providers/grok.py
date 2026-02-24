@@ -79,6 +79,13 @@ def supports_reasoning(model: str) -> bool:
     return model in REASONING_MODELS
 
 
+def default_reasoning_effort_for_model(model: str) -> str | None:
+    """Return default reasoning effort for reasoning models, or None."""
+    if model in REASONING_MODELS:
+        return "high"
+    return None
+
+
 def supports_model(model: str) -> bool:
     return model in SUPPORTED_MODELS
 
