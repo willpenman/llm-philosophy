@@ -8,6 +8,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 import numpy as np
@@ -22,18 +24,48 @@ if TYPE_CHECKING:
 DEFAULT_MODEL = "all-mpnet-base-v2"
 MAX_TOKENS = 384  # Model's max sequence length
 
+# Module-level model cache to avoid reloading
+_MODEL_CACHE: dict[str, "SentenceTransformer"] = {}
+
 
 def _get_model(model_name: str = DEFAULT_MODEL) -> "SentenceTransformer":
-    """Load the sentence transformer model."""
+    """Load the sentence transformer model (cached)."""
+    if model_name in _MODEL_CACHE:
+        return _MODEL_CACHE[model_name]
+
+    # Suppress tokenizers parallelism warning
+    os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+    # Use local cache only to avoid auth warnings
+    os.environ.setdefault("HF_HUB_OFFLINE", "1")
+
+    # Suppress HF Hub warnings
+    logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+    # Suppress MLX "UNEXPECTED" warnings for position_ids (benign, see HF forums)
+    logging.getLogger("mlx").setLevel(logging.ERROR)
+
     from sentence_transformers import SentenceTransformer
-    return SentenceTransformer(model_name)
+
+    # Load model (uses local cache due to HF_HUB_OFFLINE)
+    model = SentenceTransformer(model_name, device="cpu")
+    _MODEL_CACHE[model_name] = model
+    return model
 
 
 def _get_tokenizer(model: "SentenceTransformer"):
-    """Get the tokenizer function from a SentenceTransformer model."""
+    """Get the tokenizer function from a SentenceTransformer model.
+
+    Used for counting tokens during chunking - not for actual encoding.
+    We disable truncation warnings since we're deliberately probing
+    text lengths to find chunk boundaries.
+    """
     def tokenize(text: str) -> list:
-        # Use the model's tokenizer
-        encoded = model.tokenizer.encode(text, add_special_tokens=False)
+        # Use the model's tokenizer without truncation (for accurate counting)
+        # and without length warnings (we handle length ourselves in chunking)
+        encoded = model.tokenizer.encode(
+            text,
+            add_special_tokens=False,
+            truncation=False,  # Don't truncate - we need accurate token count
+        )
         return encoded
     return tokenize
 

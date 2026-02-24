@@ -85,9 +85,14 @@ def project_to_2d(
         ]
 
     # Use metric MDS for 3+ points
+    # metric="precomputed" means we pass a distance matrix directly
+    # metric_mds=True means use metric (vs non-metric) MDS
     mds = MDS(
         n_components=2,
-        dissimilarity="precomputed",
+        metric="precomputed",
+        metric_mds=True,
+        n_init=4,
+        init="random",
         random_state=random_state,
         normalized_stress="auto",
     )

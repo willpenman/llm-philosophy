@@ -219,7 +219,7 @@ def plot_comparison(
     ax1.set_xlim(xlim)
     ax1.set_ylim(ylim)
     ax1.grid(True, alpha=0.3)
-    ax1.set_aspect("equal", adjustable="datalim")
+    ax1.set_aspect("equal", adjustable="box")
 
     # Plot philosophy
     for point in philosophy_points:
@@ -236,7 +236,7 @@ def plot_comparison(
     ax2.set_xlim(xlim)
     ax2.set_ylim(ylim)
     ax2.grid(True, alpha=0.3)
-    ax2.set_aspect("equal", adjustable="datalim")
+    ax2.set_aspect("equal", adjustable="box")
 
     # Shared legend
     if providers_seen:
