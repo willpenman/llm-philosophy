@@ -269,7 +269,6 @@ def save_baseline_response(
     provider: str,
     model: str,
     prompt: BaselinePrompt,
-    output_text: str,
     response_payload: dict[str, Any],
 ) -> Path:
     """Save baseline response to JSONL file."""
@@ -286,12 +285,11 @@ def save_baseline_response(
         "prompt_name": prompt.name,
         "prompt_category": prompt.category,
         "prompt_text": prompt.text,
-        "output_text": output_text,
         "response": response_payload,
     }
 
     with responses_file.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(record, ensure_ascii=True))
+        f.write(json.dumps(record, ensure_ascii=False))
         f.write("\n")
 
     return responses_file
@@ -341,7 +339,7 @@ def run_all_baselines_for_model(
         try:
             print(f"  [run] {prompt.name}...", end=" ", flush=True)
             output_text, response = run_baseline(prompt, model, provider)
-            save_baseline_response(provider, model, prompt, output_text, response)
+            save_baseline_response(provider, model, prompt, response)
             print(f"done ({len(output_text)} chars)")
         except Exception as e:
             print(f"ERROR: {e}")
