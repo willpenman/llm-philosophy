@@ -355,6 +355,50 @@ def embed_all_responses(
     return embeddings
 
 
+def _extract_text_from_response(response: dict) -> str:
+    """Extract output text from a response payload.
+
+    Handles different provider response formats.
+    """
+    output_text = ""
+
+    # Anthropic format
+    content = response.get("content", [])
+    if isinstance(content, list):
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                output_text += item.get("text", "")
+
+    # OpenAI Responses API format
+    if not output_text:
+        output = response.get("output", [])
+        if isinstance(output, list):
+            for item in output:
+                if isinstance(item, dict) and item.get("type") == "message":
+                    msg_content = item.get("content", [])
+                    for c in msg_content:
+                        if isinstance(c, dict) and c.get("type") == "output_text":
+                            output_text += c.get("text", "")
+
+    # Gemini format
+    if not output_text:
+        candidates = response.get("candidates", [])
+        if candidates and isinstance(candidates[0], dict):
+            parts = candidates[0].get("content", {}).get("parts", [])
+            for part in parts:
+                if isinstance(part, dict) and "text" in part:
+                    output_text += part.get("text", "")
+
+    # Grok/Fireworks (OpenAI chat format)
+    if not output_text:
+        choices = response.get("choices", [])
+        if choices and isinstance(choices[0], dict):
+            message = choices[0].get("message", {})
+            output_text = message.get("content", "")
+
+    return output_text
+
+
 def load_baseline_responses(baselines_dir: Path) -> dict[tuple[str, str], dict[str, str]]:
     """Load all baseline responses for all models.
 
@@ -390,7 +434,8 @@ def load_baseline_responses(baselines_dir: Path) -> dict[tuple[str, str], dict[s
                     try:
                         record = json.loads(line)
                         prompt_name = record.get("prompt_name")
-                        output_text = record.get("output_text", "")
+                        response = record.get("response", {})
+                        output_text = _extract_text_from_response(response)
                         if prompt_name and output_text:
                             model_responses[prompt_name] = output_text
                     except json.JSONDecodeError:
