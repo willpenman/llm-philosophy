@@ -6,7 +6,9 @@ and projects to 2D using metric MDS.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import json
+from dataclasses import dataclass, asdict
+from pathlib import Path
 import numpy as np
 from sklearn.manifold import MDS
 from sklearn.metrics.pairwise import cosine_distances
@@ -223,3 +225,20 @@ def compute_averaged_distance_matrix(
     np.fill_diagonal(avg_distances, 0.0)
 
     return avg_distances, keys
+
+
+def save_points(points: list[ModelPoint], path: Path) -> None:
+    """Save ModelPoints to a JSON file."""
+    data = [asdict(p) for p in points]
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+def load_points(path: Path) -> list[ModelPoint] | None:
+    """Load ModelPoints from a JSON file. Returns None if file doesn't exist."""
+    if not path.exists():
+        return None
+    with open(path) as f:
+        data = json.load(f)
+    return [ModelPoint(**d) for d in data]

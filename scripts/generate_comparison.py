@@ -22,6 +22,8 @@ from analysis.distances import (
     compute_mean_pairwise_distance,
     compute_mean_pairwise_distance_points,
     scale_points,
+    save_points,
+    load_points,
 )
 from analysis.visualize import plot_comparison
 
@@ -58,12 +60,44 @@ def main() -> None:
         action="store_true",
         help="Display plot interactively",
     )
+    parser.add_argument(
+        "--recompute-points",
+        action="store_true",
+        help="Recompute MDS projection even if cached points exist",
+    )
     args = parser.parse_args()
 
     puzzle_names = args.puzzles
     puzzle_slug = "_".join(puzzle_names)
     output_path = args.output or (FIGURES_DIR / f"comparison_{puzzle_slug}.png")
     cache_dir = None if args.no_cache else CACHE_DIR
+
+    # Check for cached points
+    baseline_points_cache = CACHE_DIR / "points_baseline.json"
+    philosophy_points_cache = CACHE_DIR / f"points_{puzzle_slug}.json"
+
+    if not args.recompute_points:
+        baseline_points = load_points(baseline_points_cache)
+        philosophy_points = load_points(philosophy_points_cache)
+
+        if baseline_points is not None and philosophy_points is not None:
+            print("Using cached points (use --recompute-points to regenerate)")
+            baseline_spread = compute_spread(baseline_points)
+            philosophy_spread = compute_spread(philosophy_points)
+
+            # Generate plot (use default titles)
+            fig = plot_comparison(
+                baseline_points=baseline_points,
+                philosophy_points=philosophy_points,
+                output_path=output_path,
+            )
+
+            if args.show:
+                import matplotlib.pyplot as plt
+                plt.show()
+
+            print("\nDone!")
+            return
 
     # Load baseline embeddings (per-prompt)
     print("Loading baseline responses (per-prompt)...")
@@ -148,25 +182,20 @@ def main() -> None:
         f"scale factor = {philosophy_scale:.4f}, spread = {philosophy_spread:.4f}"
     )
 
+    # Cache computed points
+    save_points(baseline_points, baseline_points_cache)
+    save_points(philosophy_points, philosophy_points_cache)
+    print(f"\nCached points to {baseline_points_cache} and {philosophy_points_cache}")
+
     # Compare
     if baseline_mean_dist > 0:
         ratio = philosophy_mean_dist / baseline_mean_dist
         print(f"\nPhilosophy differentiation is {ratio:.2f}x baseline")
 
-    # Generate title
-    if len(puzzle_names) == 1:
-        philosophy_title = f"Philosophy: {puzzle_names[0].replace('_', ' ').title()}"
-    else:
-        philosophy_title = f"Philosophy: {len(puzzle_names)} puzzles"
-
-    # Generate plot
+    # Generate plot (use default titles)
     fig = plot_comparison(
         baseline_points=baseline_points,
         philosophy_points=philosophy_points,
-        baseline_title=f"Baseline Tasks ({len(baseline_by_prompt)} prompts)",
-        philosophy_title=philosophy_title,
-        baseline_spread=baseline_spread,
-        philosophy_spread=philosophy_spread,
         output_path=output_path,
     )
 

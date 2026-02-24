@@ -6,7 +6,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
-from adjustText import adjust_text
 
 from analysis.distances import ModelPoint
 
@@ -91,6 +90,68 @@ def _shorten_model_name(model: str) -> str:
             break
 
     return result.strip()
+
+
+def _add_radial_labels(
+    ax: plt.Axes,
+    points: list[ModelPoint],
+    label_distance: float = 0.08,
+) -> None:
+    """Add labels positioned radially outward from the centroid.
+
+    Args:
+        ax: Matplotlib axes
+        points: List of ModelPoint objects
+        label_distance: Distance to push labels outward from points
+    """
+    if not points:
+        return
+
+    # Compute centroid
+    cx = np.mean([p.x for p in points])
+    cy = np.mean([p.y for p in points])
+
+    for point in points:
+        label = _shorten_model_name(point.model)
+
+        # Vector from centroid to point
+        dx = point.x - cx
+        dy = point.y - cy
+        dist = np.sqrt(dx**2 + dy**2)
+
+        if dist > 0:
+            # Normalize and extend
+            dx_norm = dx / dist
+            dy_norm = dy / dist
+        else:
+            # Point is at centroid, default to right
+            dx_norm, dy_norm = 1, 0
+
+        # Label position: push outward from point
+        label_x = point.x + dx_norm * label_distance
+        label_y = point.y + dy_norm * label_distance
+
+        # Determine text alignment based on direction
+        if dx_norm > 0.3:
+            ha = "left"
+        elif dx_norm < -0.3:
+            ha = "right"
+        else:
+            ha = "center"
+
+        if dy_norm > 0.3:
+            va = "bottom"
+        elif dy_norm < -0.3:
+            va = "top"
+        else:
+            va = "center"
+
+        # Add label
+        ax.text(
+            label_x, label_y, label,
+            fontsize=8, alpha=0.9,
+            ha=ha, va=va,
+        )
 
 
 def plot_model_map(
@@ -179,13 +240,13 @@ def plot_comparison(
     baseline_points: list[ModelPoint],
     philosophy_points: list[ModelPoint],
     output_path: Path | None = None,
-    figsize: tuple[float, float] = (16, 7),
-    baseline_title: str = "Baseline Tasks",
-    philosophy_title: str = "Philosophy Puzzles",
+    figsize: tuple[float, float] = (18, 7),
+    baseline_title: str = "Baseline Opinions",
+    philosophy_title: str = "Philosophy Positions",
     baseline_spread: float | None = None,
     philosophy_spread: float | None = None,
 ) -> plt.Figure:
-    """Create side-by-side comparison of baseline and philosophy maps.
+    """Create side-by-side comparison of philosophy and baseline maps.
 
     Args:
         baseline_points: Points from baseline tasks
@@ -194,13 +255,17 @@ def plot_comparison(
         figsize: Figure size
         baseline_title: Title for baseline subplot
         philosophy_title: Title for philosophy subplot
-        baseline_spread: Optional spread statistic for baseline
-        philosophy_spread: Optional spread statistic for philosophy
+        baseline_spread: Optional spread statistic for baseline (unused)
+        philosophy_spread: Optional spread statistic for philosophy (unused)
 
     Returns:
         matplotlib Figure object
     """
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
+    # Create 3 subplots: philosophy, legend area, baseline
+    fig, (ax1, ax_legend, ax2) = plt.subplots(
+        1, 3, figsize=figsize,
+        gridspec_kw={"width_ratios": [1, 0.15, 1]}
+    )
 
     # Compute shared axis limits for fair comparison
     all_points = baseline_points + philosophy_points
@@ -217,48 +282,41 @@ def plot_comparison(
         ylim = (-1, 1)
 
     providers_seen = set()
-    texts1 = []
-    texts2 = []
 
-    # Plot baseline
-    for point in baseline_points:
+    # Plot philosophy points (first/left)
+    for point in philosophy_points:
         color = PROVIDER_COLORS.get(point.provider, "#6B7280")
         providers_seen.add(point.provider)
         ax1.scatter(point.x, point.y, c=color, s=100, alpha=0.8,
                     edgecolors="white", linewidth=1)
-        label = _shorten_model_name(point.model)
-        texts1.append(ax1.text(point.x, point.y, label, fontsize=8, alpha=0.9))
 
-    subtitle1 = f"(spread: {baseline_spread:.4f})" if baseline_spread is not None else ""
-    ax1.set_title(f"{baseline_title}\n{subtitle1}" if subtitle1 else baseline_title)
+    # Add radial labels for philosophy
+    _add_radial_labels(ax1, philosophy_points, label_distance=0.01)
+
+    ax1.set_title(philosophy_title)
     ax1.set_xlim(xlim)
     ax1.set_ylim(ylim)
     ax1.grid(True, alpha=0.3)
     ax1.set_aspect("equal", adjustable="box")
 
-    # Adjust baseline labels
-    adjust_text(texts1, ax=ax1, arrowprops=dict(arrowstyle="-", color="gray", lw=0.5))
-
-    # Plot philosophy
-    for point in philosophy_points:
+    # Plot baseline points (second/right)
+    for point in baseline_points:
         color = PROVIDER_COLORS.get(point.provider, "#6B7280")
         providers_seen.add(point.provider)
         ax2.scatter(point.x, point.y, c=color, s=100, alpha=0.8,
                     edgecolors="white", linewidth=1)
-        label = _shorten_model_name(point.model)
-        texts2.append(ax2.text(point.x, point.y, label, fontsize=8, alpha=0.9))
 
-    # Adjust philosophy labels
-    adjust_text(texts2, ax=ax2, arrowprops=dict(arrowstyle="-", color="gray", lw=0.5))
+    # Add radial labels for baseline
+    _add_radial_labels(ax2, baseline_points, label_distance=0.01)
 
-    subtitle2 = f"(spread: {philosophy_spread:.4f})" if philosophy_spread is not None else ""
-    ax2.set_title(f"{philosophy_title}\n{subtitle2}" if subtitle2 else philosophy_title)
+    ax2.set_title(baseline_title)
     ax2.set_xlim(xlim)
     ax2.set_ylim(ylim)
     ax2.grid(True, alpha=0.3)
     ax2.set_aspect("equal", adjustable="box")
 
-    # Shared legend
+    # Legend in center column
+    ax_legend.axis("off")
     if providers_seen:
         handles = []
         for provider in sorted(providers_seen):
@@ -266,10 +324,12 @@ def plot_comparison(
             display = PROVIDER_DISPLAY.get(provider, provider.title())
             patch = mpatches.Patch(color=color, label=display)
             handles.append(patch)
-        fig.legend(handles=handles, loc="center right", framealpha=0.9)
+        ax_legend.legend(
+            handles=handles, loc="center", framealpha=0.9,
+            fontsize=10, title="Provider"
+        )
 
     plt.tight_layout()
-    plt.subplots_adjust(right=0.88)  # Make room for legend
 
     if output_path:
         output_path.parent.mkdir(parents=True, exist_ok=True)
