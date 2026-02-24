@@ -58,6 +58,13 @@ def _get_tokenizer(model: "SentenceTransformer"):
     We disable truncation warnings since we're deliberately probing
     text lengths to find chunk boundaries.
     """
+    try:
+        from transformers.utils import logging as hf_logging
+        hf_logging.set_verbosity_error()
+    except Exception:
+        # If transformers logging isn't available, proceed without it.
+        pass
+
     def tokenize(text: str) -> list:
         # Use the model's tokenizer without truncation (for accurate counting)
         # and without length warnings (we handle length ourselves in chunking)

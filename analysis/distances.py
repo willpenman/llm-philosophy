@@ -138,6 +138,34 @@ def compute_mean_pairwise_distance(distance_matrix: np.ndarray) -> float:
     return float(np.mean(upper))
 
 
+def compute_mean_pairwise_distance_points(points: list[ModelPoint]) -> float:
+    """Compute mean pairwise Euclidean distance for 2D points."""
+    n = len(points)
+    if n < 2:
+        return 0.0
+
+    coords = np.array([[p.x, p.y] for p in points], dtype=float)
+    dists = np.sqrt(((coords[:, None, :] - coords[None, :, :]) ** 2).sum(axis=2))
+    upper = dists[np.triu_indices(n, k=1)]
+    return float(np.mean(upper))
+
+
+def scale_points(points: list[ModelPoint], factor: float) -> list[ModelPoint]:
+    """Scale points by a constant factor."""
+    if factor == 1.0:
+        return points
+
+    return [
+        ModelPoint(
+            provider=p.provider,
+            model=p.model,
+            x=p.x * factor,
+            y=p.y * factor,
+        )
+        for p in points
+    ]
+
+
 def compute_averaged_distance_matrix(
     per_task_embeddings: dict[str, dict[tuple[str, str], np.ndarray]],
 ) -> tuple[np.ndarray, list[tuple[str, str]]]:

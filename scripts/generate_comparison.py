@@ -20,6 +20,8 @@ from analysis.distances import (
     project_to_2d,
     compute_spread,
     compute_mean_pairwise_distance,
+    compute_mean_pairwise_distance_points,
+    scale_points,
 )
 from analysis.visualize import plot_comparison
 
@@ -122,17 +124,29 @@ def main() -> None:
     baseline_distances, baseline_keys = compute_averaged_distance_matrix(baseline_filtered)
     baseline_mean_dist = compute_mean_pairwise_distance(baseline_distances)
     baseline_points = project_to_2d(baseline_distances, baseline_keys)
+    baseline_points_mean = compute_mean_pairwise_distance_points(baseline_points)
+    baseline_scale = (baseline_mean_dist / baseline_points_mean) if baseline_points_mean > 0 else 1.0
+    baseline_points = scale_points(baseline_points, baseline_scale)
     baseline_spread = compute_spread(baseline_points)
 
-    print(f"\nBaseline: mean distance = {baseline_mean_dist:.4f}, spread = {baseline_spread:.4f}")
+    print(
+        f"\nBaseline: mean distance = {baseline_mean_dist:.4f}, "
+        f"scale factor = {baseline_scale:.4f}, spread = {baseline_spread:.4f}"
+    )
 
     # Compute averaged distances for philosophy
     philosophy_distances, philosophy_keys = compute_averaged_distance_matrix(philosophy_filtered)
     philosophy_mean_dist = compute_mean_pairwise_distance(philosophy_distances)
     philosophy_points = project_to_2d(philosophy_distances, philosophy_keys)
+    philosophy_points_mean = compute_mean_pairwise_distance_points(philosophy_points)
+    philosophy_scale = (philosophy_mean_dist / philosophy_points_mean) if philosophy_points_mean > 0 else 1.0
+    philosophy_points = scale_points(philosophy_points, philosophy_scale)
     philosophy_spread = compute_spread(philosophy_points)
 
-    print(f"Philosophy: mean distance = {philosophy_mean_dist:.4f}, spread = {philosophy_spread:.4f}")
+    print(
+        f"Philosophy: mean distance = {philosophy_mean_dist:.4f}, "
+        f"scale factor = {philosophy_scale:.4f}, spread = {philosophy_spread:.4f}"
+    )
 
     # Compare
     if baseline_mean_dist > 0:
