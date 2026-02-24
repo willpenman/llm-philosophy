@@ -248,6 +248,9 @@ Baseline prompts establish a "normal" level of model differentiation to contrast
 rm -rf baselines/responses/
 rm analysis/embeddings/*__baseline__*
 
+# Default behavior is resume (skip prompts already captured). Use --no-resume to force reruns.
+# Use baseline runs as part of the "add new model" checklist.
+
 # Run baselines for specific models
 python -m scripts.run_baselines --model gpt-4-0613 gemini-2.0-flash-lite-001 o3-2025-04-16 claude-opus-4-5-20251101
 

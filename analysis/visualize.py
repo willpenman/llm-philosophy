@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import numpy as np
+from adjustText import adjust_text
 
 from analysis.distances import ModelPoint
 
@@ -37,31 +38,44 @@ PROVIDER_DISPLAY = {
 
 def _shorten_model_name(model: str) -> str:
     """Create a short display name for a model."""
-    # Common patterns to shorten
+    # Common patterns to shorten (order matters - more specific first)
     replacements = [
+        ("claude-opus-4-5-20251101", "Opus 4.5"),
+        ("claude-opus-4-6", "Opus 4.6"),
+        ("claude-sonnet-4-6", "Sonnet 4.6"),
+        ("claude-3-haiku-20240307", "Haiku 3"),
         ("claude-opus-", "Opus "),
         ("claude-sonnet-", "Sonnet "),
-        ("claude-haiku-", "Haiku "),
         ("claude-", "Claude "),
+        ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro"),
+        ("gpt-5.2-2025-12-11", "GPT-5.2"),
+        ("gpt-4o-2024-05-13", "GPT-4o"),
+        ("gpt-4-0613", "GPT-4"),
         ("gpt-5.2-pro", "GPT-5.2 Pro"),
         ("gpt-5.2", "GPT-5.2"),
-        ("gpt-4o-", "GPT-4o "),
+        ("gpt-4o", "GPT-4o"),
         ("gpt-4-", "GPT-4 "),
+        ("o3-2025-04-16", "o3"),
         ("o3-", "o3 "),
+        ("gemini-3.1-pro-preview", "Gemini 3.1 Pro"),
+        ("gemini-3-pro-preview", "Gemini 3 Pro"),
         ("gemini-3.1-pro", "Gemini 3.1 Pro"),
         ("gemini-3-pro", "Gemini 3 Pro"),
-        ("gemini-2.0-flash-lite", "Gemini Flash Lite"),
+        ("gemini-2.0-flash-lite-001", "Flash Lite"),
+        ("gemini-2.0-flash-lite", "Flash Lite"),
         ("gemini-", "Gemini "),
         ("grok-4-1-fast-reasoning", "Grok 4.1"),
+        ("grok-2-vision-1212", "Grok 2"),
         ("grok-3", "Grok 3"),
         ("grok-2-vision", "Grok 2"),
         ("grok-", "Grok "),
-        ("deepseek-v3p2", "V3.2"),
-        ("deepseek-v3p1", "V3.1"),
+        ("deepseek-v3p2", "DS 3.2"),
+        ("deepseek-v3p1", "DS 3.1"),
         ("deepseek-", "DeepSeek "),
         ("llama-v3p3-70b-instruct", "Llama 3.3 70B"),
         ("llama-", "Llama "),
         ("kimi-k2p5", "K2.5"),
+        ("kimi-k2-instruct-0905", "K2"),
         ("kimi-k2-instruct", "K2"),
         ("kimi-", "Kimi "),
         ("qwen3-vl-235b-thinking", "Qwen3-VL 235B"),
@@ -203,6 +217,8 @@ def plot_comparison(
         ylim = (-1, 1)
 
     providers_seen = set()
+    texts1 = []
+    texts2 = []
 
     # Plot baseline
     for point in baseline_points:
@@ -211,8 +227,7 @@ def plot_comparison(
         ax1.scatter(point.x, point.y, c=color, s=100, alpha=0.8,
                     edgecolors="white", linewidth=1)
         label = _shorten_model_name(point.model)
-        ax1.annotate(label, (point.x, point.y), xytext=(5, 5),
-                     textcoords="offset points", fontsize=8, alpha=0.9)
+        texts1.append(ax1.text(point.x, point.y, label, fontsize=8, alpha=0.9))
 
     subtitle1 = f"(spread: {baseline_spread:.4f})" if baseline_spread is not None else ""
     ax1.set_title(f"{baseline_title}\n{subtitle1}" if subtitle1 else baseline_title)
@@ -221,6 +236,9 @@ def plot_comparison(
     ax1.grid(True, alpha=0.3)
     ax1.set_aspect("equal", adjustable="box")
 
+    # Adjust baseline labels
+    adjust_text(texts1, ax=ax1, arrowprops=dict(arrowstyle="-", color="gray", lw=0.5))
+
     # Plot philosophy
     for point in philosophy_points:
         color = PROVIDER_COLORS.get(point.provider, "#6B7280")
@@ -228,8 +246,10 @@ def plot_comparison(
         ax2.scatter(point.x, point.y, c=color, s=100, alpha=0.8,
                     edgecolors="white", linewidth=1)
         label = _shorten_model_name(point.model)
-        ax2.annotate(label, (point.x, point.y), xytext=(5, 5),
-                     textcoords="offset points", fontsize=8, alpha=0.9)
+        texts2.append(ax2.text(point.x, point.y, label, fontsize=8, alpha=0.9))
+
+    # Adjust philosophy labels
+    adjust_text(texts2, ax=ax2, arrowprops=dict(arrowstyle="-", color="gray", lw=0.5))
 
     subtitle2 = f"(spread: {philosophy_spread:.4f})" if philosophy_spread is not None else ""
     ax2.set_title(f"{philosophy_title}\n{subtitle2}" if subtitle2 else philosophy_title)
