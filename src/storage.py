@@ -187,7 +187,7 @@ class ResponseStore:
     def _append_jsonl(self, path: Path, record: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as handle:
-            handle.write(json.dumps(record, ensure_ascii=True))
+            handle.write(json.dumps(record, ensure_ascii=False))
             handle.write("\n")
 
     def record_request(

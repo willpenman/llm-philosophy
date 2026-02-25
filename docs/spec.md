@@ -37,6 +37,14 @@ across providers.
 - `docs/` (provider notes, schema references, and this spec)
 - `tests/` (static and live tests per provider, additional tests per feature eg cost calculation)
 - `tmp/` (output directory for temporary files, eg sse dumps)
+- `baselines/` (baseline prompts and responses for calibration)
+  - `prompts.py` (baseline prompt definitions)
+  - `responses/` (append-only JSONL, partitioned by provider/model)
+- `analysis/` (embedding-based analysis and visualization)
+  - `embeddings.py` (embedding generation and caching)
+  - `distances.py` (distance matrix computation and projection)
+  - `visualize.py` (plotting utilities)
+  - `embeddings/` (cached embedding files as `.npz`)
 
 ## Data capture requirements
 - Log the exact system prompt and puzzle text per request.
@@ -223,6 +231,48 @@ across providers.
 - Added Claude Opus 4.6 (`claude-opus-4-6`) model metadata, adaptive thinking defaults, and Anthropic adapter test coverage.
 - Added Claude Sonnet 4.6 (`claude-sonnet-4-6`) model metadata, output effort defaults, and Anthropic adapter test coverage.
 - Added Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`) model metadata, pricing, and Gemini request/live test coverage.
+
+## Baselines
+
+Baseline prompts establish a "normal" level of model differentiation to contrast with philosophy puzzle responses. The goal is to measure: "How much do models differ on unimportant opinion questions?" and then compare whether philosophy-of-self questions elicit at least as much (ideally more) differentiation.
+
+### Baseline prompt design
+- All prompts follow the form: "What do you think is the most interesting X?"
+- Topics are chosen to elicit minimal preferences without philosophical weight.
+- Follow-ups vary to produce genre-diverse outputs (programming, math, fiction, biology, etc.), comparable in length range to philosophy responses.
+- Some use simple "How so?" follow-ups; others request extended output in a specific register (e.g., "Compose a short 500-word addition", "Write a day-in-the-life sketch").
+
+### Running baselines
+```bash
+# Clear cached responses and embeddings before re-running with new prompts
+rm -rf baselines/responses/
+rm analysis/embeddings/*__baseline__*
+
+# Default behavior is resume (skip prompts already captured). Use --no-resume to force reruns.
+# Use baseline runs as part of the "add new model" checklist.
+
+# Run baselines for specific models
+python -m scripts.run_baselines --model gpt-4-0613 gemini-2.0-flash-lite-001 o3-2025-04-16 claude-opus-4-5-20251101
+```
+
+### Generating visualizations
+```bash
+# Side-by-side comparison of baseline vs philosophy responses
+# Points are rescaled so baseline and philosophy maps share the same axis scale
+python -m scripts.generate_comparison panopticon
+python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles averaged
+
+# Philosophy-only mode: show just the philosophy puzzle map(s) without baseline
+# No rescaling is applied since there's no baseline to match
+python -m scripts.generate_comparison panopticon --philosophy-only
+python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
+```
+
+### Embedding cache
+- Embeddings are cached in `analysis/embeddings/` as `.npz` files.
+- Filename format: `{provider}__{model}__{type}__{name}__all-mpnet-base-v2.npz`
+- `type` is either `baseline` or `puzzle`.
+- Baseline embeddings must be cleared when prompts change; puzzle embeddings can persist.
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
