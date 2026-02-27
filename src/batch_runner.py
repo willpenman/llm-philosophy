@@ -34,6 +34,15 @@ from src.providers.fireworks import (
     provider_for_model as fireworks_provider_for_model,
     storage_model_name as fireworks_storage_model_name,
 )
+
+# Models that are currently unreachable (e.g., deprecated by provider, temporarily unavailable).
+# Open-source models may become reachable again if hosted elsewhere; check before each run.
+# Format: (storage_provider, storage_model_name)
+# Include date discovered and context when adding entries.
+UNREACHABLE_MODELS: set[tuple[str, str]] = {
+    ("qwen", "qwen3-vl-235b-thinking"),  # 2026-02: removed from Fireworks serverless
+    ("qwen", "qwen2p5-vl-32b"),  # 2026-02: removed from Fireworks serverless
+}
 from src.runner import (
     run_openai_puzzle,
     run_anthropic_puzzle,
@@ -99,8 +108,13 @@ STREAM_DEFAULTS: dict[str, bool] = {
 }
 
 
-def enumerate_all_models() -> list[ModelSpec]:
-    """Build a flat list of all (provider, model) pairs across all providers."""
+def enumerate_all_models(*, include_unreachable: bool = False) -> list[ModelSpec]:
+    """Build a flat list of all (provider, model) pairs across all providers.
+
+    Args:
+        include_unreachable: If True, include models marked as unreachable.
+            Default False filters them out for batch runs.
+    """
     specs: list[ModelSpec] = []
 
     # OpenAI
@@ -160,7 +174,17 @@ def enumerate_all_models() -> list[ModelSpec]:
             )
         )
 
+    # Filter out unreachable models unless explicitly requested
+    if not include_unreachable:
+        specs = [s for s in specs if (s.provider, s.model) not in UNREACHABLE_MODELS]
+
     return specs
+
+
+def get_unreachable_models() -> list[ModelSpec]:
+    """Return list of models that are currently unreachable."""
+    all_specs = enumerate_all_models(include_unreachable=True)
+    return [s for s in all_specs if (s.provider, s.model) in UNREACHABLE_MODELS]
 
 
 def filter_models(
@@ -518,6 +542,12 @@ def run_batch(
         print(f"\nWould run {len(specs)} models:")
         for spec in specs:
             print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
+        # Show unreachable models that were excluded
+        unreachable = get_unreachable_models()
+        if unreachable:
+            print(f"\nNot running {len(unreachable)} unreachable models:")
+            for spec in unreachable:
+                print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
         return []
 
     print(f"\nRunning {len(specs)} models in {mode.value} mode...")

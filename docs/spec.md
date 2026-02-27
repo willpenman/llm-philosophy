@@ -155,6 +155,16 @@ across providers.
 - Add to `MODEL_DEFAULTS`, `PRICE_SCHEDULES_USD_PER_MILLION`, `MODEL_ALIASES`, `MODEL_PROVIDERS`.
 - If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="hight"`).
 
+## Marking a model unreachable
+
+When a model becomes unavailable (deprecated by provider, removed from Fireworks serverless, etc.):
+
+- Add the model to `UNREACHABLE_MODELS` in `src/batch_runner.py` as a `(storage_provider, storage_model_name)` tuple.
+- Include a comment with the date you discovered it was unreachable and any relevant context (e.g., provider deprecation notice, Fireworks removal).
+- The model remains in provider metadata (pricing, aliases, etc.) since we have historical responses.
+- `--model ALL` will exclude unreachable models; `list_models` shows them in a separate "Unreachable" section.
+- Open-source models may become reachable again if re-hosted; check availability before each puzzle run and remove from `UNREACHABLE_MODELS` if restored.
+
 ## Adding a puzzle
 
 Each new puzzle follows a structured development cycle:

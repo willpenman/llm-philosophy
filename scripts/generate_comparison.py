@@ -281,6 +281,12 @@ def main() -> None:
     print(f"Found {len(philosophy_models)} models across {len(philosophy_by_puzzle)} puzzles")
 
     # Find common models
+    # NOTE: We filter to the intersection of baseline and philosophy responses. This
+    # discards models that have philosophy responses but no baseline (or vice versa).
+    # This is a conservative choice: we have more data than we use here, but averaging
+    # distances across incomplete pairings is not well-defined mathematically. A model
+    # missing from one prompt/puzzle would leave gaps in the distance matrix, and it's
+    # unclear how to weight partial comparisons. For now, we accept this limitation.
     common_models = baseline_models & philosophy_models
     print(f"\n{len(common_models)} models have both baseline and philosophy responses")
 
