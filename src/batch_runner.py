@@ -296,6 +296,15 @@ def run_single_model(
     if status_callback:
         status_callback(spec, RunStatus.STARTED)
 
+    first_data_event = threading.Event()
+
+    def on_first_data() -> None:
+        if first_data_event.is_set():
+            return
+        first_data_event.set()
+        if status_callback:
+            status_callback(spec, RunStatus.RECEIVING)
+
     stream = STREAM_DEFAULTS.get(spec.runner_provider, True)
     start_time = time.perf_counter()
 
@@ -309,13 +318,11 @@ def run_single_model(
             puzzle_name=puzzle_name,
             model=model_arg,
             stream=stream,
+            quiet=quiet,
+            on_first_data=on_first_data,
         )
 
         duration = time.perf_counter() - start_time
-
-        # Report receiving (we got a response)
-        if status_callback:
-            status_callback(spec, RunStatus.RECEIVING)
 
         return ModelRunResult(
             spec=spec,
@@ -399,8 +406,9 @@ def run_parallel_by_provider(
                 quiet=True,
             )
             if display:
-                # Display manager handles COMPLETED/FAILED via status_callback
-                if result.status == RunStatus.FAILED:
+                if result.status == RunStatus.COMPLETED:
+                    display.update(spec, RunStatus.COMPLETED)
+                elif result.status == RunStatus.FAILED:
                     display.update(spec, RunStatus.FAILED, error=result.error)
             else:
                 if result.status == RunStatus.COMPLETED:
@@ -454,8 +462,9 @@ def run_parallel_all(
             quiet=True,
         )
         if display:
-            # Display manager handles COMPLETED/FAILED via status_callback
-            if result.status == RunStatus.FAILED:
+            if result.status == RunStatus.COMPLETED:
+                display.update(spec, RunStatus.COMPLETED)
+            elif result.status == RunStatus.FAILED:
                 display.update(spec, RunStatus.FAILED, error=result.error)
         else:
             if result.status == RunStatus.COMPLETED:
@@ -556,10 +565,15 @@ def run_batch(
         print(f"\nWould run {len(specs)} models:")
         for spec in specs:
             print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
+        # Show skipped models (resume mode)
+        if skipped_models:
+            print(f"\nSkipping {len(skipped_models)} models with existing responses:")
+            for name in skipped_models:
+                print(f"  - {name}")
         # Show unreachable models that were excluded
         unreachable = get_unreachable_models()
         if unreachable:
-            print(f"\nNot running {len(unreachable)} unreachable models:")
+            print(f"\nNot running {len(unreachable)} models that have some responses (are now unreachable):")
             for spec in unreachable:
                 print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
         return []
@@ -570,10 +584,17 @@ def run_batch(
         results = run_sequential(specs, puzzle_name)
         print_summary(results, skipped_count)
     elif mode == ExecutionMode.PARALLEL_PROVIDER:
+        skip_version = puzzle_version or "undefined"
+        skipped_message = (
+            f"{skipped_count} skipped since already has response for version {skip_version}"
+            if skipped_count > 0
+            else None
+        )
         display = BatchDisplayManager(
             specs=specs,
             puzzle_name=puzzle_name,
             skipped_models=skipped_models,
+            skipped_message=skipped_message,
             show_current_model=True,
         )
         display.start()
@@ -581,10 +602,17 @@ def run_batch(
         total_cost = aggregate_costs(results)
         display.finalize(total_cost=total_cost)
     elif mode == ExecutionMode.PARALLEL_ALL:
+        skip_version = puzzle_version or "undefined"
+        skipped_message = (
+            f"{skipped_count} skipped since already has response for version {skip_version}"
+            if skipped_count > 0
+            else None
+        )
         display = BatchDisplayManager(
             specs=specs,
             puzzle_name=puzzle_name,
             skipped_models=skipped_models,
+            skipped_message=skipped_message,
             show_current_model=False,  # Too many concurrent for "Now:" to be useful
         )
         display.start()

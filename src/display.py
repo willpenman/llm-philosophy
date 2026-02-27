@@ -31,6 +31,10 @@ SYMBOLS = {
     DisplayStatus.FAILED: "✗",
 }
 
+# Max provider name length + 1 space (Fireworks = 9 chars).
+# If we add a longer provider name in the future, update this width.
+PROVIDER_NAME_WIDTH = 10
+
 
 @dataclass
 class ModelState:
@@ -62,6 +66,7 @@ class BatchDisplayManager:
         specs: list["ModelSpec"],
         puzzle_name: str,
         skipped_models: list[str] | None = None,
+        skipped_message: str | None = None,
         show_current_model: bool = True,  # False for parallel-all
     ) -> None:
         """Initialize the display manager.
@@ -74,12 +79,14 @@ class BatchDisplayManager:
         """
         self._puzzle_name = puzzle_name
         self._skipped_models = skipped_models or []
+        self._skipped_message = skipped_message
         self._show_current = show_current_model
         self._lock = threading.Lock()
         self._line_count = 0  # Track lines for cursor movement
         self._is_tty = sys.stdout.isatty()
         self._errors: list[tuple[str, str]] = []  # (model_name, error_msg)
         self._started = False
+        self._symbols_width = 0
 
         # Group specs by runner_provider, sorted alphabetically
         self._providers: dict[str, ProviderState] = {}
@@ -97,6 +104,10 @@ class BatchDisplayManager:
             state = ModelState(spec=spec)
             self._providers[provider_key].models.append(state)
             self._spec_to_state[(spec.provider, spec.model)] = state
+
+        max_models = max((len(p.models) for p in self._providers.values()), default=0)
+        if max_models > 0:
+            self._symbols_width = max_models * 2 - 1
 
     def _provider_display_name(self, runner_provider: str) -> str:
         """Convert runner_provider to display name."""
@@ -123,9 +134,8 @@ class BatchDisplayManager:
         lines.append(f"Puzzle: {self._puzzle_name}")
 
         # Skipped models (if any)
-        if self._skipped_models:
-            skipped_str = ", ".join(self._skipped_models)
-            lines.append(f"Skipped (already has response): {skipped_str}")
+        if self._skipped_message:
+            lines.append(self._skipped_message)
 
         lines.append("")  # Blank line before providers
 
@@ -149,8 +159,8 @@ class BatchDisplayManager:
 
     def _format_provider_line(self, provider: ProviderState) -> str:
         """Format a single provider line with symbols."""
-        # Pad provider name to 12 chars for alignment
-        name_col = f"{provider.display_name:<12}"
+        # Pad provider name to a fixed width for alignment
+        name_col = f"{provider.display_name:<{PROVIDER_NAME_WIDTH}}"
 
         # Build symbol string: completed first, then in-flight, then pending
         completed_symbols: list[str] = []
@@ -168,6 +178,8 @@ class BatchDisplayManager:
 
         all_symbols = completed_symbols + inflight_symbols + pending_symbols
         symbols_str = " ".join(all_symbols)
+        if self._symbols_width > 0:
+            symbols_str = symbols_str.ljust(self._symbols_width)
 
         # Add "Now:" indicator if showing current model
         if self._show_current and provider.current_model:
@@ -230,8 +242,12 @@ class BatchDisplayManager:
                 model_state.status = DisplayStatus.REQUESTED
                 provider.current_model = spec.display_name
             elif status == RunStatus.RECEIVING:
-                model_state.status = DisplayStatus.STREAMING
-                provider.current_model = spec.display_name
+                if model_state.status not in (
+                    DisplayStatus.COMPLETED,
+                    DisplayStatus.FAILED,
+                ):
+                    model_state.status = DisplayStatus.STREAMING
+                    provider.current_model = spec.display_name
             elif status == RunStatus.COMPLETED:
                 model_state.status = DisplayStatus.COMPLETED
                 provider.current_model = None
@@ -258,9 +274,8 @@ class BatchDisplayManager:
         lines.append(f"Puzzle: {self._puzzle_name}")
 
         # Skipped models (if any)
-        if self._skipped_models:
-            skipped_str = ", ".join(self._skipped_models)
-            lines.append(f"Skipped (already has response): {skipped_str}")
+        if self._skipped_message:
+            lines.append("")
 
         lines.append("")  # Blank line before providers
 
@@ -322,9 +337,11 @@ class BatchDisplayManager:
             for provider_key in sorted(self._providers.keys()):
                 provider = self._providers[provider_key]
                 # Format without current_model for final state
-                name_col = f"{provider.display_name:<12}"
+                name_col = f"{provider.display_name:<{PROVIDER_NAME_WIDTH}}"
                 symbols = [SYMBOLS[m.status] for m in provider.models]
                 symbols_str = " ".join(symbols)
+                if self._symbols_width > 0:
+                    symbols_str = symbols_str.ljust(self._symbols_width)
                 lines.append(f"{name_col}{symbols_str}")
 
             lines.append("")
@@ -367,6 +384,6 @@ def aggregate_costs(results: list) -> float | None:
     has_cost = False
     for r in results:
         if r.run_result and r.run_result.cost:
-            total += r.run_result.cost.total
+            total += r.run_result.cost.total_cost
             has_cost = True
     return total if has_cost else None
