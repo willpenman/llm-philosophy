@@ -51,6 +51,7 @@ from src.runner import (
     run_fireworks_puzzle,
     RunResult,
 )
+from src.display import BatchDisplayManager, aggregate_costs
 
 
 class ExecutionMode(Enum):
@@ -370,6 +371,7 @@ def run_sequential(
 def run_parallel_by_provider(
     specs: list[ModelSpec],
     puzzle_name: str,
+    display: BatchDisplayManager | None = None,
 ) -> list[ModelRunResult]:
     """Run one model at a time per provider (5 concurrent streams)."""
     # Group specs by runner_provider
@@ -379,10 +381,11 @@ def run_parallel_by_provider(
 
     all_results: list[ModelRunResult] = []
     results_lock = threading.Lock()
-    print_lock = threading.Lock()
 
     def status_callback(spec: ModelSpec, status: RunStatus) -> None:
-        with print_lock:
+        if display:
+            display.update(spec, status)
+        else:
             _print_status(spec, status)
 
     def run_provider_queue(provider: str, queue: list[ModelSpec]) -> list[ModelRunResult]:
@@ -395,7 +398,11 @@ def run_parallel_by_provider(
                 status_callback=status_callback,
                 quiet=True,
             )
-            with print_lock:
+            if display:
+                # Display manager handles COMPLETED/FAILED via status_callback
+                if result.status == RunStatus.FAILED:
+                    display.update(spec, RunStatus.FAILED, error=result.error)
+            else:
                 if result.status == RunStatus.COMPLETED:
                     _print_status(spec, RunStatus.COMPLETED, f"({result.duration_seconds:.1f}s)")
                 else:
@@ -417,7 +424,7 @@ def run_parallel_by_provider(
                 with results_lock:
                     all_results.extend(provider_results)
             except Exception as e:
-                with print_lock:
+                if not display:
                     print(f"[ERROR] Provider {provider} failed: {e}")
 
     return all_results
@@ -427,14 +434,16 @@ def run_parallel_all(
     specs: list[ModelSpec],
     puzzle_name: str,
     max_workers: int = 30,
+    display: BatchDisplayManager | None = None,
 ) -> list[ModelRunResult]:
     """Run all models in parallel (up to max_workers)."""
     all_results: list[ModelRunResult] = []
     results_lock = threading.Lock()
-    print_lock = threading.Lock()
 
     def status_callback(spec: ModelSpec, status: RunStatus) -> None:
-        with print_lock:
+        if display:
+            display.update(spec, status)
+        else:
             _print_status(spec, status)
 
     def run_model(spec: ModelSpec) -> ModelRunResult:
@@ -444,7 +453,11 @@ def run_parallel_all(
             status_callback=status_callback,
             quiet=True,
         )
-        with print_lock:
+        if display:
+            # Display manager handles COMPLETED/FAILED via status_callback
+            if result.status == RunStatus.FAILED:
+                display.update(spec, RunStatus.FAILED, error=result.error)
+        else:
             if result.status == RunStatus.COMPLETED:
                 _print_status(spec, RunStatus.COMPLETED, f"({result.duration_seconds:.1f}s)")
             else:
@@ -521,6 +534,7 @@ def run_batch(
         List of results from executed models
     """
     skipped_count = 0
+    skipped_models: list[str] = []
 
     # Handle resume mode
     if resume:
@@ -528,7 +542,7 @@ def run_batch(
         specs_to_run = []
         for spec in specs:
             if (spec.provider, spec.model) in existing:
-                print(f"[SKIPPED] {spec.display_name} - already has response")
+                skipped_models.append(spec.display_name)
                 skipped_count += 1
             else:
                 specs_to_run.append(spec)
@@ -550,19 +564,34 @@ def run_batch(
                 print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
         return []
 
-    print(f"\nRunning {len(specs)} models in {mode.value} mode...")
-
     # Execute based on mode
     if mode == ExecutionMode.SEQUENTIAL:
+        print(f"\nRunning {len(specs)} models in {mode.value} mode...")
         results = run_sequential(specs, puzzle_name)
+        print_summary(results, skipped_count)
     elif mode == ExecutionMode.PARALLEL_PROVIDER:
-        results = run_parallel_by_provider(specs, puzzle_name)
+        display = BatchDisplayManager(
+            specs=specs,
+            puzzle_name=puzzle_name,
+            skipped_models=skipped_models,
+            show_current_model=True,
+        )
+        display.start()
+        results = run_parallel_by_provider(specs, puzzle_name, display=display)
+        total_cost = aggregate_costs(results)
+        display.finalize(total_cost=total_cost)
     elif mode == ExecutionMode.PARALLEL_ALL:
-        results = run_parallel_all(specs, puzzle_name)
+        display = BatchDisplayManager(
+            specs=specs,
+            puzzle_name=puzzle_name,
+            skipped_models=skipped_models,
+            show_current_model=False,  # Too many concurrent for "Now:" to be useful
+        )
+        display.start()
+        results = run_parallel_all(specs, puzzle_name, display=display)
+        total_cost = aggregate_costs(results)
+        display.finalize(total_cost=total_cost)
     else:
         raise ValueError(f"Unknown execution mode: {mode}")
-
-    # Print summary
-    print_summary(results, skipped_count)
 
     return results

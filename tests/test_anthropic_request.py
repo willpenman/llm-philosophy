@@ -148,7 +148,8 @@ def test_build_messages_request_accepts_temperature_for_opus_46() -> None:
     assert payload["temperature"] == 0.2
 
 
-def test_build_messages_request_rejects_temperature_for_sonnet_46() -> None:
+def test_build_messages_request_rejects_temperature_with_adaptive_thinking() -> None:
+    """Adaptive thinking models reject temperature when thinking is enabled."""
     with pytest.raises(ValueError, match="temperature"):
         build_messages_request(
             system_prompt="System text",
@@ -156,6 +157,7 @@ def test_build_messages_request_rejects_temperature_for_sonnet_46() -> None:
             model="claude-sonnet-4-6",
             max_output_tokens=128,
             temperature=0.2,
+            thinking={"type": "adaptive"},  # Default config for adaptive models
         )
 
 

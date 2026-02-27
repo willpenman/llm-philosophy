@@ -32,7 +32,7 @@ def test_build_chat_completion_request_includes_system_and_user() -> None:
     ("model", "expected_max_tokens"),
     [
         ("deepseek-v3p2", 64000),
-        ("deepseek-v3-0324", 30000),
+        ("deepseek-v3p1", 30000),
         ("qwen3-vl-235b-thinking", 38912),
         ("qwen2p5-vl-32b", 128000),
         ("kimi-k2p5", 250000),
@@ -69,7 +69,7 @@ def test_build_chat_completion_request_includes_temperature_top_p_when_set() -> 
     ("model", "expected_input", "expected_output", "expected_alias"),
     [
         ("deepseek-v3p2", 0.56, 1.68, "DeepSeek V3.2"),
-        ("deepseek-v3-0324", 0.90, 0.90, "DeepSeek V3 Update 1"),
+        ("deepseek-v3p1", 0.56, 1.68, "DeepSeek V3.1"),
         ("qwen3-vl-235b-thinking", 0.22, 0.88, "Qwen3-VL 235B Thinking"),
         ("qwen2p5-vl-32b", 0.90, 0.90, "Qwen2.5-VL 32B"),
         ("kimi-k2p5", 0.60, 3.00, "Kimi K2.5"),
@@ -95,7 +95,7 @@ def test_price_schedule_for_model_includes_units(
     ("model", "expected_provider", "expected_provider_alias"),
     [
         ("deepseek-v3p2", "deepseek", "DeepSeek AI (via Fireworks)"),
-        ("deepseek-v3-0324", "deepseek", "DeepSeek AI (via Fireworks)"),
+        ("deepseek-v3p1", "deepseek", "DeepSeek AI (via Fireworks)"),
         ("qwen3-vl-235b-thinking", "qwen", "Qwen (via Fireworks)"),
         ("qwen2p5-vl-32b", "qwen", "Qwen (via Fireworks)"),
         ("kimi-k2p5", "kimi", "Moonshot AI (via Fireworks)"),
@@ -144,7 +144,7 @@ def test_calculate_cost_breakdown_uses_fireworks_rates() -> None:
     assert breakdown.total_cost == pytest.approx(0.000056)
 
 
-def test_calculate_cost_breakdown_uses_v3_0324_rates() -> None:
+def test_calculate_cost_breakdown_uses_v3p1_rates() -> None:
     payload = {
         "usage": {
             "prompt_tokens": 10,
@@ -153,10 +153,11 @@ def test_calculate_cost_breakdown_uses_v3_0324_rates() -> None:
         }
     }
     breakdown = calculate_cost_breakdown(
-        payload, model="deepseek-v3-0324"
+        payload, model="deepseek-v3p1"
     )
     assert breakdown is not None
-    assert breakdown.input_cost == pytest.approx(0.000009)
+    # V3.1: $0.56/M input, $1.68/M output (same as V3.2)
+    assert breakdown.input_cost == pytest.approx(0.0000056)
     assert breakdown.reasoning_cost == pytest.approx(0.0)
-    assert breakdown.output_cost == pytest.approx(0.000027)
-    assert breakdown.total_cost == pytest.approx(0.000036)
+    assert breakdown.output_cost == pytest.approx(0.0000504)
+    assert breakdown.total_cost == pytest.approx(0.000056)

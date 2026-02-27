@@ -90,6 +90,8 @@ class RunResult:
     request_path: Path | None
     response_text_path: Path | None
     sse_event_path: Path | None
+    cost: CostBreakdown | None = None
+    tokens: TokenBreakdown | None = None
 
 
 def _format_timestamp(created_at: str) -> str:
@@ -518,6 +520,8 @@ def run_openai_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -701,6 +705,8 @@ def run_fireworks_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -879,6 +885,8 @@ def run_grok_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -1067,6 +1075,8 @@ def run_gemini_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -1251,4 +1261,6 @@ def run_anthropic_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
