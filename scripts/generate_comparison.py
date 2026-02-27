@@ -9,6 +9,13 @@ Usage:
     python -m scripts.generate_comparison panopticon --philosophy-only
     python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 
+    # All philosophy puzzles (averaged pairwise distances across puzzles)
+    python -m scripts.generate_comparison philosophy_all --philosophy-only
+    python -m scripts.generate_comparison philosophy_all
+
+    # Emit all three standard plots for a new puzzle
+    python -m scripts.generate_comparison panopticon --emit-all
+
     # Custom output path
     python -m scripts.generate_comparison panopticon --output analysis/figures/custom.png
 """
@@ -42,6 +49,12 @@ CACHE_DIR = ROOT / "analysis" / "embeddings"
 FIGURES_DIR = ROOT / "analysis" / "figures"
 
 
+def _display_title(puzzle_slug: str) -> str:
+    if puzzle_slug == "philosophy_all":
+        return "Model Similarity: All Philosophy Puzzles"
+    return f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
+
+
 def _run_philosophy_only(
     puzzle_names: list[str],
     puzzle_slug: str,
@@ -67,7 +80,7 @@ def _run_philosophy_only(
             spread = compute_spread(philosophy_points)
             mean_dist = compute_mean_pairwise_distance_points(philosophy_points)
 
-            title = f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
+            title = _display_title(puzzle_slug)
             subtitle = f"Mean distance: {mean_dist:.4f}, Spread: {spread:.4f}"
 
             fig = plot_model_map(
@@ -140,7 +153,7 @@ def _run_philosophy_only(
     print(f"Cached points to {philosophy_points_cache}")
 
     # Generate plot
-    title = f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
+    title = _display_title(puzzle_slug)
     subtitle = f"Mean distance: {mean_dist:.4f}, Spread: {spread:.4f}"
 
     fig = plot_model_map(
@@ -157,86 +170,40 @@ def _run_philosophy_only(
     print("\nDone!")
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate side-by-side baseline vs philosophy comparison."
-    )
-    parser.add_argument(
-        "puzzles",
-        nargs="+",
-        help="Puzzle name(s) (e.g., panopticon)",
-    )
-    parser.add_argument(
-        "--output", "-o",
-        type=Path,
-        default=None,
-        help="Output path for PNG (default: analysis/figures/comparison_{puzzles}.png)",
-    )
-    parser.add_argument(
-        "--no-cache",
-        action="store_true",
-        help="Don't use embedding cache",
-    )
-    parser.add_argument(
-        "--show",
-        action="store_true",
-        help="Display plot interactively",
-    )
-    parser.add_argument(
-        "--recompute-points",
-        action="store_true",
-        help="Recompute MDS projection even if cached points exist",
-    )
-    parser.add_argument(
-        "--philosophy-only",
-        action="store_true",
-        help="Show only philosophy map without baseline comparison (no rescaling)",
-    )
-    args = parser.parse_args()
-
-    puzzle_names = args.puzzles
-    puzzle_slug = "_".join(puzzle_names)
-    cache_dir = None if args.no_cache else CACHE_DIR
-
-    # Default output path depends on mode
-    if args.output:
-        output_path = args.output
-    elif args.philosophy_only:
-        output_path = FIGURES_DIR / f"{puzzle_slug}.png"
-    else:
-        output_path = FIGURES_DIR / f"comparison_{puzzle_slug}.png"
-
-    # Philosophy-only mode: skip baseline loading and rescaling
-    if args.philosophy_only:
-        _run_philosophy_only(
-            puzzle_names=puzzle_names,
-            puzzle_slug=puzzle_slug,
-            output_path=output_path,
-            cache_dir=cache_dir,
-            recompute_points=args.recompute_points,
-            show=args.show,
-        )
-        return
-
+def _run_comparison(
+    puzzle_names: list[str],
+    puzzle_slug: str,
+    output_path: Path,
+    cache_dir: Path | None,
+    recompute_points: bool,
+    show: bool,
+) -> None:
+    """Generate baseline vs philosophy comparison plot."""
     # Check for cached points (comparison mode)
     baseline_points_cache = CACHE_DIR / "points_baseline.json"
     philosophy_points_cache = CACHE_DIR / f"points_{puzzle_slug}.json"
 
-    if not args.recompute_points:
+    if not recompute_points:
         baseline_points = load_points(baseline_points_cache)
         philosophy_points = load_points(philosophy_points_cache)
 
         if baseline_points is not None and philosophy_points is not None:
             print("Using cached points (use --recompute-points to regenerate)")
 
-            # Generate plot (use default titles)
+            philosophy_title = (
+                "Philosophy Positions (All Puzzles)"
+                if puzzle_slug == "philosophy_all"
+                else "Philosophy Positions"
+            )
+
             fig = plot_comparison(
                 baseline_points=baseline_points,
                 philosophy_points=philosophy_points,
                 output_path=output_path,
+                philosophy_title=philosophy_title,
             )
 
-            if args.show:
+            if show:
                 import matplotlib.pyplot as plt
                 plt.show()
 
@@ -342,18 +309,149 @@ def main() -> None:
         ratio = philosophy_mean_dist / baseline_mean_dist
         print(f"\nPhilosophy differentiation is {ratio:.2f}x baseline")
 
+    philosophy_title = (
+        "Philosophy Positions (All Puzzles)"
+        if puzzle_slug == "philosophy_all"
+        else "Philosophy Positions"
+    )
+
     # Generate plot (use default titles)
     fig = plot_comparison(
         baseline_points=baseline_points,
         philosophy_points=philosophy_points,
         output_path=output_path,
+        philosophy_title=philosophy_title,
     )
 
-    if args.show:
+    if show:
         import matplotlib.pyplot as plt
         plt.show()
 
     print("\nDone!")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Generate side-by-side baseline vs philosophy comparison."
+    )
+    parser.add_argument(
+        "puzzles",
+        nargs="+",
+        help="Puzzle name(s) (e.g., panopticon) or 'philosophy_all' for all puzzles",
+    )
+    parser.add_argument(
+        "--output", "-o",
+        type=Path,
+        default=None,
+        help="Output path for PNG (default: analysis/figures/comparison_{puzzles}.png)",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Don't use embedding cache",
+    )
+    parser.add_argument(
+        "--show",
+        action="store_true",
+        help="Display plot interactively",
+    )
+    parser.add_argument(
+        "--recompute-points",
+        action="store_true",
+        help="Recompute MDS projection even if cached points exist",
+    )
+    parser.add_argument(
+        "--philosophy-only",
+        action="store_true",
+        help="Show only philosophy map without baseline comparison (no rescaling)",
+    )
+    parser.add_argument(
+        "--emit-all",
+        action="store_true",
+        help="Emit per-puzzle, all-philosophy, and baseline comparison plots",
+    )
+    args = parser.parse_args()
+
+    puzzle_names = args.puzzles
+    puzzle_slug = "_".join(puzzle_names)
+    if "philosophy_all" in puzzle_names:
+        if len(puzzle_names) > 1:
+            raise SystemExit("Use 'philosophy_all' alone to include every puzzle.")
+        from src.puzzles import list_puzzle_names
+        puzzle_names = list_puzzle_names()
+        if not puzzle_names:
+            raise SystemExit("No puzzles found for 'philosophy_all'.")
+        puzzle_slug = "philosophy_all"
+    cache_dir = None if args.no_cache else CACHE_DIR
+
+    # Default output path depends on mode
+    if args.output:
+        output_path = args.output
+    elif args.philosophy_only:
+        output_path = FIGURES_DIR / f"{puzzle_slug}.png"
+    else:
+        output_path = FIGURES_DIR / f"comparison_{puzzle_slug}.png"
+
+    if args.emit_all and args.philosophy_only:
+        raise SystemExit("Use --emit-all without --philosophy-only.")
+
+    if args.emit_all:
+        # 1) Per-puzzle plot (philosophy-only)
+        per_puzzle_output = FIGURES_DIR / f"{puzzle_slug}.png"
+        _run_philosophy_only(
+            puzzle_names=puzzle_names,
+            puzzle_slug=puzzle_slug,
+            output_path=per_puzzle_output,
+            cache_dir=cache_dir,
+            recompute_points=args.recompute_points,
+            show=args.show,
+        )
+
+        # 2) All philosophy puzzles (philosophy-only)
+        from src.puzzles import list_puzzle_names
+        all_puzzles = list_puzzle_names()
+        if not all_puzzles:
+            raise SystemExit("No puzzles found for philosophy_all.")
+        _run_philosophy_only(
+            puzzle_names=all_puzzles,
+            puzzle_slug="philosophy_all",
+            output_path=FIGURES_DIR / "philosophy_all.png",
+            cache_dir=cache_dir,
+            recompute_points=args.recompute_points,
+            show=args.show,
+        )
+
+        # 3) Baseline comparison vs all philosophy
+        _run_comparison(
+            puzzle_names=all_puzzles,
+            puzzle_slug="philosophy_all",
+            output_path=FIGURES_DIR / "comparison_philosophy_all.png",
+            cache_dir=cache_dir,
+            recompute_points=args.recompute_points,
+            show=args.show,
+        )
+        return
+
+    # Philosophy-only mode: skip baseline loading and rescaling
+    if args.philosophy_only:
+        _run_philosophy_only(
+            puzzle_names=puzzle_names,
+            puzzle_slug=puzzle_slug,
+            output_path=output_path,
+            cache_dir=cache_dir,
+            recompute_points=args.recompute_points,
+            show=args.show,
+        )
+        return
+
+    _run_comparison(
+        puzzle_names=puzzle_names,
+        puzzle_slug=puzzle_slug,
+        output_path=output_path,
+        cache_dir=cache_dir,
+        recompute_points=args.recompute_points,
+        show=args.show,
+    )
 
 
 if __name__ == "__main__":

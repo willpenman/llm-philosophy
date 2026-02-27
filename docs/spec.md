@@ -188,6 +188,9 @@ Each new puzzle follows a structured development cycle:
 - Per-puzzle plot (single puzzle visualization).
 - Aggregated philosophy plot (all philosophy puzzles combined).
 - Comparison plot (baseline vs philosophy side-by-side).
+  - Use `philosophy_all` to aggregate all puzzles; pairwise distances are computed per puzzle and then averaged.
+  - Comparison is only at the total (all-puzzles) level, not per puzzle.
+  - Quick run: `python -m scripts.generate_comparison <puzzle> --emit-all`.
 
 ### 5. Update README
 - Add the new puzzle to the README timeline/listing.
