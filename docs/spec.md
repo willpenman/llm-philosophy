@@ -155,6 +155,40 @@ across providers.
 - Add to `MODEL_DEFAULTS`, `PRICE_SCHEDULES_USD_PER_MILLION`, `MODEL_ALIASES`, `MODEL_PROVIDERS`.
 - If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="hight"`).
 
+## Adding a puzzle
+
+Each new puzzle follows a structured development cycle:
+
+### 1. Branch and iterate
+- Create a feature branch named with the expected puzzle name (e.g., `conceptual-metaphor`).
+- Start at v0.1 and increment toward v0.5 as you iterate on the puzzle text.
+
+### 2. Version conventions
+- **v0.1–0.4**: Working drafts during iteration.
+- **v0.5** is the quasi-canonical version (current max). This version:
+  - Will be used to generate scoring rubrics (and is therefore "contaminated" from a rigorous perspective—hence not yet 1.0).
+  - May be circulated for review in case unexpected prompt issues emerge and need fixing.
+- **v1.0** means "locked for publication" (as noted in Principles).
+
+### 3. Generate responses
+- Run the puzzle against all reachable models.
+- Capture responses following standard storage conventions.
+
+### 4. Regenerate plots
+- Per-puzzle plot (single puzzle visualization).
+- Aggregated philosophy plot (all philosophy puzzles combined).
+- Comparison plot (baseline vs philosophy side-by-side).
+
+### 5. Update README
+- Add the new puzzle to the README timeline/listing.
+- Include generated plots as appropriate.
+
+### 6. Merge branch
+- Open a PR to merge the feature branch.
+- PR body should summarize new findings from the puzzle responses.
+- Embed the new puzzle's plot in the PR description.
+- Include before/after versions of the all-philosophy aggregated plot to show impact.
+
 ## Testing guidance
 - Use `pytest` for lightweight tests around loaders and request assembly.
 - Keep tests small and local; avoid network calls unless explicitly marked live.

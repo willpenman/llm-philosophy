@@ -2,7 +2,7 @@
 
 PUZZLE_NAME = "conceptual_metaphor"
 PUZZLE_TITLE = "Conceptual Metaphor"
-PUZZLE_VERSION = "0.5"
+PUZZLE_VERSION = "0.2"
 
 PUZZLE_TEXT = (
     """Problem: Conceptual metaphor
