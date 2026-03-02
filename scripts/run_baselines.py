@@ -16,7 +16,7 @@ from typing import Any
 from uuid import uuid4
 
 from baselines.prompts import BASELINE_PROMPTS, BASELINE_SYSTEM_PROMPT, BaselinePrompt
-from src.batch_runner import enumerate_all_models, filter_models
+from src.batch_runner import enumerate_all_models, filter_models, get_unreachable_models
 from src.storage import utc_now_iso
 
 
@@ -392,6 +392,15 @@ def main() -> None:
         if not specs:
             print("No models match the specified filters.")
             return
+
+        # Show unreachable models in dry-run mode
+        if args.dry_run:
+            unreachable = get_unreachable_models()
+            if unreachable:
+                print(f"\nNot running {len(unreachable)} unreachable models:")
+                for spec in unreachable:
+                    print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
+                print()
 
         for spec in specs:
             run_all_baselines_for_model(

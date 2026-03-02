@@ -108,8 +108,8 @@ def main() -> None:
     parser.add_argument(
         "--mode",
         choices=["sequential", "parallel-provider", "parallel-all"],
-        default="sequential",
-        help="Execution mode for batch runs (default: sequential)",
+        default="parallel-provider",
+        help="Execution mode for batch runs (default: parallel-provider)",
     )
     parser.add_argument(
         "--resume",

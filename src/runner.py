@@ -90,6 +90,8 @@ class RunResult:
     request_path: Path | None
     response_text_path: Path | None
     sse_event_path: Path | None
+    cost: CostBreakdown | None = None
+    tokens: TokenBreakdown | None = None
 
 
 def _format_timestamp(created_at: str) -> str:
@@ -102,11 +104,21 @@ def _build_progress_callback(
     max_tokens: int | None,
     *,
     suffix: str,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> Callable[[int], None]:
     progress_width = len(str(max_tokens)) if isinstance(max_tokens, int) else 0
     last_progress = {"chars": 0}
+    first_data_fired = {"value": False}
 
     def _progress(chars: int) -> None:
+        # Fire on_first_data callback once when we receive any data
+        if on_first_data and not first_data_fired["value"] and chars > 0:
+            first_data_fired["value"] = True
+            on_first_data()
+
+        if quiet:
+            return
         if progress_width <= 0:
             return
         if chars == last_progress["chars"]:
@@ -201,7 +213,10 @@ def _print_run_summary(
     supports_reasoning: bool,
     reasoning_disabled: bool,
     combine_reasoning_output: bool = False,
+    quiet: bool = False,
 ) -> None:
+    if quiet:
+        return
     if not isinstance(response_payload, dict):
         return
     if response_payload.get("error") is None:
@@ -335,6 +350,8 @@ def run_openai_puzzle(
     system_path: Path | None = None,
     responses_dir: Path | None = None,
     api_key: str | None = None,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> RunResult:
     system_prompt, puzzle = _load_fixtures(
         puzzle_name,
@@ -393,14 +410,17 @@ def run_openai_puzzle(
         )
 
     request_started_at = created_at
-    print(
-        f"requesting puzzle={puzzle.name} model={model}",
-        flush=True,
-    )
+    if not quiet:
+        print(
+            f"requesting puzzle={puzzle.name} model={model}",
+            flush=True,
+        )
     max_tokens = request_payload.get("max_output_tokens")
-    if stream and max_tokens is None:
+    if not quiet and stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
-    progress_callback = _build_progress_callback(max_tokens, suffix="tokens")
+    progress_callback = _build_progress_callback(
+        max_tokens, suffix="tokens", quiet=quiet, on_first_data=on_first_data
+    )
 
     streamed_chunks: list[str] = []
 
@@ -417,7 +437,8 @@ def run_openai_puzzle(
             sse_event_path = (
                 base_dir / f"openai-sse-{model}-{run_id}-{timestamp}.jsonl"
             )
-        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+        if not quiet:
+            print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     stream_capture: dict[str, Any] | None = {} if stream else None
     response_payload = send_response_request(
@@ -448,7 +469,7 @@ def run_openai_puzzle(
                     {"type": "summary_text", "text": reasoning_summary}
                 ]
                 break
-    if stream and isinstance(max_tokens, int):
+    if not quiet and stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = extract_output_text(response_payload)
@@ -509,6 +530,7 @@ def run_openai_puzzle(
         response_text_path=stored_text.path if stored_text else None,
         supports_reasoning=supports_reasoning,
         reasoning_disabled=reasoning_disabled,
+        quiet=quiet,
     )
     return RunResult(
         run_id=run_id,
@@ -518,6 +540,8 @@ def run_openai_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -539,6 +563,8 @@ def run_fireworks_puzzle(
     system_path: Path | None = None,
     responses_dir: Path | None = None,
     api_key: str | None = None,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> RunResult:
     system_prompt, puzzle = _load_fixtures(
         puzzle_name,
@@ -595,14 +621,17 @@ def run_fireworks_puzzle(
         )
 
     request_started_at = created_at
-    print(
-        f"requesting puzzle={puzzle.name} model={model_id}",
-        flush=True,
-    )
+    if not quiet:
+        print(
+            f"requesting puzzle={puzzle.name} model={model_id}",
+            flush=True,
+        )
     max_tokens = request_payload.get("max_tokens")
-    if stream and max_tokens is None:
+    if not quiet and stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
-    progress_callback = _build_progress_callback(max_tokens, suffix="chars")
+    progress_callback = _build_progress_callback(
+        max_tokens, suffix="chars", quiet=quiet, on_first_data=on_first_data
+    )
 
     streamed_chunks: list[str] = []
 
@@ -619,7 +648,8 @@ def run_fireworks_puzzle(
             sse_event_path = (
                 base_dir / f"fireworks-sse-{storage_model}-{run_id}-{timestamp}.jsonl"
             )
-        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+        if not quiet:
+            print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     stream_capture: dict[str, Any] | None = {} if stream else None
     response_payload = send_fireworks_chat_completion_request(
@@ -630,7 +660,7 @@ def run_fireworks_puzzle(
         sse_event_path=sse_event_path,
         stream_capture=stream_capture,
     )
-    if stream and isinstance(max_tokens, int):
+    if not quiet and stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = extract_fireworks_output_text(response_payload)
@@ -692,6 +722,7 @@ def run_fireworks_puzzle(
         response_text_path=stored_text.path if stored_text else None,
         supports_reasoning=supports_reasoning,
         reasoning_disabled=reasoning_disabled,
+        quiet=quiet,
     )
     return RunResult(
         run_id=run_id,
@@ -701,6 +732,8 @@ def run_fireworks_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -721,6 +754,8 @@ def run_grok_puzzle(
     system_path: Path | None = None,
     responses_dir: Path | None = None,
     api_key: str | None = None,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> RunResult:
     system_prompt, puzzle = _load_fixtures(
         puzzle_name,
@@ -774,20 +809,23 @@ def run_grok_puzzle(
         )
 
     request_started_at = created_at
-    print(
-        f"requesting puzzle={puzzle.name} model={model}",
-        flush=True,
-    )
-    if not stream:
+    if not quiet:
         print(
-            "Streaming turned off for Grok, in order to retain usage stats. "
-            "If connections drop, turn on with --streaming true.",
+            f"requesting puzzle={puzzle.name} model={model}",
             flush=True,
         )
+        if not stream:
+            print(
+                "Streaming turned off for Grok, in order to retain usage stats. "
+                "If connections drop, turn on with --streaming true.",
+                flush=True,
+            )
     max_tokens = request_payload.get("max_tokens")
-    if stream and max_tokens is None:
+    if not quiet and stream and max_tokens is None:
         print("Set max tokens to see streaming info.", flush=True)
-    progress_callback = _build_progress_callback(max_tokens, suffix="tokens")
+    progress_callback = _build_progress_callback(
+        max_tokens, suffix="tokens", quiet=quiet, on_first_data=on_first_data
+    )
 
     streamed_chunks: list[str] = []
 
@@ -804,7 +842,8 @@ def run_grok_puzzle(
             sse_event_path = (
                 base_dir / f"grok-sse-{model}-{run_id}-{timestamp}.jsonl"
             )
-        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+        if not quiet:
+            print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     response_payload = send_chat_completion_request(
         request_payload,
@@ -813,7 +852,7 @@ def run_grok_puzzle(
         stream_text_callback=_collect_delta if stream else None,
         sse_event_path=sse_event_path,
     )
-    if stream and isinstance(max_tokens, int):
+    if not quiet and stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = grok_extract_output_text(response_payload)
@@ -870,6 +909,7 @@ def run_grok_puzzle(
         response_text_path=stored_text.path if stored_text else None,
         supports_reasoning=supports_reasoning,
         reasoning_disabled=reasoning_disabled,
+        quiet=quiet,
     )
     return RunResult(
         run_id=run_id,
@@ -879,6 +919,8 @@ def run_grok_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -901,6 +943,8 @@ def run_gemini_puzzle(
     system_path: Path | None = None,
     responses_dir: Path | None = None,
     api_key: str | None = None,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> RunResult:
     system_prompt, puzzle = _load_fixtures(
         puzzle_name,
@@ -964,10 +1008,11 @@ def run_gemini_puzzle(
         )
 
     request_started_at = created_at
-    print(
-        f"requesting puzzle={puzzle.name} model={model}",
-        flush=True,
-    )
+    if not quiet:
+        print(
+            f"requesting puzzle={puzzle.name} model={model}",
+            flush=True,
+        )
     max_tokens = None
     config = request_payload.get("config")
     if isinstance(config, dict):
@@ -975,13 +1020,16 @@ def run_gemini_puzzle(
     progress_callback = _build_progress_callback(
         max_tokens,
         suffix="total possible",
+        quiet=quiet,
+        on_first_data=on_first_data,
     )
 
     streamed_chars = {"total": 0}
 
     def _collect_delta(delta: str) -> None:
         streamed_chars["total"] += len(delta)
-        progress_callback(streamed_chars["total"])
+        if progress_callback:
+            progress_callback(streamed_chars["total"])
 
     sse_event_path = None
     if debug_sse:
@@ -993,7 +1041,8 @@ def run_gemini_puzzle(
             sse_event_path = (
                 base_dir / f"gemini-sse-{model}-{run_id}-{timestamp}.jsonl"
             )
-        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+        if not quiet:
+            print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     response = send_generate_content_request(
         request_payload,
@@ -1002,7 +1051,7 @@ def run_gemini_puzzle(
         stream_text_callback=_collect_delta if stream else None,
         sse_event_path=sse_event_path,
     )
-    if stream and isinstance(max_tokens, int):
+    if not quiet and stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = response.output_text
@@ -1058,6 +1107,7 @@ def run_gemini_puzzle(
         response_text_path=stored_text.path if stored_text else None,
         supports_reasoning=supports_reasoning,
         reasoning_disabled=reasoning_disabled,
+        quiet=quiet,
     )
     return RunResult(
         run_id=run_id,
@@ -1067,6 +1117,8 @@ def run_gemini_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )
 
 
@@ -1090,6 +1142,8 @@ def run_anthropic_puzzle(
     system_path: Path | None = None,
     responses_dir: Path | None = None,
     api_key: str | None = None,
+    quiet: bool = False,
+    on_first_data: Callable[[], None] | None = None,
 ) -> RunResult:
     system_prompt, puzzle = _load_fixtures(
         puzzle_name,
@@ -1151,14 +1205,17 @@ def run_anthropic_puzzle(
         )
 
     request_started_at = created_at
-    print(
-        f"Requesting model {model} for puzzle '{puzzle.name}'",
-        flush=True,
-    )
+    if not quiet:
+        print(
+            f"Requesting model {model} for puzzle '{puzzle.name}'",
+            flush=True,
+        )
     max_tokens = request_payload.get("max_tokens")
     progress_callback = _build_progress_callback(
         max_tokens if isinstance(max_tokens, int) else None,
         suffix="total possible",
+        quiet=quiet,
+        on_first_data=on_first_data,
     )
 
     sse_event_path = None
@@ -1171,7 +1228,8 @@ def run_anthropic_puzzle(
             sse_event_path = (
                 base_dir / f"anthropic-sse-{model}-{run_id}-{timestamp}.jsonl"
             )
-        print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
+        if not quiet:
+            print(f"DEBUG MODE: skips responses; writing SSE events to {sse_event_path}")
 
     response = send_messages_request(
         request_payload,
@@ -1179,7 +1237,7 @@ def run_anthropic_puzzle(
         progress_callback=progress_callback if stream else None,
         sse_event_path=sse_event_path,
     )
-    if stream and isinstance(max_tokens, int):
+    if not quiet and stream and isinstance(max_tokens, int):
         print("", flush=True)
     request_completed_at = utc_now_iso()
     output_text = response.output_text
@@ -1242,6 +1300,7 @@ def run_anthropic_puzzle(
         supports_reasoning=supports_reasoning,
         reasoning_disabled=reasoning_disabled,
         combine_reasoning_output=combine_reasoning_output,
+        quiet=quiet,
     )
     return RunResult(
         run_id=run_id,
@@ -1251,4 +1310,6 @@ def run_anthropic_puzzle(
         request_path=request_path,
         response_text_path=stored_text.path if stored_text else None,
         sse_event_path=sse_event_path,
+        cost=cost_breakdown,
+        tokens=usage_breakdown,
     )

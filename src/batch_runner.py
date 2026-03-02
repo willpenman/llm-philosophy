@@ -34,6 +34,15 @@ from src.providers.fireworks import (
     provider_for_model as fireworks_provider_for_model,
     storage_model_name as fireworks_storage_model_name,
 )
+
+# Models that are currently unreachable (e.g., deprecated by provider, temporarily unavailable).
+# Open-source models may become reachable again if hosted elsewhere; check before each run.
+# Format: (storage_provider, storage_model_name)
+# Include date discovered and context when adding entries.
+UNREACHABLE_MODELS: set[tuple[str, str]] = {
+    ("qwen", "qwen3-vl-235b-thinking"),  # 2026-02: removed from Fireworks serverless
+    ("qwen", "qwen2p5-vl-32b"),  # 2026-02: removed from Fireworks serverless
+}
 from src.runner import (
     run_openai_puzzle,
     run_anthropic_puzzle,
@@ -42,6 +51,7 @@ from src.runner import (
     run_fireworks_puzzle,
     RunResult,
 )
+from src.display import BatchDisplayManager, aggregate_costs
 
 
 class ExecutionMode(Enum):
@@ -99,8 +109,13 @@ STREAM_DEFAULTS: dict[str, bool] = {
 }
 
 
-def enumerate_all_models() -> list[ModelSpec]:
-    """Build a flat list of all (provider, model) pairs across all providers."""
+def enumerate_all_models(*, include_unreachable: bool = False) -> list[ModelSpec]:
+    """Build a flat list of all (provider, model) pairs across all providers.
+
+    Args:
+        include_unreachable: If True, include models marked as unreachable.
+            Default False filters them out for batch runs.
+    """
     specs: list[ModelSpec] = []
 
     # OpenAI
@@ -160,7 +175,17 @@ def enumerate_all_models() -> list[ModelSpec]:
             )
         )
 
+    # Filter out unreachable models unless explicitly requested
+    if not include_unreachable:
+        specs = [s for s in specs if (s.provider, s.model) not in UNREACHABLE_MODELS]
+
     return specs
+
+
+def get_unreachable_models() -> list[ModelSpec]:
+    """Return list of models that are currently unreachable."""
+    all_specs = enumerate_all_models(include_unreachable=True)
+    return [s for s in all_specs if (s.provider, s.model) in UNREACHABLE_MODELS]
 
 
 def filter_models(
@@ -271,6 +296,15 @@ def run_single_model(
     if status_callback:
         status_callback(spec, RunStatus.STARTED)
 
+    first_data_event = threading.Event()
+
+    def on_first_data() -> None:
+        if first_data_event.is_set():
+            return
+        first_data_event.set()
+        if status_callback:
+            status_callback(spec, RunStatus.RECEIVING)
+
     stream = STREAM_DEFAULTS.get(spec.runner_provider, True)
     start_time = time.perf_counter()
 
@@ -284,13 +318,11 @@ def run_single_model(
             puzzle_name=puzzle_name,
             model=model_arg,
             stream=stream,
+            quiet=quiet,
+            on_first_data=on_first_data,
         )
 
         duration = time.perf_counter() - start_time
-
-        # Report receiving (we got a response)
-        if status_callback:
-            status_callback(spec, RunStatus.RECEIVING)
 
         return ModelRunResult(
             spec=spec,
@@ -346,6 +378,7 @@ def run_sequential(
 def run_parallel_by_provider(
     specs: list[ModelSpec],
     puzzle_name: str,
+    display: BatchDisplayManager | None = None,
 ) -> list[ModelRunResult]:
     """Run one model at a time per provider (5 concurrent streams)."""
     # Group specs by runner_provider
@@ -355,10 +388,11 @@ def run_parallel_by_provider(
 
     all_results: list[ModelRunResult] = []
     results_lock = threading.Lock()
-    print_lock = threading.Lock()
 
     def status_callback(spec: ModelSpec, status: RunStatus) -> None:
-        with print_lock:
+        if display:
+            display.update(spec, status)
+        else:
             _print_status(spec, status)
 
     def run_provider_queue(provider: str, queue: list[ModelSpec]) -> list[ModelRunResult]:
@@ -371,7 +405,12 @@ def run_parallel_by_provider(
                 status_callback=status_callback,
                 quiet=True,
             )
-            with print_lock:
+            if display:
+                if result.status == RunStatus.COMPLETED:
+                    display.update(spec, RunStatus.COMPLETED)
+                elif result.status == RunStatus.FAILED:
+                    display.update(spec, RunStatus.FAILED, error=result.error)
+            else:
                 if result.status == RunStatus.COMPLETED:
                     _print_status(spec, RunStatus.COMPLETED, f"({result.duration_seconds:.1f}s)")
                 else:
@@ -393,7 +432,7 @@ def run_parallel_by_provider(
                 with results_lock:
                     all_results.extend(provider_results)
             except Exception as e:
-                with print_lock:
+                if not display:
                     print(f"[ERROR] Provider {provider} failed: {e}")
 
     return all_results
@@ -403,14 +442,16 @@ def run_parallel_all(
     specs: list[ModelSpec],
     puzzle_name: str,
     max_workers: int = 30,
+    display: BatchDisplayManager | None = None,
 ) -> list[ModelRunResult]:
     """Run all models in parallel (up to max_workers)."""
     all_results: list[ModelRunResult] = []
     results_lock = threading.Lock()
-    print_lock = threading.Lock()
 
     def status_callback(spec: ModelSpec, status: RunStatus) -> None:
-        with print_lock:
+        if display:
+            display.update(spec, status)
+        else:
             _print_status(spec, status)
 
     def run_model(spec: ModelSpec) -> ModelRunResult:
@@ -420,7 +461,12 @@ def run_parallel_all(
             status_callback=status_callback,
             quiet=True,
         )
-        with print_lock:
+        if display:
+            if result.status == RunStatus.COMPLETED:
+                display.update(spec, RunStatus.COMPLETED)
+            elif result.status == RunStatus.FAILED:
+                display.update(spec, RunStatus.FAILED, error=result.error)
+        else:
             if result.status == RunStatus.COMPLETED:
                 _print_status(spec, RunStatus.COMPLETED, f"({result.duration_seconds:.1f}s)")
             else:
@@ -497,6 +543,7 @@ def run_batch(
         List of results from executed models
     """
     skipped_count = 0
+    skipped_models: list[str] = []
 
     # Handle resume mode
     if resume:
@@ -504,7 +551,7 @@ def run_batch(
         specs_to_run = []
         for spec in specs:
             if (spec.provider, spec.model) in existing:
-                print(f"[SKIPPED] {spec.display_name} - already has response")
+                skipped_models.append(spec.display_name)
                 skipped_count += 1
             else:
                 specs_to_run.append(spec)
@@ -518,21 +565,61 @@ def run_batch(
         print(f"\nWould run {len(specs)} models:")
         for spec in specs:
             print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
+        # Show skipped models (resume mode)
+        if skipped_models:
+            print(f"\nSkipping {len(skipped_models)} models with existing responses:")
+            for name in skipped_models:
+                print(f"  - {name}")
+        # Show unreachable models that were excluded
+        unreachable = get_unreachable_models()
+        if unreachable:
+            print(f"\nNot running {len(unreachable)} models that have some responses (are now unreachable):")
+            for spec in unreachable:
+                print(f"  - {spec.display_name} ({spec.provider}/{spec.model})")
         return []
-
-    print(f"\nRunning {len(specs)} models in {mode.value} mode...")
 
     # Execute based on mode
     if mode == ExecutionMode.SEQUENTIAL:
+        print(f"\nRunning {len(specs)} models in {mode.value} mode...")
         results = run_sequential(specs, puzzle_name)
+        print_summary(results, skipped_count)
     elif mode == ExecutionMode.PARALLEL_PROVIDER:
-        results = run_parallel_by_provider(specs, puzzle_name)
+        skip_version = puzzle_version or "undefined"
+        skipped_message = (
+            f"{skipped_count} skipped since already has response for version {skip_version}"
+            if skipped_count > 0
+            else None
+        )
+        display = BatchDisplayManager(
+            specs=specs,
+            puzzle_name=puzzle_name,
+            skipped_models=skipped_models,
+            skipped_message=skipped_message,
+            show_current_model=True,
+        )
+        display.start()
+        results = run_parallel_by_provider(specs, puzzle_name, display=display)
+        total_cost = aggregate_costs(results)
+        display.finalize(total_cost=total_cost)
     elif mode == ExecutionMode.PARALLEL_ALL:
-        results = run_parallel_all(specs, puzzle_name)
+        skip_version = puzzle_version or "undefined"
+        skipped_message = (
+            f"{skipped_count} skipped since already has response for version {skip_version}"
+            if skipped_count > 0
+            else None
+        )
+        display = BatchDisplayManager(
+            specs=specs,
+            puzzle_name=puzzle_name,
+            skipped_models=skipped_models,
+            skipped_message=skipped_message,
+            show_current_model=False,  # Too many concurrent for "Now:" to be useful
+        )
+        display.start()
+        results = run_parallel_all(specs, puzzle_name, display=display)
+        total_cost = aggregate_costs(results)
+        display.finalize(total_cost=total_cost)
     else:
         raise ValueError(f"Unknown execution mode: {mode}")
-
-    # Print summary
-    print_summary(results, skipped_count)
 
     return results

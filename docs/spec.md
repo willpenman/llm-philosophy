@@ -155,6 +155,53 @@ across providers.
 - Add to `MODEL_DEFAULTS`, `PRICE_SCHEDULES_USD_PER_MILLION`, `MODEL_ALIASES`, `MODEL_PROVIDERS`.
 - If reasoning model, add to `REASONING_MODELS` set (enables auto `reasoning_effort="hight"`).
 
+## Marking a model unreachable
+
+When a model becomes unavailable (deprecated by provider, removed from Fireworks serverless, etc.):
+
+- Add the model to `UNREACHABLE_MODELS` in `src/batch_runner.py` as a `(storage_provider, storage_model_name)` tuple.
+- Include a comment with the date you discovered it was unreachable and any relevant context (e.g., provider deprecation notice, Fireworks removal).
+- The model remains in provider metadata (pricing, aliases, etc.) since we have historical responses.
+- `--model ALL` will exclude unreachable models; `list_models` shows them in a separate "Unreachable" section.
+- Open-source models may become reachable again if re-hosted; check availability before each puzzle run and remove from `UNREACHABLE_MODELS` if restored.
+
+## Adding a puzzle
+
+Each new puzzle follows a structured development cycle:
+
+### 1. Branch and iterate
+- Create a feature branch named with the expected puzzle name (e.g., `conceptual-metaphor`).
+- Start at v0.1 and increment toward v0.5 as you iterate on the puzzle text.
+
+### 2. Version conventions
+- **v0.1–0.4**: Working drafts during iteration.
+- **v0.5** is the quasi-canonical version (current max). This version:
+  - Will be used to generate scoring rubrics (and is therefore "contaminated" from a rigorous perspective—hence not yet 1.0).
+  - May be circulated for review in case unexpected prompt issues emerge and need fixing.
+- **v1.0** means "locked for publication" (as noted in Principles).
+
+### 3. Generate responses
+- Run the puzzle against all reachable models.
+- Capture responses following standard storage conventions.
+
+### 4. Regenerate plots
+- Per-puzzle plot (single puzzle visualization).
+- Aggregated philosophy plot (all philosophy puzzles combined).
+- Comparison plot (baseline vs philosophy side-by-side).
+  - Use `philosophy_all` to aggregate all puzzles; pairwise distances are computed per puzzle and then averaged.
+  - Comparison is only at the total (all-puzzles) level, not per puzzle.
+  - Quick run: `python -m scripts.generate_comparison <puzzle> --emit-all`.
+
+### 5. Update README
+- Add the new puzzle to the README timeline/listing.
+- Include generated plots as appropriate.
+
+### 6. Merge branch
+- Open a PR to merge the feature branch.
+- PR body should summarize new findings from the puzzle responses.
+- Embed the new puzzle's plot in the PR description.
+- Include before/after versions of the all-philosophy aggregated plot to show impact.
+
 ## Testing guidance
 - Use `pytest` for lightweight tests around loaders and request assembly.
 - Keep tests small and local; avoid network calls unless explicitly marked live.
@@ -276,7 +323,6 @@ python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 
 ## TODO
 - Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
-- Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3 Update 1 (`deepseek-v3-0324`).
 - Add live tests for Fireworks reasoning content capture.
 - Confirm Grok 2 Vision release date/source and live-verify its parameter support.
 - Run the new Anthropic live tests to verify Opus 4.6 adaptive thinking + temperature rejection.

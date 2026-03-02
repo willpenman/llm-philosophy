@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from src.batch_runner import UNREACHABLE_MODELS
 from src.providers.anthropic import (
     SUPPORTED_MODELS as ANTHROPIC_MODELS,
     display_model_name as display_anthropic_model_name,
@@ -28,6 +29,7 @@ from src.providers.fireworks import (
     display_model_name as display_fireworks_model_name,
     display_provider_name as display_fireworks_provider_name,
     provider_for_model as fireworks_provider_for_model,
+    storage_model_name as fireworks_storage_model_name,
 )
 
 
@@ -61,15 +63,27 @@ def main() -> None:
         )
 
     fireworks_models = sorted(FIREWORKS_CANONICAL_MODELS.keys())
+    unreachable_models: list[str] = []
     for model in fireworks_models:
         provider = fireworks_provider_for_model(model)
-        grouped[display_fireworks_provider_name(provider)].append(
-            _format_model_name(model, display_fireworks_model_name(model))
-        )
+        storage_name = fireworks_storage_model_name(model)
+        if (provider, storage_name) in UNREACHABLE_MODELS:
+            unreachable_models.append(
+                _format_model_name(model, display_fireworks_model_name(model))
+            )
+        else:
+            grouped[display_fireworks_provider_name(provider)].append(
+                _format_model_name(model, display_fireworks_model_name(model))
+            )
 
     for provider in sorted(grouped.keys()):
         print(provider)
         for model in grouped[provider]:
+            print(f"- {model}")
+
+    if unreachable_models:
+        print("Unreachable ⚠")
+        for model in unreachable_models:
             print(f"- {model}")
 
 
