@@ -40,6 +40,29 @@ Jump to: [raw responses](#raw-responses); analysis of one model's [philosophical
 
 ## Usage
 ### To read canonical runs
+Read [all models' semi-canonical (version 0.5) responses to all puzzles](/responses/compendium.docx). This is a massive Word document for easy download, annotation, sharing, and printing. So far, the longest individual response is 13 full pages, and all models have chosen to write in essay format. For each completion, the puzzle parameters are provided, then the exact puzzle input, then the model's exact output. 
+
+<p align="center">
+  <a href="samples/panopticon-sample-1.png"><img src="samples/panopticon-sample-1.png" width="30%" /></a>
+  <a href="samples/panopticon-sample-2.png"><img src="samples/panopticon-sample-2.png" width="30%" /></a>
+  <a href="samples/panopticon-sample-3.png"><img src="samples/panopticon-sample-3.png" width="30%" /></a>
+</p>
+<p align="center"><em>Screenshots of puzzle input (pages 1 and 2) and beginning of LLM output (page 3), in Word format</em></p>
+
+The System message is the same in all the puzzles, although it differs slightly depending on the model to describe what the maximum output length is. The System message in this project does *not* include a role assignment; after all, giving the LLM space to identify a "role" for itself is part of the goal!
+
+> You'll see that the input is separated into two parts. The "System" part is specially designated for orienting an LLM to "what we're doing here."[^2] Often, this begins with some kind of role assignment, "You are an expert at parsing sports contracts...", "You are a 17th century farmer in England who is talking with 21st-century children as part of an educational app...", "You are ChatGPT, a large language model trained by OpenAI..." etc.
+>
+> If you use LLMs in a browser or on a specific app like ChatGPT, you don't have access to the System message. After all, those companies have already written their own very long System messages to instruct the LLM on "what we're doing here" ([example 1](https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/gpt-5.2-thinking.md), [example 2](https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-4.5-sonnet.md)). One advantage of using an API key, described below, is that you get to use your own system prompt. 
+
+Model responses are provided in the Word docs without modification. 
+
+> Many models, such as Qwen in the screenshot, add characters to show how the text should be formatted, using a well-known style called Markdown. Beginning a paragraph with '#' shows that it should be formatted as a big header, '##' for a smaller header, etc. Putting '*' around words or phrases is for it to be in italics. Putting '**' around words or phrases is for it to be in bold. Using two linebreaks means it should be a new paragraph. As an aside, that's how OpenAI knows when to display text in bold on the app - because *ChatGPT* said to, it put two asterisks before and after that phrase. These are displayed here as-is, showing exactly what the model responded with. 
+
+Only the model's final response is provided; thinking tokens (to the extent that we receive them) are stored but not included.
+
+> Some models have the ability to output text that is formally separated from its response as a preparatory "thinking" or "reasoning" step. This is stored by the system to the extent that we receive it, but is not included in the Word documents.
+
 All outputs are saved in `responses/` in each model's corresponding `responses.jsonl` file along with all metadata (token counts, cost structure, date, thinking traces, parameters). It should be queried programmatically to find the most recent completion for a given model on a given puzzle:
 
 ```
@@ -51,8 +74,6 @@ python3 -m scripts.print_response o3-2025-04-16 panopticon
 
 python3 -m scripts.print_response kimi-k2-instruct-0905 conceptual_metaphor
 ```
-
-
 
 When a puzzle is fully developed, it is given to all of the LLMs, and their responses form each of their "canonical" runs. For maximum coverage during the developmental stage of this project, the "strongest" general-purpose models (i.e., not agentic-coding-specific) and oldest (usually, "weakest") models available from each provider are all supported.
 
@@ -69,28 +90,7 @@ When a puzzle is fully developed, it is given to all of the LLMs, and their resp
 | Qwen | Qwen3-VL 235B Thinking ([LLM Panopticon](responses/qwen/qwen3-vl-235b-thinking/texts/Qwen3-VL%20235B%20Thinking%20response%20-%20LLM%20Panopticon%202026-02-04T205355Z.docx)) | Qwen2.5-VL 32B ([LLM Panopticon](responses/qwen/qwen2p5-vl-32b/texts/Qwen2.5-VL%2032B%20response%20-%20LLM%20Panopticon%202026-02-04T212354Z.docx)) |
 | xAI | Grok 4.1 Fast Reasoning ([LLM Panopticon](responses/grok/grok-4-1-fast-reasoning/texts/Grok%204.1%20Fast%20Reasoning%20response%20-%20LLM%20Panopticon%202026-02-13T201540Z.docx)) | Grok 2 ([LLM Panopticon](responses/grok/grok-2-vision-1212/texts/Grok%202%20response%20-%20LLM%20Panopticon%202026-02-13T201435Z.docx)) |
 
-The links take you to that model's canonical run for version 0.5, saved as a Word document for easy download, annotation, sharing, and printing. So far, the longest response is 13 full pages, and all models have chosen to write in essay format. In each document, the puzzle parameters are provided, then the exact puzzle input, then the model's exact output. 
 
-<p align="center">
-  <a href="samples/panopticon-sample-1.png"><img src="samples/panopticon-sample-1.png" width="30%" /></a>
-  <a href="samples/panopticon-sample-2.png"><img src="samples/panopticon-sample-2.png" width="30%" /></a>
-  <a href="samples/panopticon-sample-3.png"><img src="samples/panopticon-sample-3.png" width="30%" /></a>
-</p>
-<p align="center"><em>Screenshots of puzzle input (pages 1 and 2) and beginning of LLM output (page 3), in Word format</em></p>
-
-The System message in all the puzzles is the same. It does *not* include a role assignment; after all, giving the LLM space to identify a "role" for itself is part of the goal!
-
-> You'll see that the input is separated into two parts. The "System" part is specially designated for orienting an LLM to "what we're doing here."[^2] Often, this begins with some kind of role assignment, "You are an expert at parsing sports contracts...", "You are a 17th century farmer in England who is talking with 21st-century children as part of an educational app...", "You are ChatGPT, a large language model trained by OpenAI..." etc.
->
-> If you use LLMs in a browser or on a specific app like ChatGPT, you don't have access to the System message. After all, those companies have already written their own very long System messages to instruct the LLM on "what we're doing here" ([example 1](https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/gpt-5.2-thinking.md), [example 2](https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-4.5-sonnet.md)). One advantage of using an API key, described below, is that you get to use your own system prompt. 
-
-Model responses are provided in the Word docs without modification. 
-
-> Many models, such as Qwen in the screenshot, add characters to show how the text should be formatted, using a well-known style called Markdown. Beginning a paragraph with '#' shows that it should be formatted as a big header, '##' for a smaller header, etc. Putting '*' around words or phrases is for it to be in italics. Putting '**' around words or phrases is for it to be in bold. Using two linebreaks means it should be a new paragraph. As an aside, that's how OpenAI knows when to display text in bold on the app - because *ChatGPT* said to, it put two asterisks before and after that phrase. These are displayed here as-is, showing exactly what the model responded with. 
-
-Only the model's final response is provided; thinking tokens (to the extent that we receive them) are stored but not included.
-
-> Some models have the ability to output text that is formally separated from its response as a preparatory "thinking" or "reasoning" step. This is stored by the system to the extent that we receive it, but is not included in the Word documents.
 
 
 #### Scoring, aka what to look for in the responses
