@@ -8,9 +8,6 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
-from httpx import Timeout
-from openai import APIConnectionError, APIStatusError, OpenAI, OpenAIError
-
 from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 
@@ -294,6 +291,10 @@ def send_response_request(
             before sending any output, causing idle periods that exceed typical read
             timeouts. Default is 1200s (20 minutes) to accommodate this.
     """
+    # Lazy import to avoid requiring SDK for response reading
+    from httpx import Timeout
+    from openai import APIConnectionError, APIStatusError, OpenAI, OpenAIError
+
     # Use httpx Timeout to set separate read timeout for streaming.
     # The read timeout governs idle time between chunks - critical for models
     # that do extended thinking before streaming any output.

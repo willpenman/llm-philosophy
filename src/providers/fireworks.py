@@ -8,8 +8,6 @@ import os
 from pathlib import Path
 from typing import Any, Callable
 
-from fireworks import Fireworks
-
 from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 
@@ -404,6 +402,9 @@ def send_chat_completion_request(
     stream_capture: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Send a chat completion request using the Fireworks SDK."""
+    # Lazy import to avoid requiring SDK for response reading
+    from fireworks import Fireworks
+
     try:
         client = Fireworks(api_key=api_key)
 

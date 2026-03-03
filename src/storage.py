@@ -9,12 +9,6 @@ from pathlib import Path
 import re
 from typing import Any
 
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt
-from docx.oxml import OxmlElement
-from docx.oxml.ns import qn
-
 @dataclass(frozen=True)
 class StoredText:
     path: Path
@@ -81,7 +75,7 @@ def _docx_filename(
     return f"{model_display} response - {puzzle_title} {timestamp}.docx"
 
 
-def _add_page_number(paragraph) -> None:
+def _add_page_number(paragraph, WD_ALIGN_PARAGRAPH, OxmlElement, qn) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = paragraph.add_run()
     field = OxmlElement("w:fldSimple")
@@ -89,7 +83,7 @@ def _add_page_number(paragraph) -> None:
     run._r.append(field)
 
 
-def _add_text_paragraphs(document: Document, text: str) -> None:
+def _add_text_paragraphs(document, text: str) -> None:
     """Add text paragraphs, treating 'System' and 'User' as h2 headings."""
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
     for line in normalized.split("\n"):
@@ -114,6 +108,13 @@ def write_response_docx(
     input_text: str,
     output_text: str,
 ) -> None:
+    # Lazy import to avoid requiring python-docx for response reading
+    from docx import Document
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.shared import Pt
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+
     document = Document()
     document.core_properties.title = display_name
     # remove default 'after paragraph' spacing of 10pt, since models typically use 2 line breaks
@@ -149,7 +150,7 @@ def write_response_docx(
     footer = document.sections[0].footer
     footer_paragraph = footer.paragraphs[0]
     footer_paragraph.text = ""
-    _add_page_number(footer_paragraph)
+    _add_page_number(footer_paragraph, WD_ALIGN_PARAGRAPH, OxmlElement, qn)
 
     document.save(path)
 
