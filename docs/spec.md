@@ -140,15 +140,16 @@ across providers.
     and tools where supported.
 
 ## Adding a model to an existing provider
+1. Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
+2. Add/extend static tests for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
+3. Update live tests by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
+  - Keep live tests grouped by behavior (see comments in code). 
+  - Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
+4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support)
+5. Update model_release_registry with our system's support for that model and README list (in "Model landscape" section only).
+
 - All open-weights models are run through Fireworks; see below.
 - Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not available (e.g. `gemini-2.5-flash`), make a note of that.
-- Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
-- Add/extend static tests for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
-- Update live tests by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
-- Keep live tests grouped by behavior (see comments in code). 
-- Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
-- Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support)
-- Update model_release_registry and README with our system's support for that model.
 
 ### Fireworks-specific (open-weights models)
 - Add alias→canonical mapping in `CANONICAL_MODELS` (e.g., `"deepseek-v3p2": "accounts/fireworks/models/deepseek-v3p2"`).

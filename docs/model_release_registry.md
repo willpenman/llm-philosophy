@@ -27,6 +27,8 @@ Columns:
 | Anthropic | Claude 3 Opus (`claude-3-opus-20240229`) | 2024-03-04 | no (retired 2026-01-05) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired January 5, 2026. |
 | Anthropic | Claude 3 Sonnet (`claude-3-sonnet-20240229`) | 2024-03-04 | no (retired 2025-07-21) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired July 21, 2025. |
 | Anthropic | Claude 3 Haiku (`claude-3-haiku-20240307`) | 2024-03-13 | yes | https://www.anthropic.com/news/claude-3-haiku | Announcement + API availability. |
+| OpenAI | GPT-5.4 (`gpt-5.4-2026-03-05`) | 2026-03-05 | yes | https://openai.com/index/introducing-gpt-5-4/ | Announcement + API availability. |
+| OpenAI | GPT-5.4 Pro (`gpt-5.4-pro-2026-03-05`) | 2026-03-05 | yes | https://openai.com/index/introducing-gpt-5-4/ | Pro availability listed in announcement. |
 | OpenAI | GPT-5.3 Codex (`gpt-5.3-codex`) | 2026-02-05 | yes (Codex) | https://openai.com/index/introducing-gpt-5-3-codex/ | Announcement. |
 | OpenAI | GPT-5.2 (`gpt-5.2-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Announcement + API availability. |
 | OpenAI | GPT-5.2 Pro (`gpt-5.2-pro-2025-12-11`) | 2025-12-11 | yes | https://openai.com/index/introducing-gpt-5-2/ | Pro availability listed in announcement. |

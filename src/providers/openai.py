@@ -18,6 +18,8 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
     "gpt-5.2-2025-12-11": {"max_output_tokens": 128000},
     "gpt-5.2-pro-2025-12-11": {"max_output_tokens": 128000},
+    "gpt-5.4-2026-03-05": {"max_output_tokens": 128000},
+    "gpt-5.4-pro-2026-03-05": {"max_output_tokens": 128000},
     "gpt-4-0613": {"max_output_tokens": 8192},
 }
 
@@ -28,6 +30,8 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
     "gpt-5.2-2025-12-11": {"input": 1.75, "output": 14.0},
     "gpt-5.2-pro-2025-12-11": {"input": 21.0, "output": 168.0},
+    "gpt-5.4-2026-03-05": {"input": 2.5, "output": 15.0},
+    "gpt-5.4-pro-2026-03-05": {"input": 30.0, "output": 180.0},
     "gpt-4-0613": {"input": 30.0, "output": 60.0},
 }
 
@@ -36,6 +40,8 @@ MODEL_ALIASES: dict[str, str] = {
     "gpt-4o-2024-05-13": "4o",
     "gpt-5.2-2025-12-11": "GPT 5.2",
     "gpt-5.2-pro-2025-12-11": "GPT-5.2 Pro",
+    "gpt-5.4-2026-03-05": "GPT 5.4",
+    "gpt-5.4-pro-2026-03-05": "GPT 5.4 Pro",
     "gpt-4-0613": "GPT-4 update 1",
 }
 
@@ -43,7 +49,13 @@ PROVIDER_ALIASES: dict[str, str] = {
     "openai": "OpenAI",
 }
 
-REASONING_MODELS: set[str] = {"o3-2025-04-16", "gpt-5.2-2025-12-11", "gpt-5.2-pro-2025-12-11"}
+REASONING_MODELS: set[str] = {
+    "o3-2025-04-16",
+    "gpt-5.2-2025-12-11",
+    "gpt-5.2-pro-2025-12-11",
+    "gpt-5.4-2026-03-05",
+    "gpt-5.4-pro-2026-03-05",
+}
 
 @dataclass(frozen=True)
 class OpenAIResponse:
@@ -90,7 +102,11 @@ def supports_reasoning(model: str) -> bool:
 
 def default_reasoning_effort_for_model(model: str) -> str | None:
     """Return default reasoning effort for the model, or None if not a reasoning model."""
-    if model == "gpt-5.2-pro-2025-12-11":
+    if model in {
+        "gpt-5.2-pro-2025-12-11",
+        "gpt-5.4-2026-03-05",
+        "gpt-5.4-pro-2026-03-05",
+    }:
         return "xhigh"
     if model in REASONING_MODELS:
         return "high"
