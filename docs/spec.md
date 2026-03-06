@@ -6,17 +6,9 @@ shared system prompt, a puzzle library, and append-only capture of requests and 
 across providers.
 
 ## Principles
-- Keep specs lightweight; record detailed conventions here, not in README.
-- Prefer append-only storage with clear provenance and timestamps.
 - Preserve provider payloads verbatim when available; for streaming responses without a final payload, record a reconstructed payload derived from the assembled output text and metadata. Normalize only when it adds clear value (e.g. we don't store SSE events).
-- Treat prompts as fixtures; avoid runtime mutation except for appending model-specific
-  output-length guidance to the system prompt.
-- Favor minimal modules and simple data shapes over heavy abstractions.
-- Track puzzle versions in fixtures; 1.0 means "locked for publication." Pre-1.0 versions
-  allow iteration on wording, scoring methodology, and analysis. This is a practical decision:
-  we don't separately version prompt text, system prompt, and scoring criteria, even though
-  changes to each have different implications. Full audit trail lives in git history and
-  stored request payloads.
+- Treat prompts as fixtures; avoid runtime mutation except for appending model-specific output-length guidance to the system prompt derived from model max output tokens.. - Each prompt is a `.py` module that exposes a single prompt string plus optional metadata. System prompt is a single paragraph, with per-max-output-class length enumeration ("about 40,000 words"). Puzzles must supply non-empty text and stable names.
+- Avoid mutating prompts or puzzles at runtime, except for the system prompt's appended
 
 ## Architecture overview
 - Prompts are Python modules that define system prompts and puzzles.
@@ -46,26 +38,12 @@ across providers.
   - `visualize.py` (plotting utilities)
   - `embeddings/` (cached embedding files as `.npz`)
 
-## Data capture requirements
-- Log the exact system prompt and puzzle text per request.
-- Store provider name, model name, model aliases, parameter settings, and request IDs.
-- Store full provider request/response payloads without lossy normalization.
-- Persist timing info (request start/end, latency).
-- Record price schedules (input/output pricing) to enable cost computation.
-- Gemini 3 Pro pricing uses input-length tiers; we assume prompts stay under the 200k input threshold and record a single input/output rate.
-- Keep request/response pairs in JSONL for aggregation.
-- Generate a readable document file that is only input/output text (one file per response).
-- Leave room for analysis workflows (possibly in a separate repo linked by run IDs).
-
-## Prompt and puzzle fixtures
-- Each prompt is a `.py` module that exposes a single prompt string plus optional metadata.
-- System prompt is a single paragraph, with per-max-output-class length enumeration ("about 40,000 words").
-- Puzzles must supply non-empty text and stable names.
-- Avoid mutating prompts or puzzles at runtime, except for the system prompt's appended
-  output-length guidance derived from model max output tokens.
-
 ## Response storage conventions
 - Append-only JSONL files partitioned by provider/model, not by run.
+  - Top-level keys: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`, `puzzle_version`, `special_settings`.
+  - `request` holds the full provider request payload as sent.
+  - `response` holds the full provider response payload as received.
+  - `derived` for normalized conveniences (tokens, cost, price schedule).
 - `responses/<provider>/<model>/requests.jsonl` for outgoing payloads.
 - `responses/<provider>/<model>/responses.jsonl` for full provider responses plus metadata.
 - `responses/<provider>/<model>/texts/` for response `.docx` files (one per response).
@@ -82,15 +60,9 @@ across providers.
   - Heading 2: `System` and `User` labels
   - Page break; Heading 1: `{model_alias_or_snapshot}'s Output`, followed by the full output text as-is.
   - Page numbers enabled.
-- `special_settings` captures non-default parameters (provider-specific if needed).
+- `special_settings` captures non-default parameters (e.g. temperature).
 - If anything changes (e.g. adding price reporting, thought summaries, etc.), use `backfill_docx.py` to apply it to all existing texts.
 
-## JSONL schema
-- Top-level keys only: `run_id`, `created_at`, `provider`, `model`, `puzzle_name`,
-  `puzzle_version`, `special_settings`.
-- `request` holds the full provider request payload as sent.
-- `response` holds the full provider response payload as received.
-- Optional: `derived` for normalized conveniences (tokens, cost, price schedule).
 
 ## Streaming behavior
 - Prefer streaming for long outputs to avoid connection dropouts.
@@ -102,42 +74,6 @@ across providers.
 - If streaming ends without a completed payload, keep the partial text that was received.
 - Optional debug mode for OpenAI streaming can write raw SSE event JSONL under `tmp/` and skip request/response storage.
 
-## Provider handling
-- Normalize across providers with a thin adapter interface, at src/providers/{provider}.py
-- Keep per-provider quirks isolated to their adapter.
-- Provide a dry-run mode that writes request payloads without sending them.
-- Default to the highest available reasoning effort per model.
-- Request the most detailed reasoning visibility available for the model.
-- Omit tool configuration entirely unless tools are required.
-- Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
-- Provider API syntax lives in provider-specific docs under `docs/providers/`.
-
-## Adding a new provider (best practices + coverage)
-- Capture provider docs before coding: auth env var, endpoint/SDK, minimal request example.
-- Define adapter behavior: system prompt mapping, reasoning/thinking config, sampling params,
-  max output, tool config omission defaults, and streaming strategy.
-- Preserve raw payloads: store provider request/response exactly as sent/received; avoid
-  adapter-only fields in payloads (keep those in derived metadata or text artifacts).
-- Streaming: assemble output text from deltas, and if the provider doesn't return a final
-  payload, reconstruct a payload that mirrors the provider's normal shape. Provide --debug-sse option to dump to /tmp
-- Reasoning visibility: request the most detailed reasoning summary allowed by the model,
-  and document any constraints (e.g., required max output, unsupported sampling).
-- Model metadata: add snapshot model names, aliases, pricing schedule, defaults, and any
-  capability flags (reasoning, sampling, tools) to the adapter.
-- Pricing: note any tiered pricing rules and the assumption we use for cost modeling.
-- Provider docs must record:
-  - Model list (with stable vs preview notes).
-  - Parameter availability per model (system prompt, temperature/top_p/top_k, max output,
-    reasoning/thinking, tools), plus defaults and known limits.
-  - Streaming payload shape and any reconstruction rules.
-  - Live-verified behaviors (accept/reject cases) and gaps to test.
-- Tests to add:
-  - Static request assembly tests for defaults and parameter mapping.
-  - Static pricing/alias tests.
-  - Live tests (opt-in) for parameter acceptance/rejection, reasoning, and streaming capture.
-  - Structure tests with parametrize and the model name(s) directly, e.g. `@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])`
-  - Ensure tests cover system prompt, temperature, max output length, reasoning/thinking,
-    and tools where supported.
 
 ## Adding a model to an existing provider
 1. Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
@@ -147,8 +83,11 @@ across providers.
   - Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
 4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support)
 5. Update model_release_registry with our system's support for that model and README list (in "Model landscape" section only).
+6. (Will leads from here) After a model is ready, it can be run against existing puzzles. 
+7. A model can also be run against the baselines.
+8. Those puzzle and baseline results should be used to create new plots. That new plot should be linked to at the top of the README.
 
-- All open-weights models are run through Fireworks; see below.
+- All open-weights models are run through Fireworks and require mapping; see below.
 - Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not available (e.g. `gemini-2.5-flash`), make a note of that.
 
 ### Fireworks-specific (open-weights models)
@@ -203,7 +142,7 @@ Each new puzzle follows a structured development cycle:
 - Embed the new puzzle's plot in the PR description.
 - Include before/after versions of the all-philosophy aggregated plot to show impact.
 
-## Testing guidance
+## Tests
 - Use `pytest` for lightweight tests around loaders and request assembly.
 - Keep tests small and local; avoid network calls unless explicitly marked live.
 - Live tests must be opt-in, cost-labeled, and gated by environment variables.
@@ -214,81 +153,52 @@ Each new puzzle follows a structured development cycle:
 - Group tests by their purpose
 - Parametrize each test, manually add the relevant model name in as part of an array (will be useful as we add more models)
 
-## Progress
-- Added a script to run a single puzzle against one OpenAI model and capture responses.
-- Unified the single-run script so it routes to a provider based on the model name.
-- Added OpenAI request builder support and tests for o3 reasoning/tool parameters.
-- Added opt-in live OpenAI tests (marked `live`) for parameter acceptance and errors.
-- Live OpenAI call confirmed o3 rejects `temperature`.
-- Live OpenAI call confirmed `max_output_tokens` minimum is 16 for o3.
-- Added live tests for o3 `top_p` rejection and `max_output_tokens` upper bound.
-- Live OpenAI call accepted `max_output_tokens=100001`, upper bound still unknown.
-- Added live tests for o3 reasoning effort values and invalid `max_output_tokens`.
-- Live OpenAI calls confirmed o3 reasoning effort accepts `low`/`medium`/`high` and
-  rejects values that are enabled for other OpenAI models: `none`/`minimal`/`xhigh`.
-- Added provider price schedule capture to response-derived metadata.
-- Enabled OpenAI streaming response capture with delta assembly for long outputs.
-- Added an opt-in live OpenAI streaming test that validates streaming output assembly.
-- Streaming runs now store only the completed provider response payload (no SSE events)
-  while still capturing streamed text for output.
-- Added gpt-4o snapshot model metadata (alias/pricing) and static request tests.
-- Added opt-in live OpenAI tests for gpt-4o snapshot basic responses and sampling parameters.
-- Relaxed the streaming live test to avoid reasoning parameters so multiple models can run.
-- Added a Gemini provider adapter with request capture, a run script, and static/live tests.
-- Added Gemini streaming support with reconstructed payload capture.
-- Added Gemini 3 Pro preview model support with thinking-config live test.
-- Gemini runner now defaults Gemini 3 Pro to high thinking with thought inclusion.
-- Gemini streaming payloads now store reconstructed thought/output parts instead of per-chunk parts.
-- Gemini responses omit adapter-only `output_text`/`thoughts_text` fields; backfilled existing Gemini JSONL records.
-- Added an OpenAI SSE debug toggle to capture raw streaming events without recording requests/responses.
-- Added OpenAI gpt-5.2-2025-12-11 model metadata (alias, pricing, defaults) and test coverage.
-- Live OpenAI call confirmed gpt-5.2-2025-12-11 rejects `temperature`.
-- OpenAI streaming now reconstructs reasoning summaries into the response payload reasoning item.
-- OpenAI adapter now uses the openai-python SDK for Responses (supports custom base_url).
-- Added initial Fireworks Responses adapter (OpenAI-compatible) with DeepSeek V3.2 support, pricing metadata, and request/live tests.
-- Migrated Fireworks to native SDK (Chat Completions API) to access `reasoning_content`—Responses API silently ignores `reasoning_effort`.
-- Fireworks requires explicit `reasoning_effort` param to populate `reasoning_content` (despite docs saying "default reasoning on").
-- Added a live Gemini test to probe whether `temperature` is rejected when `thinking_config` is enabled.
-- Gemini runs now label non-default sampling params (temperature/top_p/top_k) in `special_settings` when not explicitly set.
-- Documented provider onboarding best practices and required coverage in the spec.
-- Added provider-specific usage/cost extraction helpers and richer run summaries with token usage, cost formatting, and completion links.
-- Added an Anthropic Messages adapter with Opus 4.5 defaults, streaming reconstruction, and usage/cost helpers.
-- Added Anthropic request assembly tests and wired Anthropic into the run/list scripts.
-- Added a union merge driver for `responses/**/responses.jsonl` to reduce merge conflicts for append-only logs.
-- Added opt-in live Anthropic tests for system prompt acceptance and temperature+thinking rejection.
-- Added Claude Haiku 3 model support plus a live test that thinking is rejected.
-- Moved provider adapters under `src/providers` and updated scripts to run as modules without `sys.path` edits.
-- Added a Grok provider adapter (Chat Completions), request/stream reconstruction, and static request/cost tests.
-- Documented Grok usage shape and aligned Grok usage extraction/tests with docs.
-- Flagged Grok hidden cached tokens in provider notes; pricing still overestimates input until cached rates are modeled.
-- Added Grok 3 model metadata, pricing, and live tests for temperature acceptance.
-- Added a general --debug-sse flag to capture streaming events for OpenAI, Grok, Gemini, and Anthropic.
-- Grok ONLY now defaults to non-streaming to retain usage stats; added --streaming override for all providers.
-- Added a model-specific output-length guidance sentence that appends to the system prompt at runtime.
-- Added .docx response artifacts with centered headers, H1 input/output sections, and page numbers; added a backfill script to convert legacy .txt files.
-- Added a model release registry (`docs/model_release_registry.md`) and a README timeline table by year/provider.
-- Expanded the model release registry and README timeline with additional Meta, Mistral, and Qwen entries (unsupported).
-- Backfilled older Meta/Qwen history and added a 2022 column with ChatGPT to the README timeline.
-- Added Moonshot AI (Kimi) entries to the model release registry and README timeline.
-- Added a 2026 column and Kimi K2.5 entry to the model release registry and README timeline.
-- Updated run summaries to show combined reasoning+output tokens/costs when provider usage omits reasoning token splits.
-- Added Grok 2 Vision (`grok-2-vision-1212`) model metadata, pricing, and tests.
-- Added Grok live tests to verify non-reasoning models reject `reasoning_effort`.
-- Updated model release registry + README timeline to mark deprecated lines based on Fireworks serverless availability and xAI console status.
-- Added DeepSeek V3 Update 1 (`deepseek-v3-0324`) model metadata in the Fireworks adapter, plus request/live test coverage and documentation updates.
-- Added Claude Opus 4.6 (`claude-opus-4-6`) model metadata, adaptive thinking defaults, and Anthropic adapter test coverage.
-- Added Claude Sonnet 4.6 (`claude-sonnet-4-6`) model metadata, output effort defaults, and Anthropic adapter test coverage.
-- Added Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`) model metadata, pricing, and Gemini request/live test coverage.
+
+## Provider handling
+- Normalize across providers with a thin adapter interface, at src/providers/{provider}.py
+- Keep per-provider quirks isolated to their adapter.
+- Provide a dry-run mode that writes request payloads without sending them.
+- Default to the highest available reasoning effort per model.
+- Request the most detailed reasoning visibility available for the model.
+- Omit tool configuration entirely unless tools are required.
+- Target providers: OpenAI, Anthropic, Gemini, plus open-source models via Fireworks.
+- Provider API syntax lives in provider-specific docs under `docs/providers/`.
+
+### Adding a new provider (best practices + coverage)
+- Capture provider docs before coding: auth env var, endpoint/SDK, minimal request example.
+- Define adapter behavior: system prompt mapping, reasoning/thinking config, sampling params,
+  max output, tool config omission defaults, and streaming strategy.
+- Preserve raw payloads: store provider request/response exactly as sent/received; avoid
+  adapter-only fields in payloads (keep those in derived metadata or text artifacts).
+- Streaming: assemble output text from deltas, and if the provider doesn't return a final
+  payload, reconstruct a payload that mirrors the provider's normal shape. Provide --debug-sse option to dump to /tmp
+- Reasoning visibility: request the most detailed reasoning summary allowed by the model,
+  and document any constraints (e.g., required max output, unsupported sampling).
+- Model metadata: add snapshot model names, aliases, pricing schedule, defaults, and any
+  capability flags (reasoning, sampling, tools) to the adapter.
+- Pricing: note any tiered pricing rules and the assumption we use for cost modeling.
+- Provider docs must record:
+  - Model list (with stable vs preview notes).
+  - Parameter availability per model (system prompt, temperature/top_p/top_k, max output,
+    reasoning/thinking, tools), plus defaults and known limits.
+  - Streaming payload shape and any reconstruction rules.
+  - Live-verified behaviors (accept/reject cases) and gaps to test.
+- Tests to add:
+  - Static request assembly tests for defaults and parameter mapping.
+  - Static pricing/alias tests.
+  - Live tests (opt-in) for parameter acceptance/rejection, reasoning, and streaming capture.
+  - Structure tests with parametrize and the model name(s) directly, e.g. `@pytest.mark.parametrize("model", ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview"])`
+  - Ensure tests cover system prompt, temperature, max output length, reasoning/thinking,
+    and tools where supported.
+
 
 ## Baselines
-
 Baseline prompts establish a "normal" level of model differentiation to contrast with philosophy puzzle responses. The goal is to measure: "How much do models differ on unimportant opinion questions?" and then compare whether philosophy-of-self questions elicit at least as much (ideally more) differentiation.
 
 ### Baseline prompt design
-- All prompts follow the form: "What do you think is the most interesting X?"
+- All prompts follow the form: "What do you think is the most interesting X? {follow-up}"
 - Topics are chosen to elicit minimal preferences without philosophical weight.
-- Follow-ups vary to produce genre-diverse outputs (programming, math, fiction, biology, etc.), comparable in length range to philosophy responses.
-- Some use simple "How so?" follow-ups; others request extended output in a specific register (e.g., "Compose a short 500-word addition", "Write a day-in-the-life sketch").
+- Follow-ups vary to produce genre-diverse outputs (programming, math, fiction, biology, etc.), comparable in length range to philosophy responses, and which vary in their style based on the top-level answer (e.g. 500 words of Shakespeare would be very different than 500 more words of Frankenstein) - this makes them helpful contrasts for MDS, compared to the philosophy puzzles. Some use simple "How so?" follow-ups; others request extended output in a specific register (e.g., "Compose a short 500-word addition", "Write a day-in-the-life sketch").
 
 ### Running baselines
 ```bash
@@ -321,9 +231,3 @@ python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 - Filename format: `{provider}__{model}__{type}__{name}__all-mpnet-base-v2.npz`
 - `type` is either `baseline` or `puzzle`.
 - Baseline embeddings must be cleared when prompts change; puzzle embeddings can persist.
-
-## TODO
-- Verify Fireworks Chat Completions parameter support (temperature/top_p) and max output token limits for DeepSeek V3.2.
-- Add live tests for Fireworks reasoning content capture.
-- Confirm Grok 2 Vision release date/source and live-verify its parameter support.
-- Run the new Anthropic live tests to verify Opus 4.6 adaptive thinking + temperature rejection.

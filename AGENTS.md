@@ -9,7 +9,6 @@ Build a small Python framework for running philosophy-style LLM evaluations with
   - You don't have access to the OpenAI docs online; the first ~100 lines of the .md are helpful information and should be directly read when dealing with OpenAI, then the docs are pasted in afterward and those can be searched.
 - Task wrap-up: 
   - Document any long-term insights about agent abilities and directions here
-  - Document progress and todos in spec.md. Remove pre-existing todos that have already been done or are deprecated
   - Document model-specific parameter availability in the provider-speicfic file.
   - Amend README for public-facing notes, e.g. model support, features, etc.
 
@@ -25,22 +24,9 @@ Build a small Python framework for running philosophy-style LLM evaluations with
 - Paid/live provider tests must be opt-in and clearly labeled with cost and env requirements, pass in the relevant RUN_LIVE flag (e.g., `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest -k streaming_captures_long_output_live -m live`). Default runs should skip them.
 - Live streaming tests can take longer than typical unit tests; allow up to ~60s for them to complete.
 
-## Working agreement
-- Keep specs lightweight and editable; store detailed conventions in `docs/spec.md`.
-- Prefer append-only data storage with clear provenance and timestamps.
-- Favor minimal abstractions and small modules over heavy frameworks.
-- Preserve provider payloads verbatim; normalize only when it adds clear value.
-- Treat prompts as fixtures; avoid runtime mutation.
-
-## How to collaborate here
-- When in doubt, ask for a quick clarification rather than over-designing. If 'progress' from the spec seems to not be either, request clarification rather than adding it back in yourself; it may have been an intentional choice and therefore need revision.
-- Call out tradeoffs and leave TODOs rather than guessing.
 
 ## Pointers
 - Detailed storage conventions, JSONL schema sketch, and provider notes live in `docs/spec.md`.
 
 ## Long-term insights
 - Cost modeling needs to support multi-tier pricing (modality, service tier, long-output tiers like Gemini) beyond simple input/output rates.
-- Streaming responses may surface reasoning summaries only in SSE events for some models; keep tooling to capture raw events for audits.
-- Model parameter support can shift even on snapshot models; rely on live verification over assumptions.
-- Anthropic is shifting from manual thinking budgets to adaptive thinking on newer Opus models; keep per-model thinking defaults flexible.
