@@ -85,7 +85,8 @@ across providers.
 5. Update model_release_registry with our system's support for that model and README list (in "Model landscape" section only).
 6. (Will leads from here) After a model is ready, it can be run against existing puzzles. 
 7. A model can also be run against the baselines.
-8. Those puzzle and baseline results should be used to create new plots. That new plot should be linked to at the top of the README.
+8. Those puzzle and baseline results should be used to create new plots. That new plot should be linked to at the top of the README (sometimes with edits about 'where' certain models are, since these aren't stable)
+9. The compendium should also be regenerated
 
 - All open-weights models are run through Fireworks and require mapping; see below.
 - Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not available (e.g. `gemini-2.5-flash`), make a note of that.

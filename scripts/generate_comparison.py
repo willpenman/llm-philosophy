@@ -9,7 +9,7 @@ Usage:
     python -m scripts.generate_comparison panopticon --philosophy-only
     python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 
-    # All philosophy puzzles (averaged pairwise distances across puzzles)
+    # All philosophy puzzles (averaged pairwise distances across puzzles), alone (with --philosophy-only flag) or with baselines (no flag)
     python -m scripts.generate_comparison philosophy_all --philosophy-only
     python -m scripts.generate_comparison philosophy_all
 

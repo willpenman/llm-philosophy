@@ -292,7 +292,7 @@ def send_response_request(
     api_key: str,
     base_url: str = DEFAULT_BASE_URL,
     timeout_s: float = 600,
-    read_timeout_s: float = 1200,
+    read_timeout_s: float = 2400,
     progress_callback: Callable[[int], None] | None = None,
     stream_text_callback: Callable[[str], None] | None = None,
     sse_event_path: Path | None = None,
@@ -305,7 +305,7 @@ def send_response_request(
         read_timeout_s: Timeout for reading between streamed chunks. Extended thinking
             models like GPT-5.2 Pro with "xhigh" reasoning may think for several minutes
             before sending any output, causing idle periods that exceed typical read
-            timeouts. Default is 1200s (20 minutes) to accommodate this.
+            timeouts. Default is high (20+ minutes) to accommodate this.
     """
     # Lazy import to avoid requiring SDK for response reading
     from httpx import Timeout
