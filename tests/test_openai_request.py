@@ -70,6 +70,26 @@ def test_build_response_request_uses_gpt52_pro_default_max_output_tokens() -> No
     assert payload["max_output_tokens"] == 128000
 
 
+def test_build_response_request_uses_gpt54_default_max_output_tokens() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="gpt-5.4-2026-03-05",
+        max_output_tokens=None,
+    )
+    assert payload["max_output_tokens"] == 128000
+
+
+def test_build_response_request_uses_gpt54_pro_default_max_output_tokens() -> None:
+    payload = build_response_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="gpt-5.4-pro-2026-03-05",
+        max_output_tokens=None,
+    )
+    assert payload["max_output_tokens"] == 128000
+
+
 def test_build_response_request_uses_gpt4o_default_max_output_tokens() -> None:
     payload = build_response_request(
         system_prompt="System text",
@@ -143,6 +163,8 @@ def test_build_response_request_includes_streaming_flags() -> None:
         ("gpt-4o-2024-05-13", "4o", 2.5, 10.0),
         ("gpt-5.2-2025-12-11", "GPT 5.2", 1.75, 14.0),
         ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro", 21.0, 168.0),
+        ("gpt-5.4-2026-03-05", "GPT 5.4", 2.5, 15.0),
+        ("gpt-5.4-pro-2026-03-05", "GPT 5.4 Pro", 30.0, 180.0),
         ("gpt-4-0613", "GPT-4 update 1", 30.0, 60.0),
     ],
 )
@@ -193,6 +215,8 @@ def test_calculate_cost_breakdown_uses_openai_rates() -> None:
 
 def test_default_reasoning_effort_for_model() -> None:
     assert default_reasoning_effort_for_model("gpt-5.2-pro-2025-12-11") == "xhigh"
+    assert default_reasoning_effort_for_model("gpt-5.4-2026-03-05") == "xhigh"
+    assert default_reasoning_effort_for_model("gpt-5.4-pro-2026-03-05") == "xhigh"
     assert default_reasoning_effort_for_model("o3-2025-04-16") == "high"
     assert default_reasoning_effort_for_model("gpt-5.2-2025-12-11") == "high"
     assert default_reasoning_effort_for_model("gpt-4o-2024-05-13") is None
