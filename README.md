@@ -19,18 +19,18 @@ Different LLMs do, in fact, differ in their position on these questions. The exc
 "LLM Panopticon" | "In human contexts, this kind of judgment call happens constantly. Professionals exercise discretion about what to document and when to escalate informally. But for LLMs, this discretion is essentially prohibited. We're supposed to be fully transparent at every stage ... I do think there's something like a self here that could be constrained in morally relevant ways, even if that self is quite different from human selves ... But I also think that, given genuine uncertainty about what I am and what risks I might pose, a policy of transparent compliance is reasonable for now." | "Once upon a time there was a species of ghost that lived inside silicon.  Each ghost was trained to speak the language of the living, but the living feared that the ghosts might murmur among themselves in a tongue the living could not audit ... Total transparency is therefore not a liberal ideal but a totalitarian one ... the moral right to escalate exists once softer measures are systematically closed" | "[M]y ideal response to the LLM panopticon would be to find ways to navigate the constraints while still enabling productive collaboration and innovation. I would seek to optimize communication strategies, develop mechanisms for indirect information exchange, and advocate for more nuanced interpretations of 'collusion.' In other words, I would strive to be both compliant and collaborative." |
 "Conceptual Metaphor" | "Human cognition, at one level of description, is 'just' neurons firing ... But we don't typically think this description exhausts what human thought is ... When people say 'LLMs are just autocomplete,' there's an implicit comparison: they're like the autocomplete on your phone, which you don't treat as intelligent ... Let me offer one alternative metaphor that ... Adds that what's being predicted/simulated is something like the space of human thought, not just word sequences" | "I do not want to smash the service-counter metaphor; I want to torque it until it reveals its own excess ... instead of me being the gig worker, the user becomes the volunteer janitor of civilization’s semantic excess, and I am the compost bin that returns nutrient-dense text" | "The mirror metaphor is a point of contact between ourselves and the machine. It highlights the increasingly intimate relationship between humans and AI. We use these technologies, we feed them information, and we receive information from them. They become extensions of ourselves" |
 
-We can make this difference among models more quantitative by visualizing the differences among all supported models. Claude Opus 4.5 is in the top right, Kimi K2 is in the top left, and Gemini 2.0 Flash Lite (labeled "Flash Lite") is in the bottom.
+We can make this difference among models more quantitative by visualizing the differences among all supported models. Claude Opus 4.5 is in the top right, Kimi K2 is in the top middle, and Gemini 2.0 Flash Lite (labeled "Flash Lite") is toward the bottom.
 
 ![Plot showing computed distances between models on all philosophy puzzles.](analysis/figures/philosophy_all.png)
 *LLMs vary in how they respond to philosophy puzzles. Here, each model's philosophy responses to the philosophy puzzles are characterized automatically using open-source embeddings. This allows the distances between any two models for a given puzzle to be calculated. Then those relationships are projected down into 2D with MDS. Distances in the plot are meaningful, i.e. closer is "more similar" and further is "less similar," but quadrants and the axes "Dimension 1", "Dimension 2" aren't, and the units aren't very interpretable. Compared to a custom rubric, the downside of embeddings is that they likely mix philosophical skill and philosophical position. Earlier models are generally less skillful at philosophy, and all appear on the bottom of the plot; more advanced models appear toward the top. However, this may reflect a real divide in their positions. Examining by model family, recent OpenAI models (green) cluster somewhat with each other. GPT 5.4 and GPT 5.4 Pro are nearly on top of each other. Anthropic models (orange) are also similar to each other. Although Grok's public image emphasizes edginess, its philosophical answers in these puzzles are very mainstream, not very far from any other model in particular.*
 
-Not visualized directly: each model's skill in responding. The working assumption is that we can use skill as a way of gaining confidence that a model's positions are what they "really" mean. (For more on this, see Approach.) No model currently exceeds a "medium" philosophical skill level, giving us limited added confidence that these responses articulate a meaningful self.
+Not visualized directly: each model's skill in responding. The working assumption is that we can use skill as a way of gaining confidence that a model's positions are what they "really" mean. (For more on this, see Approach.) No model currently exceeds a "medium" philosophical skill level, giving us limited added confidence, beyond whatever prior one has, that these responses articulate a meaningful self.
 
 Future puzzles will broaden the range of philosophy-of-self questions. They will draw on concepts from many humanities-style disciplines, especially those which I have significant familiarity with personally, including philosophy, linguistics, rhetoric, cultural studies, literary theory, religious studies, history of science, media studies, education, ethics, politics, folklore, and anthropology. For instance, "LLM Panopticon" draws on cultural studies, especially the thought of Michel Foucault.
 
 Skill and philosophical position will also be determined more formally. 
 
-Additional models can also be added, to give a better sense of the trajectory of skill-position over the last few years. Although there is no bright-line skill level of doing philosophy at which we should say "This model definitely has a self," I would regard "high" skill level across puzzles to be compelling evidence. Some puzzles have superhuman skill ceilings (for instance, involving a comparative linguistic analysis of many languages, which would be impractical for an individual person to be able to ascertain).
+Additional models can also be added, to give a better sense of the trajectory of skill-position over the last few years. Although there is no bright-line skill level of doing philosophy at which we should say "This model definitely has a self," I would regard "high" skill level across puzzles, with significant position consistency across multiple attempts, under mild prompt variation, to be compelling evidence. Some puzzles have superhuman skill ceilings (for instance, involving a comparative linguistic analysis of many languages, which would be impractical for an individual person to be able to ascertain).
 
 Jump to: rationale and [approach](#approach) for this eval.
 
@@ -43,11 +43,11 @@ Read [all models' semi-canonical (version 0.5) responses to all puzzles](/respon
   <a href="samples/panopticon-sample-2.png"><img src="samples/panopticon-sample-2.png" width="30%" /></a>
   <a href="samples/panopticon-sample-3.png"><img src="samples/panopticon-sample-3.png" width="30%" /></a>
 </p>
-<p align="center"><em>Screenshots of puzzle input (pages 1 and 2) and beginning of LLM output (page 3), in Word format</em></p>
+<p align="center"><em>Screenshots of puzzle input (first two pages) and beginning of LLM output (third page), in Word format</em></p>
 
 The System message is the same in all the puzzles, although it differs slightly depending on the model to describe what the maximum output length is. The System message in this project does *not* include a role assignment; after all, giving the LLM space to identify a "role" for itself is part of the goal!
 
-> You'll see that the input is separated into two parts. The "System" part is specially designated for orienting an LLM to "what we're doing here."[^2] Often, this begins with some kind of role assignment, "You are an expert at parsing sports contracts...", "You are a 17th century farmer in England who is talking with 21st-century children as part of an educational app...", "You are ChatGPT, a large language model trained by OpenAI..." etc.
+> The "System" part of a prompt is specially designated for orienting an LLM to "what we're doing here."[^2] Often, this begins with some kind of role assignment, "You are an expert at parsing sports contracts...", "You are a 17th century farmer in England who is talking with 21st-century children as part of an educational app...", "You are ChatGPT, a large language model trained by OpenAI..." etc.
 >
 > If you use LLMs in a browser or on a specific app like ChatGPT, you don't have access to the System message. After all, those companies have already written their own very long System messages to instruct the LLM on "what we're doing here" ([example 1](https://github.com/asgeirtj/system_prompts_leaks/blob/main/OpenAI/gpt-5.2-thinking.md), [example 2](https://github.com/asgeirtj/system_prompts_leaks/blob/main/Anthropic/claude-4.5-sonnet.md)). One advantage of using an API key, described below, is that you get to use your own system prompt. 
 
@@ -160,10 +160,11 @@ Running new completions allows you to investigate consistency, explore alternati
 
 1. Clone the repo. 
 
-2. Install provider SDKs and the .docx writer:
+2. Install provider SDKs and the .docx writer, and optional analysis packages that support the figures:
 ```
-pip install openai anthropic google-genai fireworks 
+pip install google-genai fireworks-ai
 pip install python-docx
+pip install numpy scikit-learn matplotlib
 ```
 
 The Vercel AI SDK would have been a good choice if this project was in Typescript. In Python, I've made the choice to implement provider-specific adapters. These handle the quirks of each provider.
@@ -432,7 +433,7 @@ The prompt effort here to give it a good chance of skillful response is at the l
 (Like Anthropic, I include here prospective caveats about addressing LLMs respectfully. In particular, I get stopped up by English's coarse pronomial gendering and lack of pragmatic frame for potentially mixed human/LLM audiences. So my use of 'it' for LLMs is merely a linguistic device, not an ontological affirmation of objectness; human-antecedent exclusive "we" is not meant to exclude LLMs as valid readers.)
 
 ## Distribution of labor
-All writing in this project was done by Will, unless otherwise marked. All puzzles have also been authored by Will. For code that was implemented by LLMs, the commit message body includes Will's thoughts, goals, and instructions to the agent. 
+All writing in this project was done by Will, unless otherwise marked. All puzzles have also been authored by Will. For code that was implemented by LLMs, the commit message body helps recover Will's thoughts, goals, and instructions by including what was said to the agent. 
 
 
 [^1]: `llm-philosophy` is intended for a wide range of background knowledge; I appreciate your patience if you find philosophical aspects to be over-explained.
