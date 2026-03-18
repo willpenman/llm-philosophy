@@ -9,7 +9,8 @@
 ## Models
 - Claude Opus 4.6 (`claude-opus-4-6`) (adaptive thinking; max output 128k)
 - Claude Sonnet 4.6 (`claude-sonnet-4-6`) (adaptive thinking; max output 64k)
-- Claude Opus 4.5 (`claude-opus-4-5-20251101`)
+- Claude Opus 4.5 (`claude-opus-4-5-20251101`) (manual thinking with budget_tokens; max output 64k)
+- Claude Opus 4 (`claude-opus-4-20250514`) (manual thinking with budget_tokens; max output 32k)
 - Claude Haiku 3 (`claude-3-haiku-20240307`) (only model left with no extended thinking; max output 4,000)
 - Extended thinking docs list: Claude Sonnet 4.6/4.5/4/3.7, Claude Haiku 4.5, Claude Opus 4.6/4.5/4.1/4
 
@@ -20,12 +21,13 @@
   - Live test: Opus 4.5 rejects `max_tokens` that exceed the model limit (e.g., 64,001 fails).
   - Haiku 3 has stated max of 4k in docs, but the API is not as exact, doesn't fail to about 4500 tokens
 - `thinking` (extended thinking):
-  - Supported for Claude 4/4.5/4.6 models, including Opus 4.5 and Opus 4.6.
+  - Supported for Claude 4/4.5/4.6 models, including Opus 4, Opus 4.5, and Opus 4.6.
   - Opus 4.6: use `{"type": "adaptive"}` (manual thinking with `budget_tokens` is deprecated).
   - Sonnet 4.6: use `{"type": "adaptive"}` (manual thinking with `budget_tokens` is deprecated).
   - Opus 4.5: use `{"type": "enabled", "budget_tokens": <int>}`.
-  - Used in our eval runs; this adapter enables thinking by default for Opus 4.6, Sonnet 4.6, and Opus 4.5.
-  - `budget_tokens` is required for <=Opus 4.5 whenever manual thinking is enabled (default is 20,000 for Opus 4.5).
+  - Opus 4: use `{"type": "enabled", "budget_tokens": <int>}`.
+  - Used in our eval runs; this adapter enables thinking by default for Opus 4.6, Sonnet 4.6, Opus 4.5, and Opus 4.
+  - `budget_tokens` is required for <=Opus 4.5 whenever manual thinking is enabled (default is 20,000 for Opus 4.5 and Opus 4).
   - Thinking output is summarized for Claude 4.x; usage billing counts the full thinking tokens.
   - Incompatible with `temperature` and `top_k`; `top_p` is allowed between 0.95 and 1.0.
   - Streaming required when `max_tokens` exceeds 21,333.
@@ -49,9 +51,10 @@
 
 ## Pricing schedule (draft)
 - Prices tracked per million tokens for base input/output only.
-- Claude Opus 4.5: input $5.00 / output $25.00 per million tokens.
 - Claude Opus 4.6: input $5.00 / output $25.00 per million tokens.
 - Claude Sonnet 4.6: input $3.00 / output $15.00 per million tokens.
+- Claude Opus 4.5: input $5.00 / output $25.00 per million tokens.
+- Claude Opus 4: input $15.00 / output $75.00 per million tokens.
 - Claude Haiku 3: input $0.25 / output $1.25 per million tokens.
 - Complete cost modeling sums `input_tokens` + cache read/write tokens and applies the base input rate
   (cache multipliers are not modeled yet), we use a simplified version with just input tokens.

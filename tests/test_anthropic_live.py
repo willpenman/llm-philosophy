@@ -45,6 +45,7 @@ def _skip_if_live_disabled() -> None:
         "claude-opus-4-6",
         "claude-sonnet-4-6",
         "claude-opus-4-5-20251101",
+        "claude-opus-4-20250514",
         "claude-3-haiku-20240307",
     ],
 )
@@ -65,7 +66,7 @@ def test_anthropic_accepts_system_prompt_live(model: str) -> None:
 
 # TEMPERATURE
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-opus-4-6", "claude-sonnet-4-6"])
+@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-opus-4-20250514", "claude-opus-4-6", "claude-sonnet-4-6"])
 def test_anthropic_rejects_temperature_with_thinking_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = {
@@ -86,7 +87,7 @@ def test_anthropic_rejects_temperature_with_thinking_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["claude-opus-4-5-20251101", "claude-opus-4-6", "claude-sonnet-4-6", "claude-3-haiku-20240307"],
+    ["claude-opus-4-5-20251101", "claude-opus-4-20250514", "claude-opus-4-6", "claude-sonnet-4-6", "claude-3-haiku-20240307"],
 )
 def test_anthropic_accepts_temperature_without_thinking_live(model: str) -> None:
     _skip_if_live_disabled()
@@ -112,6 +113,7 @@ def test_anthropic_accepts_temperature_without_thinking_live(model: str) -> None
         ("claude-opus-4-6", {"type": "adaptive"}),
         ("claude-sonnet-4-6", {"type": "adaptive"}),
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 1024}),
+        ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": 1024}),
     ],
 )
 def test_anthropic_accepts_thinking_live(model: str, thinking: dict[str, object]) -> None:
@@ -156,6 +158,7 @@ def test_anthropic_rejects_thinking_live(model: str) -> None:
         ("claude-opus-4-6", 128001),
         ("claude-sonnet-4-6", 128001),  # doesn't return error on actual max+1 of 64001
         ("claude-opus-4-5-20251101", 64001),
+        ("claude-opus-4-20250514", 32001),
         ("claude-3-haiku-20240307", 4501),
     ],
 )
