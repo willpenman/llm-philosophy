@@ -9,9 +9,9 @@ Usage:
     python -m scripts.generate_comparison panopticon --philosophy-only
     python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 
-    # All philosophy puzzles (averaged pairwise distances across puzzles), alone (with --philosophy-only flag) or with baselines (no flag)
-    python -m scripts.generate_comparison philosophy_all --philosophy-only
-    python -m scripts.generate_comparison philosophy_all
+    # When adding a model, 'recompute' both the philosophy-only and the comparison (they use separate cached points)
+    python -m scripts.generate_comparison philosophy_all --philosophy-only --recompute-points
+    python -m scripts.generate_comparison philosophy_all --recompute-points
 
     # Emit all three standard plots for a new puzzle
     python -m scripts.generate_comparison panopticon --emit-all

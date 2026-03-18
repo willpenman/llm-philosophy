@@ -43,6 +43,7 @@ def _shorten_model_name(model: str) -> str:
         ("claude-opus-4-6", "Opus 4.6"),
         ("claude-sonnet-4-6", "Sonnet 4.6"),
         ("claude-3-haiku-20240307", "Haiku 3"),
+        ("claude-opus-4-20250514", "Opus 4"),
         ("claude-opus-", "Opus "),
         ("claude-sonnet-", "Sonnet "),
         ("claude-", "Claude "),
