@@ -76,17 +76,20 @@ across providers.
 
 
 ## Adding a model to an existing provider
-1. Add model metadata in the provider adapter: defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
-2. Add/extend static tests for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
-3. Update live tests by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
+0. Examine provider-specific documentation, docs/providers/{provider}.md, e.g. anthropic.md - this carries inter-model insights about how to add models and what particularities they have
+1. Add model metadata in the provider adapter (src/providers/{provider}.py): defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
+2. Add/extend static tests (tests/test_{provider}_request.py) for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
+3. Update live tests (tests/test_{provider}_live.py) by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
   - Keep live tests grouped by behavior (see comments in code). 
   - Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
-4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support)
-5. Update model_release_registry with our system's support for that model and README list (in "Model landscape" section only).
-6. (Will leads from here) After a model is ready, it can be run against existing puzzles. 
-7. A model can also be run against the baselines.
-8. Those puzzle and baseline results should be used to create new plots. That new plot should be linked to at the top of the README (sometimes with edits about 'where' certain models are, since these aren't stable)
-9. The compendium should also be regenerated
+4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support); surface when different than expected.
+5. Update model_release_registry with our system's support for that model and mark that model in bold in README "Model landscape" year-by-year table.
+6. (Will leads from here) After a model is ready, it can be run against existing puzzles and the baselines, using the catch_up.py script
+7. Create new plots with generate_comparison.py. (need to --recompute-points for both, add model alias if needed within visualize.py) 
+8. Confirm README text - new plot will be automatically linked, but might require edits in the caption and above about 'where' certain models are, since these aren't stable.
+9. Regenerate compendium of all responses using generate_compendium.py
+
+Remember, after merging, the live site will take an hour or two to catch up since the readme links to the same file path for the figure.
 
 - All open-weights models are run through Fireworks and require mapping; see below.
 - Use snapshot model names (e.g., `o3-2025-04-16`). If snapshot names not available (e.g. `gemini-2.5-flash`), make a note of that.
