@@ -131,6 +131,7 @@ def _make_bookmark_name(text: str) -> str:
     """Create a valid bookmark name from text.
 
     Bookmark names must start with a letter and contain only letters, digits, and underscores.
+    Word has a 40 character limit on bookmark names.
     """
     import re
     # Replace non-alphanumeric with underscore, collapse multiple underscores
@@ -138,6 +139,9 @@ def _make_bookmark_name(text: str) -> str:
     # Ensure starts with letter
     if name and not name[0].isalpha():
         name = "bm_" + name
+    # Word truncates bookmarks at 40 characters
+    if len(name) > 40:
+        name = name[:40]
     return name or "bookmark"
 
 

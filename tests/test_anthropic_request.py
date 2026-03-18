@@ -54,6 +54,14 @@ def test_build_messages_request_uses_default_max_output_tokens() -> None:
     payload = build_messages_request(
         system_prompt="System text",
         user_prompt="User text",
+        model="claude-opus-4-20250514",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 32000
+
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
         model="claude-3-haiku-20240307",
         max_output_tokens=None,
     )
@@ -87,6 +95,10 @@ def test_build_messages_request_includes_optional_params() -> None:
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
+        ("claude-opus-4-20250514", {"type": "disabled", "budget_tokens": 1000}, "thinking.type"),
+        ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
+        ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
+        ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
         ("claude-opus-4-6", {"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
         ("claude-opus-4-6", {"type": "adaptive", "effort": 123}, "effort"),
     ],
@@ -104,12 +116,13 @@ def test_build_messages_request_rejects_invalid_thinking_config(
         )
 
 
-def test_build_messages_request_rejects_adaptive_thinking_for_manual_model() -> None:
+@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-opus-4-20250514"])
+def test_build_messages_request_rejects_adaptive_thinking_for_manual_model(model: str) -> None:
     with pytest.raises(ValueError, match="adaptive"):
         build_messages_request(
             system_prompt="System text",
             user_prompt="User text",
-            model="claude-opus-4-5-20251101",
+            model=model,
             max_output_tokens=128,
             thinking={"type": "adaptive"},
         )
@@ -135,6 +148,18 @@ def test_build_messages_request_accepts_adaptive_thinking_for_sonnet_46() -> Non
         thinking={"type": "adaptive"},
     )
     assert payload["thinking"] == {"type": "adaptive"}
+
+
+@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-opus-4-20250514"])
+def test_build_messages_request_accepts_manual_thinking_for_manual_models(model: str) -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model=model,
+        max_output_tokens=2048,
+        thinking={"type": "enabled", "budget_tokens": 1024},
+    )
+    assert payload["thinking"] == {"type": "enabled", "budget_tokens": 1024}
 
 
 def test_build_messages_request_accepts_temperature_for_opus_46() -> None:
@@ -167,6 +192,7 @@ def test_build_messages_request_rejects_temperature_with_adaptive_thinking() -> 
         ("claude-opus-4-6", "Claude Opus 4.6", 5.0, 25.0),
         ("claude-sonnet-4-6", "Claude Sonnet 4.6", 3.0, 15.0),
         ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),
+        ("claude-opus-4-20250514", "Opus 4", 15.0, 75.0),
         ("claude-3-haiku-20240307", "Claude Haiku 3", 0.25, 1.25),
     ],
 )

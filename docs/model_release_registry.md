@@ -18,9 +18,9 @@ Columns:
 | Anthropic | Claude Haiku 4.5 (`claude-haiku-4-5-20251001`) | 2025-10-15 | no | https://www.anthropic.com/news/claude-haiku-4-5 | Not supported. |
 | Anthropic | Claude Sonnet 4.5 (`claude-sonnet-4-5-20250929`) | 2025-09-29 | no | https://www.anthropic.com/news/claude-sonnet-4-5 | Not supported. |
 | Anthropic | Claude Opus 4.1 (`claude-opus-4-1-20250805`) | 2025-08-05 | no | https://www.anthropic.com/news/claude-opus-4-1 | Not supported. |
-| Anthropic | Claude Opus 4 (`claude-opus-4-20250514`) | 2025-05-22 | no (retired 2026-01-05) | https://www.anthropic.com/news/claude-4 | Retired January 5, 2026. |
+| Anthropic | Claude Opus 4 (`claude-opus-4-20250514`) | 2025-05-22 | yes | https://www.anthropic.com/news/claude-4 | Retirement not sooner than May 14, 2026. |
 | Anthropic | Claude Sonnet 4 (`claude-sonnet-4-20250514`) | 2025-05-22 | no | https://www.anthropic.com/news/claude-4 | Not supported. |
-| Anthropic | Claude 3.7 Sonnet (`claude-3-7-sonnet-20250219`) | 2025-02-24 | deprecated (retiring 2026-02-19) | https://www.anthropic.com/news/claude-3-7-sonnet | Deprecated October 28, 2025. |
+| Anthropic | Claude 3.7 Sonnet (`claude-3-7-sonnet-20250219`) | 2025-02-24 | no (retired 2026-02-19) | https://www.anthropic.com/news/claude-3-7-sonnet | Deprecated October 28, 2025. |
 | Anthropic | Claude 3.5 Haiku (`claude-3-5-haiku-20241022`) | 2024-10-22 | deprecated (retiring 2026-02-19) | https://www.anthropic.com/news/3-5-models-and-computer-use | Deprecated December 19, 2025. |
 | Anthropic | Claude 3.5 Sonnet v2 (`claude-3-5-sonnet-20241022`) | 2024-10-22 | no (retired 2025-10-28) | https://www.anthropic.com/news/3-5-models-and-computer-use | Retired October 28, 2025. |
 | Anthropic | Claude 3.5 Sonnet (`claude-3-5-sonnet-20240620`) | 2024-06-20 | no (retired 2025-10-28) | https://www.anthropic.com/news/claude-3-5-sonnet | First 3.5 model. Retired October 28, 2025. |
