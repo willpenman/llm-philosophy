@@ -82,7 +82,7 @@ across providers.
 3. Update live tests (tests/test_{provider}_live.py) by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
   - Keep live tests grouped by behavior (see comments in code). 
   - Run live tests, use `-k` to run just the new model's parameterized case when validating, eg `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k gpt-4o-2024-05-13 -m live`, or for a single one, `source .venv/bin/activate && RUN_LIVE_OPENAI=1 pytest tests/test_openai_live.py -k "accepts_tools_live and gpt-4o-2024-05-13" -m live`
-4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support); surface when different than expected.
+4. Update provider docs with parameter support based on tests (system prompt, temperature/top_p, reasoning, tools, max output constraints). Treat tests as the arbiter of uncertain assumptions (e.g. of parameter support); surface when different than expected. If the new model has a different kind of default parameters, then the runners (for puzzles and for baselines) will also need to be updated.
 5. Update model_release_registry (docs/model_release_registry.md) with our system's support for that model. Mark that model in bold in README "Model landscape" year-by-year table.
 6. (Will leads from here) After a model is ready, it can be run against existing puzzles and the baselines, using the catch_up.py script
 7. Create new plots with generate_comparison.py. (need to --recompute-points for both, add model alias if needed within visualize.py) 
