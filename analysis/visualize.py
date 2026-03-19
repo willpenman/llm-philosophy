@@ -51,6 +51,7 @@ def _shorten_model_name(model: str) -> str:
         ("gpt-5.4-pro-2026-03-05", "GPT-5.4 Pro"),
         ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro"),
         ("gpt-5.2-2025-12-11", "GPT-5.2"),
+        ("gpt-5-2025-08-07", "GPT-5"),
         ("gpt-4o-2024-05-13", "GPT-4o"),
         ("gpt-4-0613", "GPT-4"),
         ("gpt-5.2-pro", "GPT-5.2 Pro"),

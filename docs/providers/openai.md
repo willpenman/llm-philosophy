@@ -62,6 +62,11 @@
   - Error shape observed for invalid `max_output_tokens` (below minimum): HTTP 400, `invalid_request_error`, `param: max_output_tokens`, `code: integer_below_min_value`.
 - Debugging note: a `--debug-sse` run records raw SSE event JSONL (event objects such as `response.completed` and `response.reasoning_text.done`) under `tmp/` without writing to request/response JSONL storage.
 - Streaming note: when SSE includes reasoning summary deltas (e.g. `response.reasoning_summary_text.delta`), the runner stores a concatenated summary inside the response payload reasoning item (`output[].type=reasoning`), preferring `*.done` content and falling back to joined deltas, using `\n\n\n` between parts.
+- gpt-5-2025-08-07:
+  - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `stream`, `stream_options` (live-verified).
+  - Not supported: `temperature`, `top_p` (live call returns 400 unsupported parameter).
+  - Reasoning effort values: `low`, `medium`, `high` accepted (live-verified).
+  - Defaults: `max_output_tokens=128000`.
 - gpt-5.2-2025-12-11:
   - Supported: `system`/`user` input items, `max_output_tokens`, `reasoning` (`effort`, `summary`), `tools`, `tool_choice`, `seed`, `stream`, `stream_options`.
   - Not supported: `temperature` (live call returns 400 unsupported parameter).
@@ -88,5 +93,6 @@
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
 - o3-2025-04-16: input $2.00 / output $8.00 per million tokens.
 - gpt-4o-2024-05-13: input $2.50 / output $10.00 per million tokens.
+- gpt-5-2025-08-07: input $1.25 / output $10.00 per million tokens.
 - gpt-5.2-2025-12-11: input $1.75 / output $14.00 per million tokens.
 - gpt-4-0613: input $30.00 / output $60.00 per million tokens.

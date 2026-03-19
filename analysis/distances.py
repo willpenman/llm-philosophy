@@ -227,18 +227,37 @@ def compute_averaged_distance_matrix(
     return avg_distances, keys
 
 
-def save_points(points: list[ModelPoint], path: Path) -> None:
-    """Save ModelPoints to a JSON file."""
-    data = [asdict(p) for p in points]
+@dataclass
+class CachedPoints:
+    """Cached MDS projection with metadata for dynamic scaling."""
+    points: list[ModelPoint]
+    mean_cosine_distance: float
+
+
+def save_points(
+    points: list[ModelPoint],
+    path: Path,
+    mean_cosine_distance: float = 0.0,
+) -> None:
+    """Save ModelPoints to a JSON file with metadata."""
+    data = {
+        "points": [asdict(p) for p in points],
+        "mean_cosine_distance": mean_cosine_distance,
+    }
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w") as f:
         json.dump(data, f, indent=2)
 
 
-def load_points(path: Path) -> list[ModelPoint] | None:
+def load_points(path: Path) -> CachedPoints | None:
     """Load ModelPoints from a JSON file. Returns None if file doesn't exist."""
     if not path.exists():
         return None
     with open(path) as f:
         data = json.load(f)
-    return [ModelPoint(**d) for d in data]
+
+    points = [ModelPoint(**d) for d in data["points"]]
+    return CachedPoints(
+        points=points,
+        mean_cosine_distance=data["mean_cosine_distance"],
+    )

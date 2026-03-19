@@ -55,6 +55,7 @@ def _create_response_or_skip_on_server_error(request: pytest.FixtureRequest, **k
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",
@@ -102,6 +103,7 @@ def test_openai_accepts_temperature_top_p_live(
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",
@@ -126,6 +128,7 @@ def test_openai_rejects_top_p_live(model: str) -> None:
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",
@@ -173,6 +176,7 @@ def test_openai_accepts_temperature_when_reasoning_none_live(
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",
@@ -205,7 +209,7 @@ def test_openai_accepts_tools_live(
 
 @pytest.mark.live
 @pytest.mark.parametrize("effort", ["low", "medium", "high"])
-@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5.2-2025-12-11"])
+@pytest.mark.parametrize("model", ["o3-2025-04-16", "gpt-5-2025-08-07", "gpt-5.2-2025-12-11"])
 def test_openai_accepts_reasoning_effort_live(
     request: pytest.FixtureRequest, model: str, effort: str
 ) -> None:
@@ -318,6 +322,7 @@ def test_openai_rejects_invalid_reasoning_effort_live(model: str, effort: str) -
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",
@@ -364,6 +369,7 @@ def test_openai_rejects_too_low_max_output_tokens_live(model: str) -> None:
     "model",
     [
         "o3-2025-04-16",
+        "gpt-5-2025-08-07",
         "gpt-5.2-2025-12-11",
         "gpt-5.2-pro-2025-12-11",
         "gpt-5.4-2026-03-05",

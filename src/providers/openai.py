@@ -16,6 +16,7 @@ DEFAULT_BASE_URL = "https://api.openai.com/v1"
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "o3-2025-04-16": {"max_output_tokens": 100000},
     "gpt-4o-2024-05-13": {"max_output_tokens": 64000},
+    "gpt-5-2025-08-07": {"max_output_tokens": 128000},
     "gpt-5.2-2025-12-11": {"max_output_tokens": 128000},
     "gpt-5.2-pro-2025-12-11": {"max_output_tokens": 128000},
     "gpt-5.4-2026-03-05": {"max_output_tokens": 128000},
@@ -28,6 +29,7 @@ SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "o3-2025-04-16": {"input": 2.0, "output": 8.0},
     "gpt-4o-2024-05-13": {"input": 2.5, "output": 10.0},
+    "gpt-5-2025-08-07": {"input": 1.25, "output": 10.0},
     "gpt-5.2-2025-12-11": {"input": 1.75, "output": 14.0},
     "gpt-5.2-pro-2025-12-11": {"input": 21.0, "output": 168.0},
     "gpt-5.4-2026-03-05": {"input": 2.5, "output": 15.0},
@@ -38,6 +40,7 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
 MODEL_ALIASES: dict[str, str] = {
     "o3-2025-04-16": "o3",
     "gpt-4o-2024-05-13": "4o",
+    "gpt-5-2025-08-07": "GPT 5",
     "gpt-5.2-2025-12-11": "GPT 5.2",
     "gpt-5.2-pro-2025-12-11": "GPT-5.2 Pro",
     "gpt-5.4-2026-03-05": "GPT 5.4",
@@ -51,6 +54,7 @@ PROVIDER_ALIASES: dict[str, str] = {
 
 REASONING_MODELS: set[str] = {
     "o3-2025-04-16",
+    "gpt-5-2025-08-07",
     "gpt-5.2-2025-12-11",
     "gpt-5.2-pro-2025-12-11",
     "gpt-5.4-2026-03-05",

@@ -37,7 +37,7 @@ Columns:
 | OpenAI | GPT-5.1-Codex (`gpt-5.1-codex`) | 2025-11-13 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex release note. |
 | OpenAI | GPT-5.1-Codex-Mini (`gpt-5.1-codex-mini`) | 2025-11-13 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex release note. |
 | OpenAI | GPT-5.1-Codex-Max (`gpt-5.1-codex-max`) | 2025-11-13 | yes (Codex) | https://developers.openai.com/codex/changelog | Codex release note. |
-| OpenAI | GPT-5 (`gpt-5`) | 2025-08-07 | yes | https://openai.com/index/introducing-gpt-5/ | Announcement. |
+| OpenAI | GPT-5 (`gpt-5-2025-08-07`) | 2025-08-07 | yes | https://openai.com/index/introducing-gpt-5/ | Announcement. Supported. |
 | OpenAI | GPT-5 Pro | 2025-08-07 | yes | https://openai.com/index/introducing-gpt-5/ | Pro availability listed in announcement. |
 | OpenAI | GPT-5 mini (`gpt-5-mini`) | 2025-08-07 | yes | https://openai.com/index/introducing-gpt-5-for-developers/ | API release (mini/nano). |
 | OpenAI | GPT-5 nano (`gpt-5-nano`) | 2025-08-07 | yes | https://openai.com/index/introducing-gpt-5-for-developers/ | API release (mini/nano). |
