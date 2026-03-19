@@ -68,7 +68,7 @@ Columns:
 | Google | Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`) | 2026-02-19 | preview | https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/ | Announcement. |
 | Google | Gemini 3 Pro Preview (`gemini-3-pro-preview`) | 2025-11-18 | preview | https://ai.google.dev/gemini-api/docs/changelog | Changelog launch note. |
 | Google | Gemini 2.5 Flash-Lite (`gemini-2.5-flash-lite`) | 2025-07-22 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | Stable version release. Not supported. |
-| Google | Gemini 2.5 Pro (`gemini-2.5-pro`) | 2025-06-17 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | GA release. Not supported. |
+| Google | Gemini 2.5 Pro (`gemini-2.5-pro`) | 2025-06-17 | yes | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | GA release. No snapshot name available. |
 | Google | Gemini 2.5 Flash (`gemini-2.5-flash`) | 2025-06-17 | no | https://cloud.google.com/blog/products/ai-machine-learning/gemini-2-5-flash-lite-flash-pro-ga-vertex-ai | GA release. Not supported. |
 | Google | Gemini 2.0 Flash Lite (`gemini-2.0-flash-lite-001`) | 2025-02-25 | yes (scheduled shutdown 2026-02-25) | https://cloud.google.com/vertex-ai/generative-ai/docs/models/gemini/2-0-flash-lite | Release + discontinuation dates. |
 | Google | Gemini 2.0 Pro (`gemini-2.0-pro`) | 2025-02-05 | no | https://blog.google/innovation-and-ai/models-and-research/google-deepmind/gemini-model-updates-february-2025/ | GA release. Not supported. |

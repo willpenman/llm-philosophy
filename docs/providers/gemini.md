@@ -6,6 +6,7 @@
 
 ## Models
 - gemini-2.0-flash-lite-001 (stable)
+- gemini-2.5-pro (stable; reasoning/thinking enabled; no snapshot name available)
 - gemini-3-pro-preview (preview; reasoning/thinking enabled)
 - gemini-3.1-pro-preview (preview; reasoning/thinking enabled)
 
@@ -35,10 +36,19 @@
     `temperature`, `thinking_config` (`thinking_level`, `thinking_budget`, `include_thoughts`)
   - Reasoning/thinking enabled.
   - Versions: preview only (`gemini-3.1-pro-preview`).
+- gemini-2.5-pro:
+  - Supported: `system_instruction` (system prompt), `max_output_tokens`,
+    `temperature`, `top_p`, `top_k`, `thinking_config` (`thinking_budget`, `include_thoughts`)
+  - Reasoning/thinking enabled via `thinking_budget` (NOT `thinking_level` - model rejects it).
+  - Omitting `thinking_budget` uses dynamic thinking (128-32768 tokens).
+  - Max output: 65,536 tokens.
+  - No snapshot model name available (use `gemini-2.5-pro`).
+  - Adapter defaults: `include_thoughts=True` (no thinking_budget set, uses dynamic thinking).
 
 ## Pricing schedule (draft)
 - Prices are tracked per million tokens for input/output only (other tiers not yet modeled).
 - gemini-2.0-flash-lite-001: input $0.075 / output $0.30 per million tokens.
+- gemini-2.5-pro: input $1.25 / output $10.00 per million tokens.
 - gemini-3-pro-preview: input $2.00 / output $12.00 per million tokens.
 - gemini-3.1-pro-preview: input $2.00 / output $12.00 per million tokens.
 

@@ -63,6 +63,7 @@ def _shorten_model_name(model: str) -> str:
         ("gemini-3-pro-preview", "Gemini 3 Pro"),
         ("gemini-3.1-pro", "Gemini 3.1 Pro"),
         ("gemini-3-pro", "Gemini 3 Pro"),
+        ("gemini-2.5-pro", "Gemini 2.5 Pro"),
         ("gemini-2.0-flash-lite-001", "Flash Lite"),
         ("gemini-2.0-flash-lite", "Flash Lite"),
         ("gemini-", "Gemini "),

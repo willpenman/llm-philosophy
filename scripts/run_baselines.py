@@ -145,6 +145,7 @@ def _run_baseline_gemini(
     """Run a baseline prompt with Gemini."""
     from src.providers.gemini import (
         build_generate_content_request,
+        default_thinking_config_for_model,
         send_generate_content_request,
         require_api_key,
         supports_reasoning,
@@ -153,7 +154,7 @@ def _run_baseline_gemini(
     # Use thinking if available (same as eval)
     thinking_config = None
     if supports_reasoning(model):
-        thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
+        thinking_config = default_thinking_config_for_model(model)
 
     request = build_generate_content_request(
         system_prompt=BASELINE_SYSTEM_PROMPT,
