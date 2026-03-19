@@ -13,18 +13,21 @@ from src.costs import CostBreakdown, TokenBreakdown, compute_cost_breakdown
 
 MODEL_ALIASES: dict[str, str] = {
     "gemini-2.0-flash-lite-001": "Gemini 2.0 Flash Lite",
+    "gemini-2.5-pro": "Gemini 2.5 Pro",
     "gemini-3-pro-preview": "Gemini 3 Pro Preview",
     "gemini-3.1-pro-preview": "Gemini 3.1 Pro",
 }
 
 SUPPORTED_MODELS: set[str] = {
     "gemini-2.0-flash-lite-001",
+    "gemini-2.5-pro",
     "gemini-3-pro-preview",
     "gemini-3.1-pro-preview",
 }
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
     "gemini-2.0-flash-lite-001": {"max_output_tokens": 8192},
+    "gemini-2.5-pro": {"max_output_tokens": 65536},
     "gemini-3-pro-preview": {"max_output_tokens": 65536},
     "gemini-3.1-pro-preview": {"max_output_tokens": 65536},
 }
@@ -35,6 +38,7 @@ MODEL_DEFAULT_TEMPERATURES: dict[str, float] = {
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-2.0-flash-lite-001": {"input": 0.075, "output": 0.30},
+    "gemini-2.5-pro": {"input": 1.25, "output": 10.0},
     "gemini-3-pro-preview": {"input": 2.0, "output": 12.0},
     "gemini-3.1-pro-preview": {"input": 2.0, "output": 12.0},
 }
@@ -43,7 +47,12 @@ PROVIDER_ALIASES: dict[str, str] = {
     "gemini": "Gemini",
 }
 
-REASONING_MODELS: set[str] = {"gemini-3-pro-preview", "gemini-3.1-pro-preview"}
+REASONING_MODELS: set[str] = {"gemini-2.5-pro", "gemini-3-pro-preview", "gemini-3.1-pro-preview"}
+
+# Models that use thinking_level (Gemini 3+) vs thinking_budget (Gemini 2.5)
+# Gemini 2.5 Pro: omitting thinking_budget uses dynamic thinking (128-32768 tokens)
+THINKING_LEVEL_MODELS: set[str] = {"gemini-3-pro-preview", "gemini-3.1-pro-preview"}
+THINKING_BUDGET_MODELS: set[str] = {"gemini-2.5-pro"}
 
 
 @dataclass(frozen=True)
@@ -81,6 +90,16 @@ def display_provider_name(provider: str) -> str:
 
 def supports_reasoning(model: str) -> bool:
     return model in REASONING_MODELS
+
+
+def default_thinking_config_for_model(model: str) -> dict[str, Any] | None:
+    """Return the default thinking config for a model, or None if not a reasoning model."""
+    if model in THINKING_LEVEL_MODELS:
+        return {"thinking_level": "HIGH", "include_thoughts": True}
+    if model in THINKING_BUDGET_MODELS:
+        # Omit thinking_budget to use dynamic thinking (128-32768 tokens)
+        return {"include_thoughts": True}
+    return None
 
 
 def supports_model(model: str) -> bool:
@@ -320,7 +339,7 @@ def create_response(
     api_key: str | None = None,
 ) -> GeminiResponse:
     if thinking_config is None and supports_reasoning(model):
-        thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
+        thinking_config = default_thinking_config_for_model(model)
     payload = build_generate_content_request(
         system_prompt=system_prompt,
         user_prompt=user_prompt,

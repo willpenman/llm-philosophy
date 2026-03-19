@@ -76,7 +76,7 @@ def _has_thoughts(payload: dict[str, object]) -> bool:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+    ["gemini-2.0-flash-lite-001", "gemini-2.5-pro", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
 )
 def test_gemini_accepts_system_prompt_live(model: str) -> None:
     _skip_if_live_disabled()
@@ -94,7 +94,7 @@ def test_gemini_accepts_system_prompt_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+    ["gemini-2.0-flash-lite-001", "gemini-2.5-pro", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
 )
 def test_gemini_accepts_sampling_params_live(model: str) -> None:
     _skip_if_live_disabled()
@@ -144,6 +144,22 @@ def test_gemini_rejects_thinking_config_live(model: str) -> None:
 
 
 @pytest.mark.live
+@pytest.mark.parametrize("model", ["gemini-2.5-pro"])
+def test_gemini_rejects_thinking_level_live(model: str) -> None:
+    """Gemini 2.5 Pro uses thinking_budget, not thinking_level."""
+    _skip_if_live_disabled()
+    payload = build_generate_content_request(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=150,
+    )
+    payload["config"]["thinking_config"] = {"thinking_level": "HIGH"}
+    with pytest.raises(RuntimeError):
+        send_generate_content_request(payload)
+
+
+@pytest.mark.live
 @pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 @pytest.mark.parametrize("thinking_level", ["LOW", "HIGH"])
 def test_gemini_accepts_thinking_levels_live(
@@ -162,7 +178,7 @@ def test_gemini_accepts_thinking_levels_live(
 
 
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
+@pytest.mark.parametrize("model", ["gemini-2.5-pro", "gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 def test_gemini_accepts_thinking_budget_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = build_generate_content_request(
@@ -179,6 +195,7 @@ def test_gemini_accepts_thinking_budget_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize("model", ["gemini-3-pro-preview", "gemini-3.1-pro-preview"])
 def test_gemini_include_thoughts_returns_payload_live(model: str) -> None:
+    """Test thinking_level models return thoughts in payload."""
     _skip_if_live_disabled()
     payload = build_generate_content_request(
         system_prompt="You are a test harness. Reply with OK.",
@@ -188,6 +205,26 @@ def test_gemini_include_thoughts_returns_payload_live(model: str) -> None:
     )
     payload["config"]["thinking_config"] = {
         "thinking_level": "HIGH",
+        "include_thoughts": True,
+    }
+    response = send_generate_content_request(payload)
+    assert "OK" in response.output_text.upper()
+    assert _has_thoughts(response.payload)
+
+
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["gemini-2.5-pro"])
+def test_gemini_include_thoughts_with_budget_returns_payload_live(model: str) -> None:
+    """Test thinking_budget models return thoughts in payload."""
+    _skip_if_live_disabled()
+    payload = build_generate_content_request(
+        system_prompt="You are a test harness. Reply with OK.",
+        user_prompt="Reply with OK.",
+        model=model,
+        max_output_tokens=3000,
+    )
+    payload["config"]["thinking_config"] = {
+        "thinking_budget": 1024,
         "include_thoughts": True,
     }
     response = send_generate_content_request(payload)
@@ -213,7 +250,7 @@ def test_gemini_accepts_max_output_tokens_8192_live(model: str) -> None:
 @pytest.mark.live
 @pytest.mark.parametrize(
     "model",
-    ["gemini-2.0-flash-lite-001", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
+    ["gemini-2.0-flash-lite-001", "gemini-2.5-pro", "gemini-3-pro-preview", "gemini-3.1-pro-preview"],
 )
 def test_gemini_streaming_captures_long_output_live(model: str) -> None:
     _skip_if_live_disabled()

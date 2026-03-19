@@ -26,6 +26,7 @@ from src.providers.gemini import (
     build_generate_content_request,
     calculate_cost_breakdown as gemini_calculate_cost_breakdown,
     default_temperature_for_model as gemini_default_temperature_for_model,
+    default_thinking_config_for_model as gemini_default_thinking_config_for_model,
     display_model_name as display_gemini_model_name,
     display_provider_name as display_gemini_provider_name,
     extract_usage_breakdown as gemini_extract_usage_breakdown,
@@ -968,7 +969,7 @@ def run_gemini_puzzle(
         raise ValueError("debug_sse requires stream=True")
 
     if thinking_config is None and gemini_supports_reasoning(model):
-        thinking_config = {"thinking_level": "HIGH", "include_thoughts": True}
+        thinking_config = gemini_default_thinking_config_for_model(model)
 
     request_payload = build_generate_content_request(
         system_prompt=system_prompt.text,

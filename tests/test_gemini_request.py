@@ -56,6 +56,7 @@ def test_build_generate_content_request_omits_empty_tools() -> None:
     ("model", "alias", "input_cost", "output_cost"),
     [
         ("gemini-2.0-flash-lite-001", "Gemini 2.0 Flash Lite", 0.075, 0.30),
+        ("gemini-2.5-pro", "Gemini 2.5 Pro", 1.25, 10.0),
         ("gemini-3-pro-preview", "Gemini 3 Pro Preview", 2.0, 12.0),
         ("gemini-3.1-pro-preview", "Gemini 3.1 Pro", 2.0, 12.0),
     ],
