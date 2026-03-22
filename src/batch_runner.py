@@ -42,6 +42,8 @@ from src.providers.fireworks import (
 UNREACHABLE_MODELS: set[tuple[str, str]] = {
     ("qwen", "qwen3-vl-235b-thinking"),  # 2026-02: removed from Fireworks serverless
     ("qwen", "qwen2p5-vl-32b"),  # 2026-02: removed from Fireworks serverless
+    ("xai", "grok-2-vision-1212"), # 2026-03-21: discovered removed from Grok model list; note that grok 3 is also unlisted but IS reachable in practice
+    # 2025-03-09 Google claims that Gemini 3 Pro Preview is unreachable, but in fact it still is.
 }
 from src.runner import (
     run_openai_puzzle,

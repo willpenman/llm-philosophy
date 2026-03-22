@@ -17,7 +17,7 @@
 ## Models
 - grok-4-1-fast-reasoning (Grok 4.1 Fast Reasoning)
 - grok-3 (Grok 3)
-- grok-2-vision-1212 (Grok 2)
+- grok-2-vision-1212 (Grok 2) (unreachable as of march 2026)
 
 ## Model parameter availability
 - Source: local xAI docs in repo (reasoning + streaming).
