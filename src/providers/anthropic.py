@@ -51,6 +51,14 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "claude-3-haiku-20240307": {"input": 0.25, "output": 1.25},
 }
 
+MODEL_RELEASE_DATES: dict[str, str] = {
+    "claude-opus-4-6": "2026-02-05",
+    "claude-sonnet-4-6": "2026-02-17",
+    "claude-opus-4-5-20251101": "2025-11-24",
+    "claude-opus-4-20250514": "2025-05-22",
+    "claude-3-haiku-20240307": "2024-03-13",
+}
+
 
 @dataclass(frozen=True)
 class AnthropicResponse:

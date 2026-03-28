@@ -41,6 +41,12 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "grok-2-vision-1212": {"input": 2.0, "output": 10.0},
 }
 
+MODEL_RELEASE_DATES: dict[str, str] = {
+    "grok-4-1-fast-reasoning": "2025-11-17",
+    "grok-3": "2025-02-19",
+    "grok-2-vision-1212": "2024-12-12",
+}
+
 
 @dataclass(frozen=True)
 class GrokResponse:

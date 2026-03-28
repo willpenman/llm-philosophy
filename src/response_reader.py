@@ -145,6 +145,24 @@ def display_names(provider: str, model: str) -> tuple[str, str]:
     return model, provider
 
 
+def release_date(provider: str, model: str) -> str | None:
+    """Get the release date for a model in YYYY-MM-DD format.
+
+    Returns None if the release date is not known.
+    """
+    if provider == "anthropic":
+        return anthropic.MODEL_RELEASE_DATES.get(model)
+    if provider == "openai":
+        return openai.MODEL_RELEASE_DATES.get(model)
+    if provider == "gemini":
+        return gemini.MODEL_RELEASE_DATES.get(model)
+    if provider in {"fireworks", "deepseek", "kimi", "qwen", "meta"}:
+        return fireworks.MODEL_RELEASE_DATES.get(model)
+    if provider == "grok":
+        return grok.MODEL_RELEASE_DATES.get(model)
+    return None
+
+
 def find_response(
     responses_dir: Path,
     model: str,
