@@ -1,0 +1,956 @@
+# Programming Hacks
+
+## Bit Manipulation Hacks
+XOR swap (swap two variables without a temporary) | General / C / C++
+Check if integer is power of 2 using n & (n-1) == 0 | General / C
+Multiply/divide by powers of 2 using bit shifts | General / C / C++
+Brian Kernighan's algorithm (count set bits by n &= n-1) | General / C
+Fast modulo for powers of 2 using n & (m-1) | General / C
+Toggle a bit with XOR mask | General / C
+Set/clear specific bits with OR/AND masks | General / C
+Find the lone unique element in a list using XOR reduction | General
+Compute absolute value without branching using bit tricks | C / C++
+Branchless min/max using bitwise operations | C / C++
+Fast sign extraction via bit shift | C / C++
+Round up to next power of 2 with bit smearing | C / C++
+Integer average without overflow: (a & b) + ((a ^ b) >> 1) | C / C++
+Parity computation via cascading XOR | General
+De Bruijn sequence for finding bit position in O(1) | C / C++
+Gray code to binary and back with XOR shifts | General
+Using popcount intrinsic for fast Hamming weight | C / C++
+Using leading/trailing zero count intrinsics (CLZ/CTZ) | C / C++
+Bit reversal using masks and shifts | C / C++
+Using bitmask to represent and iterate subsets | General / Competitive Programming
+Isolating the lowest set bit with n & (-n) | C / C++
+Turning off the lowest set bit with n & (n-1) | C / C++
+Using XOR to find two unique elements in a list (partition by any set bit) | General
+Computing ceiling of integer division as (a + b - 1) / b | General
+
+## Classic C / C++ Hacks
+Duff's device (loop unrolling via switch/case interleaving) | C / C++
+Fast inverse square root (0x5f3759df magic constant) | C / Quake III
+XOR linked list (doubly linked list using single pointer per node) | C / C++
+Union type punning for reinterpreting bit patterns | C
+Flexible array members at end of struct | C99
+Struct hack (zero-length array at end of struct, pre-C99) | C
+Computed goto (GCC's labels-as-values extension) | C / GCC
+Statement expressions ({ }) for complex macros | C / GCC
+X-macros for generating repetitive code from a single list | C / C++
+Token pasting (##) in preprocessor macros | C / C++
+Stringification (#) in preprocessor macros | C / C++
+Double macro expansion trick for stringifying expanded macros | C / C++
+Variadic macros (__VA_ARGS__) | C99 / C++11
+container_of macro to get parent struct from member pointer | C / Linux Kernel
+offsetof macro for member offset within a struct | C / C++
+Comma operator for sequencing expressions | C / C++
+setjmp/longjmp for poor-man's exception handling | C
+Using alloca for dynamic stack allocation | C / C++
+Using volatile to prevent compiler optimization of memory reads | C / C++
+Using restrict to promise no pointer aliasing for optimization | C99
+Inline assembly for accessing hardware-specific instructions | C / C++
+Using __builtin_expect (likely/unlikely) for branch prediction hints | C / GCC
+Using __attribute__((cleanup)) for RAII-like cleanup in C | C / GCC
+Using memcpy for strict-aliasing-safe type punning | C / C++
+Designated initializers for sparse array initialization | C99
+Compound literals for creating unnamed temporary objects | C99
+Function pointer tables as a manual vtable | C
+Simulating coroutines with Duff's device and static variables | C
+Simon Tatham's coroutine macros using switch/case | C
+Trigraphs and digraphs as alternate character representations | C / C++
+Using #pragma once instead of include guards | C / C++
+Using signal handlers for custom error handling | C / C++
+Memory-mapped I/O via pointer casting | C / Embedded
+Using sentinel values in arrays to eliminate bounds checks | C / C++
+Casting between function pointer types | C
+Exploiting guaranteed struct layout with #pragma pack | C / C++
+Using anonymous structs/unions for cleaner access | C11 / C++11
+
+## C++ Specific Hacks
+SFINAE (Substitution Failure Is Not An Error) for compile-time dispatch | C++
+CRTP (Curiously Recurring Template Pattern) for static polymorphism | C++
+Expression templates for lazy evaluation of arithmetic | C++
+Template metaprogramming (computing at compile time) | C++
+Tag dispatch for function overload selection | C++
+enable_if / std::enable_if_t for conditional function overloads | C++
+constexpr for compile-time computation | C++11+
+if constexpr for compile-time branching | C++17
+Placement new for constructing objects in pre-allocated memory | C++
+Return value optimization (RVO/NRVO, guaranteed copy elision) | C++
+Move semantics to transfer ownership without copying | C++11
+Perfect forwarding with std::forward and universal references | C++11
+Empty base optimization (EBO) | C++
+Small buffer / short string optimization (SBO/SSO) | C++
+Type erasure (e.g., std::function, std::any) | C++
+Pimpl idiom (pointer-to-implementation) for ABI stability | C++
+Barton-Nackman trick (friend function defined inside template) | C++
+Attorney-Client idiom for controlled access to private members | C++
+Hidden friend functions for controlled ADL | C++
+Koenig lookup (ADL) tricks for operator resolution | C++
+Meyers singleton (function-local static initialization) | C++11
+Nifty counter for cross-translation-unit initialization ordering | C++
+Scope guard (RAII-based cleanup on scope exit) | C++
+User-defined literals for expressive types | C++11
+Fold expressions for variadic template expansion | C++17
+Structured bindings for tuple/struct decomposition | C++17
+Immediately invoked lambda for complex initialization | C++11
+Recursive lambdas via std::function or auto& self | C++
+Generic lambdas as a lightweight template substitute | C++14
+Operator overloading for DSL-like syntax | C++
+Using std::launder for placement-new pointer laundering | C++17
+consteval for guaranteed compile-time evaluation | C++20
+Using virtual inheritance to solve the diamond problem | C++
+Covariant return types in virtual functions | C++
+Enum class with underlying type specification | C++11
+Aggregate initialization tricks | C++
+Using std::variant as a type-safe union | C++17
+Using std::optional to replace nullable pointers | C++17
+
+## Python Hacks
+List comprehension for concise transformation/filtering | Python
+Dictionary/set comprehension | Python
+Generator expressions for lazy evaluation | Python
+Using zip(*matrix) to transpose a matrix | Python
+Tuple unpacking swap: a, b = b, a | Python
+Extended unpacking: a, *b, c = iterable | Python
+Chained comparisons: a < b < c | Python
+Walrus operator (:=) for assignment in expressions | Python 3.8+
+Using collections.defaultdict to avoid key existence checks | Python
+functools.lru_cache / @cache for automatic memoization | Python
+Using __slots__ to reduce memory in classes | Python
+Monkey patching (modifying classes/modules at runtime) | Python
+Metaclass tricks for class creation control | Python
+Descriptor protocol for reusable attribute logic | Python
+Using @property for computed attributes | Python
+Using __missing__ in dict subclass for auto-generation | Python
+Mutable default argument accumulator (intentional gotcha use) | Python
+String multiplication for repetition: "abc" * 3 | Python
+Using else clause on for/while loops (no-break clause) | Python
+Using _ as throwaway variable | Python
+Using ... (Ellipsis) as a placeholder or in type hints | Python
+Dynamic class creation with type() | Python
+exec/eval for runtime code generation | Python
+Using __init_subclass__ for subclass registration hooks | Python
+Using __set_name__ in descriptors | Python
+Context managers (with statement) for resource management | Python
+Using contextlib.contextmanager decorator | Python
+Using itertools (product, combinations, permutations, chain, etc.) | Python
+Using collections.Counter for frequency counting | Python
+Negative indexing for accessing elements from end | Python
+Slice assignment for in-place list modification | Python
+Using set operations for fast membership/intersection | Python
+Using bisect for sorted list operations | Python
+Using heapq for priority queue operations | Python
+f-string debugging: f"{variable=}" | Python 3.8+
+Using dataclasses for boilerplate-free classes | Python 3.7+
+Using namedtuple as lightweight immutable class | Python
+Using pathlib for cross-platform path manipulation | Python
+Using sys.setrecursionlimit to increase recursion depth | Python
+Using __import__ for dynamic module loading | Python
+Using weakref to avoid reference cycles | Python
+Using array module for typed arrays instead of lists | Python
+Using __getattr__ for lazy attribute loading / proxy objects | Python
+Using __new__ for singleton pattern | Python
+Small integer caching (-5 to 256 are pre-allocated objects) | Python / CPython
+String interning for frequently used strings | Python / CPython
+Using ast module for safe code parsing | Python
+Using inspect module for introspecting functions/classes | Python
+Using functools.partial for partial application | Python
+Using operator.itemgetter/attrgetter for efficient key functions | Python
+Using map/filter with lambda or named functions | Python
+Using enumerate instead of manual counter | Python
+Using any()/all() for short-circuit boolean evaluation on iterables | Python
+Using try/except for control flow (EAFP principle) | Python
+Using __enter__/__exit__ for context manager protocol | Python
+Dictionary merge with {**d1, **d2} or d1 | d2 | Python 3.9+
+Using yield from for delegating to sub-generators | Python 3.3+
+Using __call__ to make instances callable | Python
+
+## JavaScript Hacks
+Double negation (!!) for boolean coercion | JavaScript
+Bitwise OR (|0) for truncating to integer | JavaScript
+Using ~~value for fast Math.floor on positive numbers | JavaScript
+Short-circuit evaluation for defaults: a || defaultValue | JavaScript
+Nullish coalescing (??) for null/undefined-only defaults | JavaScript 
+Optional chaining (?.) for safe nested property access | JavaScript
+IIFE (Immediately Invoked Function Expression) for scoping | JavaScript
+Closure for creating private state | JavaScript
+Using void 0 instead of undefined (can't be overwritten pre-ES5) | JavaScript
+Destructuring assignment for extraction and swap | JavaScript
+Spread operator for cloning/merging objects and arrays | JavaScript
+Array destructuring swap: [a, b] = [b, a] | JavaScript
+Template literal tag functions for DSLs | JavaScript
+Using Proxy for metaprogramming (interception, validation) | JavaScript
+Using Symbol for unique property keys | JavaScript
+Using WeakMap/WeakSet for private data without memory leaks | JavaScript
+JSON.parse(JSON.stringify(obj)) for quick deep clone | JavaScript
+Using Array.from({length: n}, (_, i) => ...) for range generation | JavaScript
+Using Set for deduplication: [...new Set(array)] | JavaScript
+Using + operator for string-to-number conversion | JavaScript
+Event delegation (single listener on parent instead of many on children) | JavaScript
+Debouncing function calls for performance | JavaScript
+Throttling function calls for rate limiting | JavaScript
+Using .bind() for partial application | JavaScript
+Using reduce for versatile array transformations | JavaScript
+Comma operator for sequencing in expressions | JavaScript
+Labeled statements for breaking out of nested loops | JavaScript
+Using ~indexOf() as a truthy existence check (pre-includes) | JavaScript
+Using Object.freeze() for shallow immutability | JavaScript
+Using Object.create(null) for prototype-free dictionary | JavaScript
+Microtask queue manipulation with queueMicrotask / Promise.resolve().then() | JavaScript
+Using requestAnimationFrame for smooth visual updates | JavaScript
+Using IntersectionObserver for lazy loading | JavaScript
+Using MutationObserver for DOM change detection | JavaScript
+Using AbortController to cancel fetch requests | JavaScript
+Blob URLs for dynamically generated content | JavaScript
+Dynamic import() for lazy code loading | JavaScript
+Using Web Workers for off-main-thread computation | JavaScript
+Using SharedArrayBuffer and Atomics for shared memory concurrency | JavaScript
+Using postMessage for cross-origin/cross-frame communication | JavaScript
+Self-referencing default export trick | JavaScript / Modules
+Using arguments.callee (pre-strict mode) for anonymous recursion | JavaScript
+Using toString() or valueOf() overrides for custom coercion | JavaScript
+Generator functions for lazy iteration and coroutine-like behavior | JavaScript
+Async iterators and for-await-of for streaming data | JavaScript
+Promise.all/allSettled/race/any for concurrency control | JavaScript
+Using globalThis for universal global access | JavaScript
+
+## TypeScript Hacks
+Discriminated unions for type-safe tagged unions | TypeScript
+Type guards (user-defined, typeof, instanceof, in) for narrowing | TypeScript
+Mapped types (Record, Partial, Required, Readonly) | TypeScript
+Conditional types with extends and infer | TypeScript
+Template literal types for string manipulation at type level | TypeScript
+Using as const for literal type inference | TypeScript
+Using satisfies operator for validation without widening | TypeScript 4.9+
+Branded/nominal types using unique symbol or intersection | TypeScript
+Using never type for exhaustive checking | TypeScript
+Using unknown vs any for type-safe unknown values | TypeScript
+Declaration merging for augmenting existing types | TypeScript
+Module augmentation for extending third-party types | TypeScript
+Recursive types for deeply nested structures (JSON, trees) | TypeScript
+Utility types (Pick, Omit, Extract, Exclude, NonNullable, ReturnType) | TypeScript
+Index signatures for dynamic property types | TypeScript
+Using infer in conditional types for type extraction | TypeScript
+Type-level arithmetic with tuple manipulation | TypeScript
+Using enum reverse mapping | TypeScript
+Intersection types for mixin patterns | TypeScript
+Using abstract classes with protected constructors | TypeScript
+Const assertions for deeply immutable types | TypeScript
+Overloaded function signatures for multiple call patterns | TypeScript
+Using this type for fluent interfaces | TypeScript
+
+## Java Hacks
+String.intern() for deduplicating string instances | Java
+StringBuilder for efficient string concatenation in loops | Java
+Double-checked locking with volatile for lazy singleton | Java
+Using Unsafe (sun.misc.Unsafe) for off-heap memory and CAS | Java
+Reflection for accessing private fields and methods | Java
+Dynamic proxy (java.lang.reflect.Proxy) for AOP-like interception | Java
+ClassLoader tricks for runtime class loading and isolation | Java
+Enum singleton (thread-safe, serialization-safe) | Java
+Try-with-resources for automatic resource management | Java 7+
+Using varargs for flexible argument lists | Java
+Autoboxing/unboxing awareness for performance | Java
+Covariant return types in overridden methods | Java
+Using ThreadLocal for per-thread isolated state | Java
+Using WeakReference/SoftReference for cache-friendly memory management | Java
+Using java.lang.invoke.MethodHandle for fast reflective access | Java 7+
+Using VarHandle for atomic operations on fields | Java 9+
+Records for concise immutable data classes | Java 16+
+Sealed classes/interfaces for restricted hierarchies | Java 17+
+Pattern matching for instanceof | Java 16+
+Text blocks for multiline strings | Java 13+
+Stream API tricks (collectors, groupingBy, teeing) | Java 8+
+Parallel streams for automatic data parallelism | Java 8+
+CompletableFuture composition for async pipelines | Java 8+
+Fork/Join framework for recursive parallelism | Java 7+
+Using Optional to encode nullable values safely | Java 8+
+Using Arrays.asList() for quick fixed-size list | Java
+Using Collections.unmodifiableList() for defensive copying | Java
+Anonymous inner class double-brace initialization | Java
+Using @SuppressWarnings for targeted warning suppression | Java
+Using ServiceLoader for plugin discovery | Java
+Using Annotation Processing for compile-time code generation | Java
+
+## Rust Hacks
+Using unsafe blocks for FFI and raw pointer manipulation | Rust
+std::mem::transmute for reinterpreting bit patterns | Rust
+Using PhantomData for unused type parameters | Rust
+Newtype pattern for type-safe wrappers | Rust
+Builder pattern for complex object construction | Rust
+Deref coercion for ergonomic type wrapping | Rust
+Using Cow<T> for clone-on-write efficiency | Rust
+Interior mutability with Cell<T> and RefCell<T> | Rust
+Using Arc<Mutex<T>> for shared mutable state across threads | Rust
+Pin for self-referential structs | Rust
+Using std::mem::replace and std::mem::swap | Rust
+Turbofish syntax ::<> for explicit type annotation | Rust
+Using ? operator for concise error propagation | Rust
+Custom derive macros for automatic trait implementation | Rust
+Procedural macros for compile-time code generation | Rust
+Declarative macro_rules! tricks (recursive macros, TT munching) | Rust
+Using #[repr(C)] for FFI-compatible struct layout | Rust
+Enum dispatch as a faster alternative to trait objects | Rust
+Using MaybeUninit for delayed initialization | Rust
+Using NonNull/NonZeroU* for niche optimization (Option size) | Rust
+Zero-cost abstractions via monomorphization | Rust
+Using From/Into traits for ergonomic type conversion | Rust
+Using the typestate pattern for compile-time state machines | Rust
+Using impl Trait for anonymous return types | Rust
+Using trait objects (dyn Trait) for runtime polymorphism | Rust
+Orphan rule workarounds with newtypes | Rust
+Using #[cfg(...)] for conditional compilation | Rust
+Using features in Cargo.toml for optional functionality | Rust
+
+## Go Hacks
+Goroutines for lightweight concurrent execution | Go
+Channel patterns (fan-in, fan-out, pipeline) | Go
+Select statement for multiplexing channel operations | Go
+Using context.Context for cancellation and deadlines | Go
+Using defer for guaranteed cleanup | Go
+Using panic/recover for exception-like error handling | Go
+Struct embedding for composition/inheritance-like behavior | Go
+Interface embedding for interface composition | Go
+Using blank identifier _ to discard values or force interface checks | Go
+Using init() functions for package initialization | Go
+Build tags for conditional compilation | Go
+Using unsafe.Pointer for low-level memory manipulation | Go
+Using reflect package for runtime type inspection | Go
+sync.Pool for reusing allocated objects | Go
+sync.Once for thread-safe lazy initialization | Go
+sync.Map for concurrent map access | Go
+Using atomic operations from sync/atomic | Go
+Using race detector (-race flag) for concurrency debugging | Go
+go generate for code generation | Go
+Table-driven tests for comprehensive test coverage | Go
+Using io.Reader/io.Writer interface composition everywhere | Go
+Using channels as semaphores | Go
+Using empty struct{} for zero-allocation signaling | Go
+Using error wrapping with fmt.Errorf %w | Go 1.13+
+Using generics with type constraints | Go 1.18+
+Goroutine leak detection patterns | Go
+
+## Ruby Hacks
+method_missing for dynamic method dispatch | Ruby
+Open classes / monkey patching existing classes | Ruby
+Using blocks, procs, and lambdas as first-class callables | Ruby
+Using yield for passing control to blocks | Ruby
+Eigenclass (singleton class) for per-instance methods | Ruby
+Using define_method for runtime method creation | Ruby
+Using send to call private/protected methods | Ruby
+Using respond_to? for duck typing checks | Ruby
+Symbols as lightweight immutable strings | Ruby
+Using freeze for object immutability | Ruby
+Using tap for debugging in method chains | Ruby
+Method chaining for fluent interfaces | Ruby
+Using Struct for quick class creation | Ruby
+Using OpenStruct for dynamic attribute objects | Ruby
+Refinements for scoped monkey patching | Ruby 2.0+
+Lazy enumerators for deferred computation | Ruby
+Using Comparable mixin for free comparison operators | Ruby
+Using Forwardable/Delegator for delegation | Ruby
+Using prepend for method wrapping | Ruby
+DSL creation using instance_eval and blocks | Ruby
+Using __method__ to get current method name | Ruby
+Protected/private methods via visibility modifiers after definitions | Ruby
+Using Enumerable mixin with custom each | Ruby
+
+## PHP Hacks
+Using opcache for bytecode caching | PHP
+Null coalescing operator ?? | PHP 7+
+Spaceship operator <=> for three-way comparison | PHP 7+
+Arrow functions (fn =>) for concise closures | PHP 7.4+
+Named arguments for clarity | PHP 8+
+Match expression as improved switch | PHP 8+
+Fibers for cooperative multitasking | PHP 8.1+
+Using generators (yield) for memory-efficient iteration | PHP 5.5+
+Using __autoload / spl_autoload_register for lazy class loading | PHP
+Traits for horizontal code reuse | PHP 5.4+
+Late static binding (static:: vs self::) | PHP 5.3+
+Magic methods (__get, __set, __call, __toString, etc.) | PHP
+Using SPL data structures (SplFixedArray, SplPriorityQueue, etc.) | PHP
+Variable variables ($$var) | PHP
+List() / array destructuring | PHP 7.1+
+Using compact() and extract() for array/variable conversion | PHP
+Null safe operator ?-> | PHP 8+
+
+## Kotlin Hacks
+Extension functions for adding methods to existing classes | Kotlin
+Data classes for automatic equals/hashCode/toString/copy | Kotlin
+Sealed classes for restricted class hierarchies | Kotlin
+Null safety operators: ?. (safe call), ?: (Elvis), !! (non-null assert) | Kotlin
+Coroutines for structured concurrency | Kotlin
+Scope functions (let, run, with, apply, also) | Kotlin
+Inline functions to avoid lambda allocation overhead | Kotlin
+Reified type parameters in inline functions | Kotlin
+Delegation pattern via by keyword | Kotlin
+Property delegates (lazy, observable, vetoable) | Kotlin
+Destructuring declarations | Kotlin
+Operator overloading | Kotlin
+Type aliases for complex type abbreviation | Kotlin
+When expression for exhaustive matching | Kotlin
+Using sequences for lazy evaluation | Kotlin
+Companion objects as static-like members and factories | Kotlin
+Using Nothing type for functions that never return | Kotlin
+String templates for interpolation | Kotlin
+Using object declarations for singletons | Kotlin
+Contract DSL for smart cast guarantees | Kotlin
+
+## Swift Hacks
+Optionals and optional chaining for null safety | Swift
+Guard statements for early exit | Swift
+Defer statements for guaranteed cleanup | Swift
+Protocol extensions for default implementations | Swift
+Protocol-oriented programming over inheritance | Swift
+Where clauses on generics and protocols | Swift
+Associated types in protocols | Swift
+Type erasure patterns (AnyPublisher, AnySequence, etc.) | Swift
+Property wrappers (@Published, @State, custom) | Swift
+Result builders for DSL-like syntax (SwiftUI) | Swift
+Using Codable for automatic serialization/deserialization | Swift
+Key paths for type-safe property references | Swift
+Lazy properties for deferred initialization | Swift
+Computed properties with get/set | Swift
+Property observers (willSet, didSet) | Swift
+Using enums with associated values for algebraic data types | Swift
+Pattern matching in switch statements | Swift
+Using @autoclosure for lazy argument evaluation | Swift
+Using @escaping for closures that outlive function calls | Swift
+
+## SQL / Database Hacks
+Self-joins for comparing rows within the same table | SQL
+Common Table Expressions (CTEs) for readable subqueries | SQL
+Recursive CTEs for hierarchical data traversal | SQL
+Window functions (ROW_NUMBER, RANK, LAG, LEAD, etc.) | SQL
+COALESCE for null fallback chains | SQL
+CASE expression for conditional logic in queries | SQL
+Pivot/unpivot for row-to-column transformation | SQL
+Using EXISTS instead of IN for correlated subquery performance | SQL
+Index hints to force query plan choices | SQL
+Covering indexes that include all queried columns | SQL
+Partial indexes for indexing subset of rows | SQL
+Expression indexes on computed values | SQL
+Using EXPLAIN/EXPLAIN ANALYZE for query plan inspection | SQL
+Materialized views for caching expensive queries | SQL
+Using UNION ALL vs UNION to skip deduplication | SQL
+LATERAL join for correlated subqueries in FROM | SQL / PostgreSQL
+Using generate_series for data generation | PostgreSQL
+String aggregation (GROUP_CONCAT, STRING_AGG, LISTAGG) | SQL
+Using JSON/JSONB columns for semi-structured data | SQL / PostgreSQL
+Full-text search with tsvector/tsquery | PostgreSQL
+UPSERT (INSERT ON CONFLICT / MERGE) for atomic insert-or-update | SQL
+Using RETURNING clause to get affected rows | PostgreSQL
+Using advisory locks for application-level locking | PostgreSQL
+Using LISTEN/NOTIFY for pub/sub | PostgreSQL
+Using COPY for fast bulk data loading | PostgreSQL
+Using unnest for expanding arrays into rows | PostgreSQL
+Anti-join pattern with LEFT JOIN ... WHERE IS NULL | SQL
+Gap-and-island problems solved with window function tricks | SQL
+Running totals/cumulative sums with window functions | SQL
+Using EXCEPT/INTERSECT for set operations | SQL
+Denormalization for read performance | Database Design
+Using composite indexes strategically for multi-column queries | SQL
+Using LIMIT with OFFSET for pagination (and keyset pagination as improvement) | SQL
+Using subquery in SELECT for scalar correlated lookups | SQL
+
+## Bash / Shell Hacks
+Process substitution <() and >() for treating command output as files | Bash
+Here documents (<<EOF) for multiline input | Bash / Shell
+Here strings (<<<) for single-line input | Bash
+Command substitution $() for capturing output | Bash / Shell
+Parameter expansion tricks (${var:-default}, ${var:+alt}, ${var##pattern}, ${var%%pattern}) | Bash
+Brace expansion {1..10}, {a,b,c} | Bash
+Using /dev/null for discarding output | Unix / Shell
+Using /dev/urandom for random data | Unix / Shell
+Redirecting stderr to stdout with 2>&1 | Shell
+Using tee for dual output (screen + file) | Unix / Shell
+Using trap for cleanup on script exit | Bash / Shell
+Using xargs for converting stdin to arguments | Unix / Shell
+find with -exec for acting on found files | Unix / Shell
+Awk one-liners for text processing | Unix / Awk
+Sed one-liners for stream editing | Unix / Sed
+Using named pipes (FIFOs) for inter-process communication | Unix
+Using && and || for conditional command chaining | Shell
+Associative arrays in Bash 4+ | Bash
+Using eval for dynamic command construction | Shell
+Using diff <(cmd1) <(cmd2) to compare command outputs | Bash
+Using sort | uniq -c for frequency counting | Unix / Shell
+Background processes with & and wait for parallel execution | Shell
+Using GNU parallel for parallel command execution | Unix
+Signal handling with trap for specific signals | Bash / Shell
+Using flock for file locking | Linux / Shell
+Using mktemp for safe temporary file creation | Unix / Shell
+Subshell execution with () for isolated environments | Bash / Shell
+Using set -euo pipefail for strict error handling | Bash
+Using exec for stream redirection in scripts | Bash / Shell
+Using history expansion (!, !!, !$) | Bash
+Array slicing ${arr[@]:start:length} | Bash
+Using read for parsing input line by line | Bash
+Using IFS for custom field splitting | Bash / Shell
+Using printf instead of echo for portable output | Shell
+Heredoc with <<- for indented content (tab-stripped) | Bash
+
+## Regex Hacks
+Lookahead (?=...) and lookbehind (?<=...) for zero-width assertions | Regex
+Negative lookahead (?!...) and lookbehind (?<!...) | Regex
+Non-capturing groups (?:...) to group without capturing | Regex
+Named capture groups (?P<name>...) or (?<name>...) | Regex
+Backreferences (\1, \2) for matching repeated patterns | Regex
+Atomic groups (?>...) to prevent backtracking | Regex
+Possessive quantifiers (++, *+, ?+) to prevent backtracking | Regex
+Conditional patterns (?(condition)yes|no) | Regex (PCRE)
+Recursive patterns (?R) for matching nested structures | Regex (PCRE)
+Using \K to reset match start position | Regex (PCRE/Perl)
+Using \b for word boundary matching | Regex
+Lazy quantifiers (*?, +?, ??) for minimal matching | Regex
+Using character class subtraction/intersection | Regex (Java/.NET)
+Using regex subroutines/definitions (?(DEFINE)...) | Regex (PCRE)
+Using regex for email/URL validation (with known limitations) | Regex
+Using alternation ordering for priority matching | Regex
+Free-spacing mode (?x) for readable regex | Regex
+
+## Assembly / Low-Level Hacks
+Self-modifying code for runtime code generation | Assembly
+NOP sled for reliable shellcode landing | Assembly / Security
+Return-Oriented Programming (ROP) chains | Assembly / Security
+Using LEA for complex arithmetic without flags | x86 Assembly
+SIMD instructions for data-parallel computation | Assembly / x86
+Loop unrolling for reduced branch overhead | Assembly
+Aligning code/data to cache line boundaries | Assembly
+Using CMOV for branchless conditional moves | x86 Assembly
+Prefetch instructions for cache warming | Assembly
+Using BSR/BSF/POPCNT/LZCNT instructions | x86 Assembly
+Using XMM/YMM registers for fast memory copy | x86 Assembly
+Computed jumps via jump tables | Assembly
+Threaded code / token threading (Forth-style interpretation) | Assembly / Forth
+System call tricks for minimal binaries | Assembly / Linux
+Branch prediction hints (Intel branch hint prefixes) | x86 Assembly
+Using the red zone for leaf function optimization | x86-64 Assembly
+Overlapping instructions for code obfuscation | x86 Assembly
+Using INT 3 for debugger breakpoints | x86 Assembly
+
+## Web / HTML / CSS Hacks
+CSS clearfix hack for containing floated elements | CSS
+Box model hack (IE box model workaround) | CSS / Legacy
+IE conditional comments for browser-specific styles | HTML / Legacy
+Using checkbox/radio hack for state without JavaScript | CSS / HTML
+Pure CSS dropdown menus | CSS
+CSS specificity tricks (chaining selectors for higher specificity) | CSS
+Using !important override (and when to avoid it) | CSS
+CSS custom properties (variables) for theming | CSS
+CSS calc() for mixed-unit calculations | CSS
+CSS counters for auto-numbering | CSS
+Using ::before/::after pseudo-elements for decorative content | CSS
+CSS sprite sheets for reducing HTTP requests | CSS
+Using data URIs for inline small resources | HTML / CSS
+Using srcset and sizes for responsive images | HTML
+Lazy loading images with loading="lazy" | HTML
+Using will-change for GPU-accelerated compositing | CSS
+transform: translateZ(0) hack for forcing GPU layer | CSS
+CSS containment (contain property) for rendering optimization | CSS
+Using clip-path for complex shapes | CSS
+Using @supports for feature detection | CSS
+Using CSS Grid's minmax() and auto-fill/auto-fit | CSS
+Using flexbox order property to visually reorder elements | CSS
+Using position: sticky for scroll-aware positioning | CSS
+Using pointer-events: none to make elements click-through | CSS
+Content Security Policy for XSS mitigation | HTTP / Web Security
+CORS headers for cross-origin resource sharing | HTTP / Web
+Using preload/prefetch link hints | HTML
+Critical CSS inlining for above-the-fold rendering | HTML / CSS / Performance
+Font-display: swap for non-blocking font loading | CSS
+Using service workers for offline caching and interception | Web / JavaScript
+URL hash-based routing for single-page apps | Web / JavaScript
+History API (pushState/replaceState) for clean SPA URLs | Web / JavaScript
+Using data-* attributes for storing custom data on elements | HTML
+
+## Security Exploits / Hacks
+SQL injection (inserting malicious SQL via user input) | Security / SQL
+Cross-Site Scripting (XSS) — reflected, stored, DOM-based | Security / Web
+Cross-Site Request Forgery (CSRF) via forged requests | Security / Web
+Buffer overflow (writing past buffer boundaries) | Security / C
+Stack smashing / stack buffer overflow for code execution | Security / C
+Heap overflow for corrupting heap metadata | Security / C
+Format string vulnerability (%n writes via printf) | Security / C
+Integer overflow/underflow exploit | Security / C
+Use-after-free exploitation | Security / C / C++
+Double-free exploitation | Security / C / C++
+Race condition exploit (TOCTOU — time-of-check-to-time-of-use) | Security / General
+DLL injection / shared library injection | Security / Windows / Linux
+Code injection via eval/exec of user input | Security / General
+Path/directory traversal (../ to escape web root) | Security / Web
+Deserialization attacks (crafted serialized objects) | Security / Java / Python / PHP
+XML External Entity (XXE) injection | Security / XML
+Server-Side Request Forgery (SSRF) | Security / Web
+Command injection via unsanitized shell commands | Security / Web
+LDAP injection | Security / Web
+Server-Side Template Injection (SSTI) | Security / Web
+Prototype pollution via __proto__ manipulation | Security / JavaScript
+ReDoS (Regular Expression Denial of Service) via catastrophic backtracking | Security / Regex
+Timing side-channel attacks for leaking secrets | Security / Cryptography
+Spectre (speculative execution side-channel) | Security / Hardware
+Meltdown (out-of-order execution side-channel) | Security / Hardware
+Rowhammer (bit-flipping via DRAM row hammering) | Security / Hardware
+Cache timing attacks for key extraction | Security / Cryptography
+DNS rebinding for bypassing same-origin policy | Security / Web
+Clickjacking via iframe overlay | Security / Web
+Session hijacking via cookie theft | Security / Web
+Session fixation attack | Security / Web
+Man-in-the-middle via network interception | Security / Network
+Return-to-libc attack (bypassing non-executable stack) | Security / C
+Heap spraying for reliable exploitation | Security / Browser
+Padding oracle attack for decryption without key | Security / Cryptography
+Null byte injection for truncating strings | Security / C / Web
+HTTP request smuggling | Security / Web
+Host header injection | Security / Web
+Open redirect exploitation | Security / Web
+Insecure direct object reference (IDOR) | Security / Web
+JWT algorithm confusion attack (none/HS256 vs RS256) | Security / Web
+Mass assignment vulnerability | Security / Web Frameworks
+Subdomain takeover | Security / DNS
+Dangling pointer exploitation | Security / C / C++
+
+## Algorithm / Data Structure Hacks
+Sentinel node in linked lists to eliminate null checks | General / Algorithms
+Fast exponentiation by squaring | General / Math
+Sieve of Eratosthenes with wheel factorization | Algorithms
+Bloom filter for probabilistic membership testing | Data Structures
+Reservoir sampling for random selection from streams | Algorithms
+Floyd's tortoise and hare for cycle detection | Algorithms
+Two-pointer technique for sorted array problems | Algorithms
+Sliding window for subarray/substring problems | Algorithms
+Prefix sum array for constant-time range sum queries | Algorithms
+Difference array for range update in O(1) | Algorithms
+Sparse table for O(1) static range minimum queries | Data Structures
+Fenwick tree (Binary Indexed Tree) for prefix queries | Data Structures
+Segment tree with lazy propagation for range queries/updates | Data Structures
+Union-Find with path compression and union by rank | Data Structures
+Morris traversal for O(1) space inorder tree traversal | Algorithms
+KMP algorithm for O(n+m) pattern matching | Algorithms / Strings
+Rabin-Karp rolling hash for string matching | Algorithms / Strings
+Manacher's algorithm for O(n) palindrome detection | Algorithms / Strings
+Z-algorithm for string matching | Algorithms / Strings
+Suffix array for string problems | Data Structures
+Heavy-light decomposition for tree path queries | Algorithms / Trees
+Centroid decomposition for tree problems | Algorithms / Trees
+Square root decomposition (Mo's algorithm) | Algorithms
+Meet-in-the-middle to halve exponential search space | Algorithms
+Coordinate compression for handling large value ranges | Algorithms
+Bidirectional BFS for shortest path in unweighted graphs | Algorithms
+Iterative deepening depth-first search (IDDFS) | Algorithms
+A* heuristic search | Algorithms
+Karatsuba multiplication for large numbers | Algorithms / Math
+FFT/NTT for O(n log n) polynomial multiplication | Algorithms / Math
+Matrix exponentiation for solving linear recurrences | Algorithms / Math
+Persistent data structures (path copying) | Data Structures
+Rope data structure for efficient string operations | Data Structures
+Skip list as probabilistic balanced search structure | Data Structures
+Treap (tree + heap) for balanced BST with randomization | Data Structures
+Cuckoo hashing for O(1) worst-case lookups | Data Structures
+Consistent hashing for distributed systems | Data Structures / Distributed
+HyperLogLog for cardinality estimation | Data Structures / Probabilistic
+Count-min sketch for frequency estimation | Data Structures / Probabilistic
+Disjoint sparse table for O(1) RMQ | Data Structures
+Van Emde Boas tree for O(log log u) operations | Data Structures
+XOR-trick for finding missing number in sequence | Algorithms
+Using stack to simulate recursion iteratively | Algorithms
+Amortized analysis tricks (e.g., dynamic array doubling) | Algorithms
+Boyer-Moore voting algorithm for majority element | Algorithms
+Dutch National Flag algorithm for three-way partitioning | Algorithms
+Quickselect for O(n) average kth element | Algorithms
+Monotonic stack/queue for next greater/smaller element | Algorithms
+
+## Functional Programming Hacks
+Currying (transforming multi-argument into chained single-argument functions) | FP / Haskell / General
+Partial application for specializing functions | FP / General
+Monads for chaining computations with context | Haskell / FP
+Functors for mapping over wrapped values | Haskell / FP
+Applicative functors for combining wrapped values | Haskell / FP
+Church encoding for representing data as functions | Lambda Calculus / FP
+Y combinator for anonymous recursion | Lambda Calculus / FP
+Continuation-passing style (CPS) for control flow | FP / General
+Trampolining for stack-safe tail-call optimization in non-TCO languages | FP / JavaScript / General
+Memoization via higher-order functions | FP / General
+Lazy evaluation for deferred computation | Haskell / FP
+Infinite data structures (lazy lists/streams) | Haskell / FP
+Pattern matching for destructuring algebraic data types | Haskell / ML / FP
+Algebraic data types (sum + product types) | Haskell / ML / FP
+Phantom types for type-level tags | Haskell / FP
+GADTs (Generalized Algebraic Data Types) | Haskell / FP
+Type-level programming with type families | Haskell / FP
+Free monads for separating structure from interpretation | Haskell / FP
+Monad transformers for stacking effects | Haskell / FP
+Lenses/optics for composable nested data access | Haskell / FP
+Fold/reduce for expressing iteration as recursion | FP / General
+Unfold for generating data structures from seeds | FP
+Catamorphisms/anamorphisms as generalized folds/unfolds | FP
+Point-free (tacit) style for combinator-based composition | Haskell / FP
+Using Either/Result for error handling without exceptions | FP / Haskell / Rust
+
+## Performance Optimization Hacks
+Loop unrolling to reduce branch overhead | General / Compilers
+Loop fusion (combining adjacent loops over same data) | General / Compilers
+Loop tiling/blocking for cache-friendly access patterns | General / HPC
+Strength reduction (replacing expensive ops with cheaper ones) | Compilers
+Common subexpression elimination | Compilers
+Dead code elimination | Compilers
+Constant folding and propagation | Compilers
+Tail call optimization for recursive functions | Compilers / FP
+Function inlining for removing call overhead | Compilers
+Profile-guided optimization (PGO) | Compilers
+Link-time optimization (LTO) | Compilers
+Auto-vectorization via compiler hints | Compilers / C / C++
+Using SIMD intrinsics for manual vectorization | C / C++ / Performance
+Branch prediction hints (likely/unlikely macros) | C / GCC / Performance
+Software prefetching for cache warming | C / C++ / Performance
+Avoiding false sharing by padding shared data to cache lines | Concurrency / Performance
+Cache-line alignment of hot data | Performance
+Hot/cold code splitting for instruction cache efficiency | Performance
+Using huge pages for reducing TLB misses | Linux / Performance
+NUMA-aware memory allocation | Performance / Linux
+Data-oriented design (structure of arrays vs array of structures) | Performance / Game Dev
+Using lookup tables instead of computation | General / Performance
+Using fixed-point arithmetic instead of floating-point | Embedded / Performance
+Approximate computing (fast math, relaxed precision) | Performance
+Using memory pools/arena allocation for fast allocation/deallocation | C / C++ / Performance
+Using mmap for memory-mapped file access | C / Linux / Performance
+Using sendfile/splice for zero-copy I/O | Linux / Performance
+Using io_uring for async I/O | Linux / Performance
+Using epoll/kqueue for scalable event-driven I/O | Linux / BSD / Performance
+Double buffering for smooth rendering/output | Graphics / Performance
+Object pooling to avoid allocation costs | General / Performance
+Copy-on-write for lazy duplication | General / OS / Performance
+Short-circuit evaluation to avoid unnecessary computation | General
+Using bitwise operations instead of arithmetic when possible | General / Performance
+Branch-free code using conditional moves or arithmetic | General / Performance
+Interning (reusing identical immutable objects) | General / Performance
+Using compile-time computation (constexpr, macros, templates) | C++ / General
+
+## Concurrency / Parallelism Hacks
+Lock-free data structures using CAS (Compare-And-Swap) | Concurrency
+Wait-free algorithms for guaranteed per-thread progress | Concurrency
+Double-checked locking for lazy initialization | Concurrency / Java / C++
+Reader-writer locks for read-heavy workloads | Concurrency
+Thread-local storage for per-thread data | Concurrency / General
+Using futures/promises for asynchronous computation | Concurrency / General
+Actor model for message-passing concurrency | Concurrency / Erlang
+Software Transactional Memory (STM) | Concurrency / Haskell / Clojure
+Hazard pointers for safe memory reclamation | Concurrency / C / C++
+RCU (Read-Copy-Update) for read-mostly data structures | Concurrency / Linux Kernel
+Seqlock for low-overhead read-heavy synchronization | Concurrency / Linux Kernel
+Memory ordering specification (relaxed, acquire, release, seq_cst) | Concurrency / C++
+Using spin locks for very short critical sections | Concurrency
+Using condition variables for thread signaling | Concurrency
+Barrier synchronization for phased computation | Concurrency
+Work stealing for dynamic load balancing | Concurrency
+Using semaphores for resource counting | Concurrency
+Using memory fences/barriers for ordering guarantees | Concurrency / Assembly
+
+## DevOps / Infrastructure Hacks
+Infrastructure as Code (IaC) for reproducible environments | DevOps / Terraform
+Blue-green deployments for zero-downtime releases | DevOps
+Canary releases for gradual rollout | DevOps
+Feature flags for decoupling deployment from release | DevOps
+A/B testing infrastructure for experiment management | DevOps
+Using environment variables for configuration | DevOps / 12-Factor
+Using secrets managers (Vault, AWS Secrets Manager) | DevOps / Security
+Circuit breaker pattern for fault tolerance | DevOps / Microservices
+Rate limiting for protecting services | DevOps / API
+Health check endpoints for monitoring | DevOps
+Graceful shutdown on SIGTERM | DevOps / General
+Rolling updates for incremental deployment | DevOps / Kubernetes
+Init containers for setup tasks | Kubernetes
+Sidecar pattern for cross-cutting concerns | Kubernetes / Microservices
+Multi-stage Docker builds for smaller images | Docker
+Docker layer caching optimization (ordering instructions) | Docker
+Using .dockerignore to reduce build context | Docker
+Using scratch/distroless base images for minimal containers | Docker
+Using BuildKit for improved Docker builds | Docker
+Log aggregation (ELK, Loki) | DevOps / Observability
+Distributed tracing (Jaeger, Zipkin) | DevOps / Observability
+
+## Git Hacks
+Interactive rebase for squashing/reordering commits | Git
+Git bisect for binary search bug finding | Git
+Git reflog for recovering lost commits/branches | Git
+Git stash for temporarily shelving changes | Git
+Git worktree for multiple working directories | Git
+Git hooks for automated checks on commit/push | Git
+Git filter-repo for history rewriting | Git
+Cherry-pick for applying individual commits | Git
+Git blame for line-by-line authorship | Git
+Sparse checkout for partial repository checkout | Git
+Shallow clone (--depth) for faster cloning | Git
+Git rerere for reusing recorded merge resolutions | Git
+Force push with --force-with-lease for safer overwrites | Git
+Using .gitattributes for per-path settings (LFS, line endings) | Git
+Git subtree for embedding repos without submodule complexity | Git
+Using git diff --word-diff for inline change viewing | Git
+Using git log --graph --oneline for visual history | Git
+Fixup commits with git commit --fixup and autosquash | Git
+
+## React / Frontend Framework Hacks
+Virtual DOM diffing for efficient updates | React
+Using key prop correctly for list reconciliation | React
+useMemo/useCallback for avoiding unnecessary re-renders | React
+React.lazy + Suspense for code splitting | React
+Error boundaries for graceful error handling | React
+Using refs for direct DOM access | React
+Portal for rendering outside the component tree | React
+Custom hooks for reusable stateful logic | React
+Using context for dependency injection / global state | React
+Render props pattern for shared behavior | React
+Higher-order components (HOC) for cross-cutting concerns | React
+Compound components pattern for flexible APIs | React
+Optimistic UI updates for perceived performance | React / Frontend
+Using React.memo for component-level memoization | React
+Using useReducer for complex state logic | React
+Using useLayoutEffect for synchronous DOM measurements | React
+Server-side rendering (SSR) for initial load performance | React / Next.js
+Static site generation (SSG) for pre-rendered pages | React / Next.js
+Incremental static regeneration | Next.js
+Using React Server Components for reduced client bundle | React 18+
+
+## Networking / Protocol Hacks
+TCP Fast Open for reducing handshake latency | Networking
+HTTP/2 multiplexing for concurrent requests on one connection | Networking / HTTP
+HTTP/2 server push for proactive resource delivery | Networking / HTTP
+WebSocket for persistent bidirectional communication | Networking / Web
+Long polling as a fallback for real-time updates | Networking / Web
+Server-Sent Events (SSE) for server-to-client streaming | Networking / Web
+Using gzip/brotli compression for HTTP responses | Networking / Web
+CDN edge caching for reduced latency | Networking / Web
+DNS prefetching for reducing resolution latency | Networking / Web
+TCP keepalive for detecting dead connections | Networking
+Connection pooling and reuse | Networking
+NAT traversal via STUN/TURN/ICE hole punching | Networking
+Using UDP for latency-sensitive applications | Networking
+HTTP caching headers (ETag, Last-Modified, Cache-Control) | Networking / Web
+Using HEAD requests for existence/metadata checks | HTTP
+Using HTTP range requests for resumable downloads | HTTP
+gRPC for efficient RPC with Protocol Buffers | Networking
+GraphQL for flexible client-specified data fetching | Networking / API
+
+## Encoding / Serialization Hacks
+Base64 encoding for binary-to-text representation | General
+URL encoding for special characters in URLs | Web
+Using Protocol Buffers for compact binary serialization | General / gRPC
+Using MessagePack as a faster JSON alternative | General
+Using CBOR for concise binary object representation | General / IoT
+Varint encoding for space-efficient integers | General / Protobuf
+Delta encoding for compressing similar values | General / Compression
+Run-length encoding for repetitive data | General / Compression
+Using JSON streaming (NDJSON) for large datasets | General / Web
+Using Avro with schema registry for evolving schemas | General / Data Engineering
+
+## Embedded / Hardware Hacks
+Bit-banging for implementing protocols without hardware support | Embedded
+Using DMA for CPU-free data transfers | Embedded
+Interrupt-driven I/O for responsive handling | Embedded
+Watchdog timer for automatic crash recovery | Embedded
+Using sleep modes for power conservation | Embedded
+Software debouncing for noisy button inputs | Embedded
+Using lookup tables on resource-constrained devices | Embedded
+Fixed-point arithmetic for processors without FPU | Embedded
+Ring/circular buffers for producer-consumer communication | Embedded
+Using volatile for memory-mapped hardware registers | Embedded / C
+Double-buffered DMA for continuous data streaming | Embedded
+
+## Cryptography Hacks
+Constant-time comparison to prevent timing attacks | Cryptography
+Blinding for side-channel resistance in RSA | Cryptography
+Using HKDF for proper key derivation | Cryptography
+Salting passwords before hashing | Cryptography
+Using bcrypt/scrypt/argon2 for password hashing | Cryptography
+Time-based OTP (TOTP) for two-factor authentication | Cryptography
+Using nonces for replay attack prevention | Cryptography
+Authenticated encryption (AES-GCM, ChaCha20-Poly1305) | Cryptography
+Key stretching for password-derived keys | Cryptography
+Using HMAC for message authentication | Cryptography
+Envelope encryption for managing large data with KMS | Cryptography
+
+## Linux / Unix System Hacks
+Using /proc filesystem for process introspection | Linux
+Using /sys filesystem for kernel parameter tuning | Linux
+LD_PRELOAD for intercepting shared library calls | Linux
+Using strace for system call tracing | Linux
+Using ltrace for library call tracing | Linux
+Using perf for performance profiling | Linux
+Using dtrace/bpftrace for dynamic tracing | Linux / BSD
+Using cgroups for resource limiting | Linux
+Using namespaces for process isolation | Linux
+Using inotify/fanotify for filesystem event monitoring | Linux
+Using epoll for scalable I/O multiplexing | Linux
+Using io_uring for high-performance async I/O | Linux 5.1+
+Using splice/tee/vmsplice for zero-copy data movement | Linux
+Using mmap for memory-mapped file access | Unix / Linux
+Using tmpfs for in-memory filesystems | Linux
+Using chroot/pivot_root for filesystem isolation | Linux
+Using nice/ionice for process priority management | Unix / Linux
+Using taskset for CPU affinity binding | Linux
+Using numactl for NUMA-aware execution | Linux
+Using ulimit for per-process resource limits | Unix / Linux
+Using seccomp for system call filtering | Linux
+Using capabilities instead of full root privileges | Linux
+Using eBPF for programmable kernel extensions | Linux
+
+## Design Pattern / Architecture Hacks
+Singleton pattern for global shared instance | General / OOP
+Factory pattern for decoupled object creation | General / OOP
+Observer/pub-sub pattern for event-driven systems | General / OOP
+Strategy pattern for swappable algorithms | General / OOP
+Decorator pattern for dynamic behavior extension | General / OOP
+Flyweight pattern for sharing common state | General / OOP
+Object pool for reusing expensive objects | General
+Command pattern for encapsulating actions | General / OOP
+Null object pattern to avoid null checks | General / OOP
+CQRS (Command Query Responsibility Segregation) | Architecture
+Event sourcing for append-only state reconstruction | Architecture
+Saga pattern for distributed transactions | Architecture / Microservices
+Outbox pattern for reliable event publishing | Architecture / Microservices
+Idempotency keys for safe retries | Architecture / API
+Optimistic locking with version numbers | Architecture / Database
+Pessimistic locking for exclusive access | Architecture / Database
+Write-ahead logging for crash recovery | Database / Architecture
+Retry with exponential backoff and jitter | Architecture / Distributed
+
+## Debugging / Development Hacks
+Rubber duck debugging (explaining code to an inanimate object) | General / Debugging
+Printf/console.log debugging | General / Debugging
+Binary search debugging (bisecting code to find bugs) | General / Debugging
+Using git bisect to find the commit that introduced a bug | Git / Debugging
+Using breakpoints and watchpoints in debuggers | General / Debugging
+Using core dumps for post-mortem analysis | C / C++ / Debugging
+Using sanitizers (ASan, MSan, TSan, UBSan) | C / C++ / Debugging
+Using valgrind for memory error detection | C / C++ / Linux
+Using static analysis tools (linting) for early bug detection | General
+Using fuzzing for automated input testing | General / Security
+Using property-based testing (QuickCheck-style) | General / Testing
+Using snapshot testing for UI regression detection | Frontend / Testing
+Using chaos engineering for resilience testing | DevOps / Testing
+
+## Miscellaneous / Cross-Domain Hacks
+Quines (self-replicating programs) | General / Esoteric
+Polyglot programs (valid in multiple languages simultaneously) | General / Esoteric
+Code golf (minimizing source code size) | General / Esoteric
+Using Unicode identifiers for obfuscation | General
+Using zero-width characters for steganography in code | General / Security
+Exploiting undefined behavior "intentionally" (risky/fragile) | C / C++
+Writing JIT compilers by generating machine code at runtime | General / Performance
+Self-modifying code for runtime optimization | General / Performance
+Reflective programming for runtime introspection | General / Java / Python
+Aspect-oriented programming for cross-cutting concerns | Java / General
+Using metaprogramming to generate boilerplate | General
+Using code generation tools to reduce manual coding | General
+Using DSLs (Domain-Specific Languages) for expressive abstractions | General
+Using trampolines for inter-architecture calls | General / OS
+Using fifos/pipes for interprocess communication | Unix / General
+Embedding one language's runtime in another (e.g., Lua in C) | General / Interop
+Using WebAssembly for near-native web performance | Web / General
+Using REPL-driven development for rapid iteration | General / Lisp / Python
+Using hot-reloading for instant code feedback | General / Web Dev
+Dependency injection for testable, decoupled code | General / OOP
+Using test doubles (mocks, stubs, fakes, spies) | General / Testing
+Using feature branches and pull requests for code review | General / Git
+Using pre-commit hooks for automated quality checks | General / Git
+Semantic versioning for communicating change impact | General / DevOps

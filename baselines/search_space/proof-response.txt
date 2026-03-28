@@ -1,0 +1,274 @@
+# Forms of Mathematical Proof
+
+## Core Logical Techniques
+Direct proof | Assume hypotheses, apply definitions and logical steps to reach conclusion
+Proof by contradiction (reductio ad absurdum) | Assume negation of conclusion, derive a logical contradiction
+Proof by contrapositive | Prove ¬Q → ¬P instead of P → Q
+Proof by cases (case analysis) | Partition into exhaustive cases, prove each separately
+Proof by exhaustion (brute force) | Check every possible instance, often finitely many
+Constructive proof (proof by exhibition) | Explicitly construct or display the object claimed to exist
+Non-constructive existence proof | Prove something must exist without producing it
+Proof by counterexample | Disprove a universal claim by exhibiting a specific failure
+Uniqueness proof | Assume two objects satisfy the property, show they must be equal
+Existence-and-uniqueness proof | Prove an object exists, then prove it is the only one
+If-and-only-if proof (biconditional proof) | Prove forward direction and reverse direction separately
+Proof by equivalence chain (iff chain) | Show P₁ ⇔ P₂ ⇔ … ⇔ Pₙ via successive equivalences
+Proof by elimination | Rule out all possibilities except the desired conclusion
+Vacuous proof | Show the hypothesis of P → Q is always false, making the implication trivially true
+Trivial proof | Show the conclusion Q is always true regardless of P
+Proof by WLOG (without loss of generality) | Reduce to a representative case via symmetry or relabeling
+
+## Induction Family
+Proof by weak (ordinary) mathematical induction | Prove P(base), then P(k) → P(k+1) for all k
+Proof by strong (complete) induction | Prove P(base), then [P(base) ∧ … ∧ P(k)] → P(k+1)
+Proof by mutual (simultaneous) induction | Induct on two or more statements in tandem, each helping prove the other
+Proof by structural induction | Prove for base elements of a recursive structure, then for each constructor
+Proof by transfinite induction | Prove base, successor, and limit-ordinal cases over all ordinals
+Proof by well-founded induction | Induct over any well-founded relation: every nonempty subset has a minimal element
+Proof by Noetherian induction | Induct using ascending/descending chain conditions on a poset
+Proof by infinite descent (Fermat) | Assume a minimal positive solution exists, construct a strictly smaller one, contradiction
+Proof by the well-ordering principle | Select the least element of a nonempty set of natural numbers, derive contradiction or property
+Proof by induction on complexity/length/rank | Induct on a measure of structural complexity (formula length, derivation depth, rank, etc.)
+Proof by course-of-values induction | Equivalent to strong induction; P(n) depends on all P(m) with m < n
+
+## Formal Proof Systems and Logical Frameworks
+Natural deduction proof | Apply introduction and elimination rules for each connective/quantifier
+Sequent calculus proof (Gentzen-style) | Derive sequents Γ ⊢ Δ using structural and logical rules with cut
+Hilbert-style axiomatic proof | Chain axiom instances with modus ponens (and generalization)
+Proof by resolution | Convert to CNF, repeatedly resolve complementary literals until empty clause or saturation
+Semantic tableau (truth tree) proof | Systematically decompose formulas on branches, close branches with contradictions
+Proof by truth table | Evaluate all rows of a truth table to verify tautology/validity
+Equational proof (equational reasoning) | Apply substitution and equational axioms to transform one expression into another
+Proof by term rewriting | Apply oriented rewrite rules until reaching normal form, compare results
+Proof by cut elimination | Remove cuts from a sequent proof, yielding a direct subformula-property proof
+Proof by normalization (proof-theoretic) | Transform a natural deduction proof into normal form, eliminating detours
+Proof by the Curry-Howard correspondence | Construct a typed lambda term inhabiting the proposition-as-type
+Proof by realizability | Construct a computable realizer witnessing each quantifier in the statement
+
+## Combinatorial and Discrete Methods
+Combinatorial proof (counting two ways) | Show both sides of an identity count the same set of combinatorial objects
+Double counting proof | Count one set by two methods, equate the results
+Bijective proof | Construct an explicit bijection between two finite sets to show equal cardinality
+Proof by the pigeonhole principle | Place n+1 objects into n boxes, conclude some box has ≥ 2
+Proof by inclusion-exclusion | Compute a union's size by alternately adding and subtracting intersection sizes
+Proof by Möbius inversion | Invert a sum over a poset using the Möbius function
+Proof by generating functions | Encode a sequence as a formal power series, manipulate algebraically
+Proof by the transfer matrix method | Encode walks/tilings as matrix powers, extract coefficients
+Proof by the symbolic/analytic combinatorics method | Use singularity analysis of generating functions to extract asymptotics
+Proof by recurrence relation | Establish and solve a recurrence that characterizes the quantity
+Proof by the extremal principle | Consider the element maximizing/minimizing some quantity, derive contradiction or structure
+Proof by greedy algorithm argument | Show a greedy strategy achieves optimum by exchange or stays-ahead argument
+Proof by exchange argument | Show any optimal solution can be transformed to the greedy solution without loss
+Proof by the Ramsey theory argument | Show sufficiently large structures must contain monochromatic substructures
+Proof by regularity lemma (Szemerédi) | Partition a graph into pseudorandom-like parts, analyze the reduced graph
+Proof by the container method | Show the family of independent sets is captured by a small number of containers
+Proof by flag algebras | Use semidefinite programming on flag algebra inequalities
+Proof by the discharging method | Assign charges, redistribute via rules, derive contradiction on total charge
+Proof by coloring / labeling argument | Assign colors to elements, use constraints to derive impossibility or structure
+Proof by parity argument | Track even/odd parity of some quantity to derive contradiction or necessary conditions
+Proof by the handshaking lemma / degree-sum argument | Use the fact that the sum of degrees equals twice the number of edges
+Proof by tiling/covering argument | Show a region can or cannot be tiled by certain pieces via invariants
+Proof by a flow/network argument | Model as network flow, invoke max-flow min-cut or related theorems
+Proof by matroid theory | Use matroid axioms, duality, or intersection to prove combinatorial results
+Proof by topological combinatorics | Apply topological tools (Borsuk-Ulam, Lusternik-Schnirelmann) to combinatorial problems
+
+## Probabilistic and Randomized Methods
+Proof by the probabilistic method (Erdős) | Show that a random object has the desired property with positive probability
+Proof by the first moment method (expectation) | Show E[X] > 0 (or < n) so some outcome achieves the desired bound
+Proof by the second moment method (Paley-Zygmund) | Use variance bounds to show X > 0 with positive probability
+Proof by the Lovász Local Lemma | Show bad events are sparse and weakly dependent, so all can be avoided simultaneously
+Proof by the entropy method / compression | Use information-theoretic entropy to bound combinatorial quantities
+Proof by the alteration (deletion) method | Randomly construct, then fix violations by deleting a few elements
+Proof by derandomization (conditional expectations) | Convert probabilistic argument into deterministic one by fixing bits greedily
+Proof by random restriction | Randomly restrict variables and analyze the simplified function
+Proof by Kolmogorov complexity | Bound combinatorial quantities using incompressibility of random strings
+
+## Algebraic Proof Techniques
+Proof by direct algebraic manipulation / computation | Transform expressions using algebraic identities until reaching the result
+Proof by the polynomial method | Encode the problem with polynomials, use degree or vanishing arguments
+Proof by the dimension argument (linear algebra method) | Compare dimensions of vector spaces, apply rank-nullity or linear dependence
+Proof by eigenvalue/spectral methods (algebraic) | Analyze eigenvalues of an associated matrix to bound combinatorial quantities
+Proof by the trace method | Compute or bound the trace of a matrix to infer properties of eigenvalues
+Proof by determinant argument | Evaluate or estimate a determinant to show (non)singularity or count
+Proof by Gröbner basis computation | Compute a Gröbner basis to decide ideal membership or solve polynomial systems
+Proof by resultants / elimination theory | Eliminate variables from polynomial systems via resultants
+Proof by homomorphism / isomorphism theorems | Map between structures via a homomorphism, apply isomorphism theorems
+Proof by quotient construction | Construct a quotient by an equivalence relation or ideal, derive properties
+Proof by universal property / categorical adjunction | Characterize an object by its universal mapping property, deduce consequences
+Proof by diagram chasing | Follow elements through a commutative diagram of exact sequences
+Proof by exact sequence argument | Use short/long exact sequences to relate algebraic invariants
+Proof by spectral sequence | Iteratively compute pages of a spectral sequence converging to the desired cohomology
+Proof by derived functors (Ext, Tor, etc.) | Compute derived functors to extract algebraic or topological information
+Proof by Galois theory | Use the Galois correspondence between subgroups and intermediate fields
+Proof by representation theory | Analyze group actions via linear representations and their decompositions
+Proof by character theory | Use character tables and orthogonality relations to prove results about groups
+Proof by localization | Localize a ring/module at a prime, prove the local statement, reassemble
+Proof by completion (algebraic) | Complete a local ring or metric space, prove the result in the completed setting
+Proof by reduction mod p / finite field methods | Reduce an integer or algebraic problem modulo a prime, analyze over 𝔽ₚ
+Proof by the Nullstellensatz | Relate polynomial vanishing to ideal membership via Hilbert's Nullstellensatz
+Proof by descent (algebraic/Galois) | Use faithfully flat or Galois descent to transfer structure across base change
+
+## Analytic Proof Techniques
+Proof by epsilon-delta argument | Construct an explicit δ (or N) for each ε to establish limits, continuity, or convergence
+Proof by the squeeze theorem / comparison | Bound a quantity between two quantities sharing the same limit
+Proof by telescoping | Write a sum/product as a telescoping series where most terms cancel
+Proof by Abel summation / summation by parts | Discrete analogue of integration by parts to estimate partial sums
+Proof by partial fractions | Decompose a rational function, analyze each term separately
+Proof by integral representation | Represent a quantity as an integral, then estimate or evaluate the integral
+Proof by contour integration / residues | Integrate around a closed contour in ℂ, apply Cauchy's residue theorem
+Proof by analytic continuation | Extend an analytic function beyond its original domain, use the extension
+Proof by saddle-point / steepest descent method | Deform a contour to pass through a saddle point, extract leading asymptotics
+Proof by stationary phase | Approximate oscillatory integrals by contribution near stationary points
+Proof by Fourier analysis | Decompose into frequencies, use Parseval's theorem or decay of coefficients
+Proof by Laplace / integral transform | Apply an integral transform, solve in transform domain, invert
+Proof by the maximum/minimum principle | Use the fact that harmonic/subharmonic functions attain extrema on the boundary
+Proof by comparison principle / barrier functions | Construct sub- or supersolutions that bound the true solution
+Proof by energy method (PDE/analysis) | Define an energy functional, show it is monotone or bounded
+Proof by variational method / calculus of variations | Minimize a functional to find solutions, prove existence of minimizers
+Proof by monotone convergence theorem | Show an increasing sequence bounded above converges, take the limit
+Proof by dominated convergence theorem | Bound integrands by an integrable function, pass limits inside the integral
+Proof by uniform convergence argument | Establish uniform convergence to interchange limits with integrals/sums/derivatives
+Proof by Arzelà-Ascoli compactness | Extract a convergent subsequence from equicontinuous, uniformly bounded functions
+Proof by weak/weak-* compactness | Extract a weakly convergent subsequence in a reflexive Banach space
+Proof by density / approximation | Prove for a dense subclass (smooth, simple, polynomial), extend by density
+Proof by mollification / regularization | Convolve with a smooth kernel, prove for smooth approximations, take limits
+Proof by interpolation (Riesz-Thorin, Marcinkiewicz) | Prove endpoint estimates, obtain intermediate results by interpolation
+Proof by bootstrapping / regularity iteration | Start with weak regularity, iteratively improve until reaching desired smoothness
+Proof by scaling / dimensional analysis | Exploit scale invariance to reduce parameters or normalize
+Proof by blowup analysis | Rescale near a singularity, pass to a limit, derive contradiction from the blowup profile
+Proof by the continuity method | Deform from a solvable problem to the target, show the set of solvable parameters is open and closed
+Proof by the method of continuity / connectedness | Show a set is nonempty, open, and closed in a connected space, so it is everything
+Proof by the implicit/inverse function theorem | Apply the IFT to deduce local existence and regularity of solutions
+Proof by convexity (Jensen's inequality, etc.) | Exploit convexity/concavity of functions to derive inequalities
+Proof by Lagrange multipliers / KKT conditions | Characterize extrema under constraints, derive necessary conditions
+Proof by the Cauchy-Schwarz inequality | Apply |⟨u,v⟩| ≤ ‖u‖‖v‖ to bound sums, integrals, or inner products
+Proof by AM-GM / power mean inequality | Apply arithmetic-geometric mean inequality or its generalizations
+Proof by Schur convexity / majorization | Show a symmetric function is Schur-convex, optimize via majorization
+Proof by the Baire category theorem | Show a set is residual (countable intersection of open dense sets) hence nonempty
+Proof by measure-theoretic argument | Use σ-additivity, absolute continuity, or Radon-Nikodym to derive results
+Proof by the Hahn-Banach theorem | Extend a functional or separate convex sets, derive dual characterizations
+
+## Fixed-Point and Iterative Methods
+Proof by the Banach fixed-point theorem (contraction mapping) | Show a map is a contraction, conclude a unique fixed point exists
+Proof by Brouwer's fixed-point theorem | Continuous map on a compact convex set has a fixed point
+Proof by Schauder's fixed-point theorem | Continuous map on a compact convex subset of a Banach space has a fixed point
+Proof by the Knaster-Tarski fixed-point theorem | Monotone map on a complete lattice has a fixed point
+Proof by Kakutani's fixed-point theorem | Upper hemicontinuous set-valued map on compact convex set has a fixed point
+Proof by iteration / Picard iteration | Iterate a map, show convergence of successive approximations to a solution
+
+## Probabilistic and Stochastic Methods
+Proof by martingale argument | Show a process is a (super/sub)martingale, apply optional stopping or convergence
+Proof by coupling | Construct two random processes on the same probability space, compare them directly
+Proof by large deviations | Bound tail probabilities using exponential moment/rate function techniques
+Proof by concentration inequalities (Chernoff, Azuma, Talagrand) | Bound deviation from mean using exponential or isoperimetric inequalities
+Proof by Stein's method | Bound distance to a target distribution via a characterizing operator equation
+Proof by moment method (probability) | Compute or bound moments, use moment convergence or moment comparison
+Proof by characteristic function / Fourier method (probability) | Analyze distributions via their characteristic functions, use Lévy continuity
+Proof by ergodic theory | Use ergodic theorems (Birkhoff, von Neumann) to derive long-run averages
+Proof by stochastic calculus (Itô) | Apply Itô's formula to semimartingales, derive properties of SDEs
+
+## Number-Theoretic Methods
+Proof by modular arithmetic / congruence argument | Work modulo n to derive divisibility or impossibility results
+Proof by Fermat's little theorem / Euler's theorem | Use aᵖ⁻¹ ≡ 1 mod p or related congruences
+Proof by quadratic reciprocity | Apply quadratic reciprocity to determine solvability of quadratic congruences
+Proof by p-adic analysis | Work in the p-adic numbers ℚₚ, use p-adic convergence or Hensel's lemma
+Proof by the geometry of numbers (Minkowski) | Use lattice point theorems in convex bodies to show existence of solutions
+Proof by the Hardy-Littlewood circle method | Decompose a generating function integral into major and minor arcs, estimate each
+Proof by sieve methods (Brun, Selberg, large sieve) | Sieve out unwanted primes to bound counts of primes or almost-primes
+Proof by L-functions / analytic number theory | Analyze L-functions (zeros, residues, functional equations) to extract arithmetic info
+Proof by algebraic number theory (ideal theory, class groups) | Use unique factorization of ideals, class numbers, units to derive results
+Proof by continued fraction expansion | Represent numbers as continued fractions, use convergent properties
+Proof by Vieta jumping / root flipping | In a Diophantine equation, treat one variable as a root and jump to the conjugate root
+
+## Geometric Methods
+Proof by synthetic (Euclidean) geometry | Use axioms, congruence, similarity, and classical theorems directly
+Proof by analytic/coordinate geometry | Assign coordinates, reduce geometric statements to algebraic equations
+Proof by geometric transformation (symmetry, rotation, reflection, translation) | Apply a transformation to map one configuration to another
+Proof by inversion (inversive geometry) | Invert through a circle/sphere to simplify tangency or angle conditions
+Proof by projective geometry | Work in projective space, use cross-ratios, duality, perspectivities
+Proof by affine methods | Use affine invariants and affine transformations
+Proof by barycentric coordinates | Express points as weighted averages of triangle vertices, compute algebraically
+Proof by trigonometric (trigonometric cevian/identity) methods | Apply trig identities, law of sines/cosines, to establish geometric facts
+Proof by vector methods | Use vector addition, dot products, cross products to prove geometric statements
+Proof by complex numbers in geometry | Represent plane points as complex numbers, use multiplication and conjugation
+Proof by dissection / decomposition | Cut a figure into pieces and rearrange to show area/volume equality
+Proof by geometric series / recursion | Use self-similarity of a geometric construction to set up a geometric series
+
+## Topological Methods
+Proof by compactness (topological) | Extract finite subcovers, or use sequential compactness to find convergent subsequences
+Proof by connectedness / path-connectedness | Show a set is connected to prove it cannot be split, or use IVT
+Proof by the fundamental group / covering spaces | Compute π₁, use lifting properties of covering spaces
+Proof by homology theory | Compute homology groups, use exact sequences and functoriality
+Proof by cohomology theory | Compute cohomology, use cup products or cohomological operations
+Proof by homotopy theory | Use homotopy groups, fibrations, or homotopy equivalences
+Proof by degree theory (topological degree) | Compute the degree of a map, use homotopy invariance to derive existence
+Proof by index theory (Atiyah-Singer, Lefschetz, etc.) | Compute an index or fixed-point count via topological invariants
+Proof by Euler characteristic / Gauss-Bonnet | Compute χ or apply Gauss-Bonnet to relate topology and curvature
+Proof by Morse theory | Analyze critical points of a smooth function to determine topological structure
+Proof by surgery theory | Cut and reglue manifolds, track how invariants change
+Proof by cobordism | Show two manifolds are cobordant, use cobordism invariants
+Proof by characteristic classes (Chern, Stiefel-Whitney, Pontryagin) | Compute characteristic classes to distinguish or obstruct
+Proof by K-theory | Use K-groups of vector bundles or C*-algebras to derive invariants
+Proof by sheaf theory / sheaf cohomology | Compute sheaf cohomology groups, use exact sequences of sheaves
+Proof by the Borsuk-Ulam theorem | Show an antipodal map must have a coincidence point
+Proof by the Lefschetz fixed-point theorem | If the Lefschetz number is nonzero, the map has a fixed point
+Proof by obstruction theory | Identify topological obstructions (cohomology classes) to extending maps
+
+## Set-Theoretic and Model-Theoretic Methods
+Proof by forcing (Cohen forcing, iterated forcing) | Extend a model of ZFC with generic filters to establish consistency/independence
+Proof by inner models (L, HOD, core models) | Work inside a canonical inner model to establish consistency results
+Proof by large cardinal axioms | Assume existence of large cardinals, derive consequences via their reflection properties
+Proof by determinacy (AD, PD) | Assume determinacy of certain games, derive regularity properties of sets
+Proof by absoluteness (Shoenfield, Mansfield) | Show a statement is absolute between models, transfer results between them
+Proof by the reflection principle (set-theoretic) | Reflect a property of V down to some Vα, use the reflected version
+Proof by club and stationary set arguments | Use the closed unbounded filter and stationary sets to argue about uncountable combinatorics
+Proof by Zorn's lemma / axiom of choice / well-ordering theorem | Invoke Zorn to find maximal elements, or well-order to make transfinite choices
+Proof by cardinal arithmetic | Use properties of cardinal exponentiation, cofinality, GCH/SCH
+Proof by the ultrafilter lemma | Use existence of ultrafilters (weaker than AC) to derive compactness-type results
+Proof by ultraproducts / Łoś's theorem | Construct an ultraproduct, apply Łoś to transfer first-order properties
+Proof by the back-and-forth method | Build an isomorphism incrementally, alternating between the two structures
+Proof by Löwenheim-Skolem | Obtain models of different cardinalities, use to prove or disprove properties
+Proof by compactness (model-theoretic) | If every finite subset of a theory is satisfiable, the whole theory is
+Proof by quantifier elimination | Eliminate quantifiers to reduce to quantifier-free statements, then check directly
+Proof by model completeness | Show every embedding between models is elementary, derive consequences
+Proof by o-minimality | Work in an o-minimal structure where definable sets are finite unions of intervals
+Proof by the transfer principle (nonstandard analysis) | Transfer first-order statements between standard and nonstandard models
+Proof by omitting types | Apply the omitting types theorem to build models missing certain types
+Proof by indiscernibles / Ramsey-model-theory | Use Ehrenfeucht-Mostowski models built from indiscernible sequences
+
+## Category-Theoretic Methods
+Proof by the Yoneda lemma | Reduce to checking natural transformations from representable functors
+Proof by adjoint functor arguments | Use existence/properties of adjoint functors to derive results
+Proof by limits/colimits and universal constructions | Construct objects via universal properties, prove results via their characterization
+Proof by topos-theoretic internal logic | Interpret the statement in the internal language of a topos, prove it there
+
+## Computability and Complexity Methods
+Proof by diagonalization (Cantor / Turing) | Construct an object differing from the nth listed object at the nth position
+Proof by reduction (computability) | Reduce a known undecidable problem to the target problem
+Proof by the halting problem / Rice's theorem | Show solving the problem would solve the halting problem
+Proof by NP-hardness / complexity reduction | Reduce a known NP-hard problem to the target via polynomial-time mapping
+Proof by communication complexity | Model as a communication game, prove lower bounds on bits exchanged
+Proof by information-theoretic lower bound | Use entropy or mutual information to prove impossibility or lower bounds
+Proof by circuit complexity / gate elimination | Analyze Boolean circuits, derive lower bounds on size or depth
+Proof by the adversary method | Show any algorithm can be forced into many queries by an adversary
+
+## Computational and Machine-Assisted Methods
+Computer-assisted proof (exhaustive case checking) | Use a computer to verify finitely many cases too numerous for humans (e.g., Four Color Theorem)
+Proof by formal verification / proof assistant (Coq, Lean, Isabelle, HOL) | Encode every step in a formal system, verified correct by software
+Proof by SAT solver | Encode the problem as a Boolean satisfiability instance, solve, extract proof/certificate
+Proof by SMT solver | Encode in a satisfiability modulo theories framework, obtain a verified result
+Proof by model checking | Exhaustively verify all states of a finite-state system against a specification
+Proof by certified / verified computation | Perform a numerical computation with a machine-checkable correctness certificate
+Proof by interval arithmetic | Bound all intermediate values in rigorous intervals, verify the conclusion holds
+
+## General Proof Strategies and Meta-Methods
+Proof by symmetry | Exploit a symmetry of the problem to reduce cases or equate quantities
+Proof by duality | Pass to a dual formulation (e.g., planar graph duality, LP duality, Pontryagin duality), prove the dual statement
+Proof by generalization (strengthening the hypothesis) | Prove a stronger result whose inductive structure or applicability is cleaner
+Proof by specialization | Prove a specific case that implies or illuminates the general result
+Proof by reduction to a known result | Transform the problem until a known theorem directly applies
+Proof by analogy / transport of structure | Establish a formal correspondence and transfer a known proof across it
+Proof by the probabilistic lens (reformulation) | Reinterpret a deterministic statement probabilistically to gain insight or tools
+Proof by phantom / auxiliary construction | Introduce a new object (auxiliary line, helper function, extension field) that clarifies the argument
+Proof without words (visual / diagrammatic proof) | Present a diagram or picture that makes the argument self-evident
+Proof by wishful thinking / reverse engineering | Assume the answer has a certain form, determine parameters, then verify rigorously
