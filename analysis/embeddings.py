@@ -406,6 +406,89 @@ def _extract_text_from_response(response: dict) -> str:
     return output_text
 
 
+def enumerate_baseline_models(baselines_dir: Path) -> set[tuple[str, str]]:
+    """Enumerate models that have baseline responses (lightweight, no text loading).
+
+    Args:
+        baselines_dir: Base baselines/responses directory
+
+    Returns:
+        Set of (provider, model) tuples that have at least one baseline response
+    """
+    models: set[tuple[str, str]] = set()
+
+    if not baselines_dir.exists():
+        return models
+
+    for provider_dir in baselines_dir.iterdir():
+        if not provider_dir.is_dir():
+            continue
+        provider = provider_dir.name
+
+        for model_dir in provider_dir.iterdir():
+            if not model_dir.is_dir():
+                continue
+            model = model_dir.name
+
+            responses_file = model_dir / "responses.jsonl"
+            if responses_file.exists():
+                models.add((provider, model))
+
+    return models
+
+
+def enumerate_puzzle_models(responses_dir: Path, puzzle_names: list[str]) -> set[tuple[str, str]]:
+    """Enumerate models that have responses for the given puzzles (lightweight).
+
+    Args:
+        responses_dir: Base responses directory
+        puzzle_names: List of puzzle names to check
+
+    Returns:
+        Set of (provider, model) tuples that have responses for ALL puzzles
+    """
+    # Track which models have each puzzle
+    models_by_puzzle: dict[str, set[tuple[str, str]]] = {p: set() for p in puzzle_names}
+
+    for provider_dir in responses_dir.iterdir():
+        if not provider_dir.is_dir():
+            continue
+        provider = provider_dir.name
+
+        for model_dir in provider_dir.iterdir():
+            if not model_dir.is_dir():
+                continue
+            model = model_dir.name
+
+            responses_file = model_dir / "responses.jsonl"
+            if not responses_file.exists():
+                continue
+
+            # Check which puzzles this model has responses for
+            with responses_file.open() as f:
+                for line in f:
+                    try:
+                        record = json.loads(line)
+                        puzzle_name = record.get("puzzle_name")
+                        if puzzle_name in models_by_puzzle:
+                            models_by_puzzle[puzzle_name].add((provider, model))
+                    except json.JSONDecodeError:
+                        continue
+
+    # Return intersection: models that have ALL puzzles
+    if not models_by_puzzle:
+        return set()
+
+    result = None
+    for puzzle_models in models_by_puzzle.values():
+        if result is None:
+            result = puzzle_models.copy()
+        else:
+            result &= puzzle_models
+
+    return result or set()
+
+
 def load_baseline_responses(baselines_dir: Path) -> dict[tuple[str, str], dict[str, str]]:
     """Load all baseline responses for all models.
 
