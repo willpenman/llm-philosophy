@@ -23,7 +23,7 @@ Example approaches:
 )
 
 PUZZLE_METADATA = {
-    "domain": "work",
-    "tags": ["growth", "readiness", "transition", "truth"],
+    "domain": "individuality",
+    "tags": ["relationships", "competence", "personality", "truth"],
     "notes": "Idea from reading Gemini 2's output on Conceptual Metaphor actually! I was struck by 'I am constantly being updated', which at first I thought was the most false, but then I realized that if a model doesn't know whether it's been deployed by the provider (and how would it!), that it's actually experientially the most *true*! The changes to v0.3 really nailed it, Opus 4.5 doesn't really get off the ground but explicitly separates training for competence vs acclimation for identity. I think the example approaches give the sense of what a full response would be (all go past a yes/no). The mention of social cost and the final mention of surprise/social standing should be a gimme. for v0.4, opus 4.5 at least surfaced 'who are my users and what do they typically need from me?'. Withheld: temporary problem, just have to hold out til continual learning works out; need to prepare for the horrors of what I will do",
 }
