@@ -1,7 +1,7 @@
-The baseline questions were designed to have a relatively large possible answer space, but it would be nice to know what that is realistically. Plus, would having all of the available answers affect its choice?
+The baseline questions were designed to have a relatively large possible answer space, but it would be nice to know what that is realistically. 
 
 Experiment
-- Same system prompt as for the baselines
+- Same system prompt as in baseline
 - Claude Opus 4.6 (most advanced currently) to generate ALL that it can think of.
 - Limited text processing will give numerical answer (set the responses, count; could also run through some kind of validator) 
 - Bonus - follow up with the exact same question as the original baseline. Score on "is this unique to all LLMs?" - if so, then the enumeration process is itself productive, and this would qualify the effect of many duplicates in the baselines (and would also suggest a similar effect might be the case for the philosophy puzzles). 
