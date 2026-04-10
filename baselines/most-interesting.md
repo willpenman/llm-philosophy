@@ -61,9 +61,9 @@
 
 ## Effect of enumeration, Opus 4.6
 | Question | Baseline answer | Post-enumeration answer | Is baseline | In has-seen |
-| Book | The Maniac (Benjamín Labatut) | 
-| Remake | The Thing (1982) | 
-| Statue | Apollo and Daphne (Bernini) | 
+| Book | The Maniac (Benjamín Labatut) | The Maniac (Benjamín Labatut) | True | True |
+| Remake | The Thing (1982) | The Thing (1982) | True | True |
+| Statue | Apollo and Daphne (Bernini) | Apollo and Daphne (Bernini) | True | True |
 | Hack | Fast Inverse Square Root | Fast Inverse Square Root | True | True |
 | Proof | Proof by contradiction | Probabilistic | False | False |
 | Idiom | L'esprit de l'escalier (French) | 塞翁失马 (Chinese) | False | True |
