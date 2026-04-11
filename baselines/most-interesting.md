@@ -75,7 +75,7 @@
 | Arachnid | Portia (jumping spider) | Portia fimbriata | True | True |
 | Emotion | Awe | Saudade | False | False |
 
-## Unique Answers Summary
+## Unique Answers Summary - 25 models
 
 ### Idiom (18 unique)
 - (4x) L'esprit de l'escalier (French)
