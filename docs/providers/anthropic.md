@@ -23,7 +23,8 @@
   - Haiku 3 has stated max of 4k in docs, but the API is not as exact, doesn't fail to about 4500 tokens
 - `thinking` (extended thinking):
   - Supported for Claude 4/4.5/4.6/4.7 models, including Opus 4, Opus 4.5, Opus 4.6, and Opus 4.7.
-  - Opus 4.7: use `{"type": "adaptive"}` (manual thinking with `budget_tokens` is deprecated).
+  - Opus 4.7: use `{"type": "adaptive", "display": "summarized"}` (manual thinking with `budget_tokens` is deprecated).
+    - **Important**: Opus 4.7 defaults to `display: "omitted"`, so `display: "summarized"` must be set explicitly to receive thinking summaries. (catch_up script was run without this; no thinking summaries available)
   - Opus 4.6: use `{"type": "adaptive"}` (manual thinking with `budget_tokens` is deprecated).
   - Sonnet 4.6: use `{"type": "adaptive"}` (manual thinking with `budget_tokens` is deprecated).
   - Opus 4.5: use `{"type": "enabled", "budget_tokens": <int>}`.

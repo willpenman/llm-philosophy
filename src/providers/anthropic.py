@@ -44,6 +44,8 @@ ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-7", "claude-opus-4-6", "cla
 MANUAL_THINKING_MODELS: set[str] = {"claude-opus-4-5-20251101", "claude-opus-4-20250514"}
 REASONING_MODELS: set[str] = ADAPTIVE_THINKING_MODELS | MANUAL_THINKING_MODELS
 MAX_EFFORT_OUTPUT_MODELS: set[str] = {"claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6"}
+# Models that default to omitted thinking display and require explicit "summarized", expect this to be true for Claude 4.7+
+SUMMARIZED_DISPLAY_REQUIRED_MODELS: set[str] = {"claude-opus-4-7"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "claude-opus-4-7": {"input": 5.0, "output": 25.0},
@@ -112,7 +114,10 @@ def default_thinking_budget_for_model(model: str) -> int | None:
 
 def default_thinking_config_for_model(model: str) -> dict[str, Any] | None:
     if model in ADAPTIVE_THINKING_MODELS:
-        return {"type": "adaptive"}
+        config: dict[str, Any] = {"type": "adaptive"}
+        if model in SUMMARIZED_DISPLAY_REQUIRED_MODELS:
+            config["display"] = "summarized"
+        return config
     if model in MANUAL_THINKING_MODELS:
         budget_tokens = default_thinking_budget_for_model(model)
         if budget_tokens is None:

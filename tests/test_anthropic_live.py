@@ -130,7 +130,7 @@ def test_anthropic_rejects_temperature_live(model: str) -> None:
 @pytest.mark.parametrize(
     ("model", "thinking"),
     [
-        ("claude-opus-4-7", {"type": "adaptive"}),
+        ("claude-opus-4-7", {"type": "adaptive", "display": "summarized"}),
         ("claude-opus-4-6", {"type": "adaptive"}),
         ("claude-sonnet-4-6", {"type": "adaptive"}),
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 1024}),
