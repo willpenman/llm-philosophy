@@ -39,43 +39,41 @@ def _shorten_claude_name(model: str) -> str | None:
     """Create a short display name for Claude models.
 
     Returns None if not a Claude model.
+
+    Examples:
+        claude-opus-4-7 -> Opus 4.7
+        claude-opus-4-5-20251101 -> Opus 4.5
+        claude-sonnet-4-6 -> Sonnet 4.6
+        claude-opus-4-20250514 -> Opus 4
+        claude-3-haiku-20240307 -> Haiku 3
     """
     lower = model.lower()
-    if not lower.startswith("claude-"):
+
+    # Guard: must start with "claude-"
+    prefix = "claude-"
+    if not lower.startswith(prefix):
         return None
 
-    # Handle Claude 3.x models (have date suffixes like 20240307)
-    if lower.startswith("claude-3-"):
-        # claude-3-haiku-20240307 -> Haiku 3
-        if "haiku" in lower:
-            return "Haiku 3"
-        if "sonnet" in lower:
-            return "Sonnet 3"
-        if "opus" in lower:
-            return "Opus 3"
-        return model  # fallback
+    rest = lower[len(prefix):]
 
-    # Handle Claude 4.x+ models
-    # Pattern: claude-{variant}-{version}[-date] where version is like "4-5" or "4-6"
-    # Examples:
-    #   claude-opus-4-7 -> Opus 4.7
-    #   claude-opus-4-5-20251101 -> Opus 4.5
-    #   claude-sonnet-4-6 -> Sonnet 4.6
-    #   claude-opus-4-20250514 -> Opus 4
+    # Handle Claude 3.x models (pattern: claude-3-{variant}-{date})
+    if rest.startswith("3-"):
+        for v in ("haiku", "sonnet", "opus"):
+            if v in rest:
+                return f"{v.capitalize()} 3"
+        return None  # unrecognized Claude 3 model
 
-    # Remove claude- prefix
-    rest = lower[7:]  # after "claude-"
-
+    # Handle Claude 4.x+ models (pattern: claude-{variant}-{major}-{minor}[-date])
     # Identify variant
     variant = None
     for v in ("opus", "sonnet", "haiku"):
         if rest.startswith(v + "-"):
             variant = v.capitalize()
-            rest = rest[len(v) + 1:]  # after "opus-" etc.
+            rest = rest[len(v) + 1:]
             break
 
     if not variant:
-        return model  # fallback
+        return None  # unrecognized pattern
 
     # Parse version: expect "4-7" or "4-5-20251101" or "4-20250514"
     parts = rest.split("-")
@@ -83,7 +81,7 @@ def _shorten_claude_name(model: str) -> str | None:
         major = parts[0]
         minor = parts[1]
         # Check if minor looks like a date (8 digits) vs actual minor version
-        if len(minor) == 8 and minor.isdigit():
+        if len(minor) == 8:
             # It's a date, so this is like "4-20250514" meaning version 4.0
             return f"{variant} {major}"
         else:
@@ -93,29 +91,77 @@ def _shorten_claude_name(model: str) -> str | None:
         # Just major version
         return f"{variant} {parts[0]}"
 
-    return model  # fallback
+    return None  # unrecognized pattern
+
+
+def _shorten_gpt_name(model: str) -> str | None:
+    """Create a short display name for GPT models (GPT-4+).
+
+    Returns None if not a GPT model or not handled.
+
+    Examples:
+        gpt-5.4-2026-03-05 -> GPT-5.4
+        gpt-5.4-pro-2026-03-05 -> GPT-5.4 Pro
+        gpt-5-2025-08-07 -> GPT-5
+        gpt-4o-2024-05-13 -> GPT-4o
+        gpt-4-0613 -> GPT-4
+    """
+    lower = model.lower()
+
+    # Guard: must start with "gpt-"
+    prefix = "gpt-"
+    if not lower.startswith(prefix):
+        return None
+
+    rest = lower[len(prefix):]
+
+    # Handle GPT-4o separately (special naming)
+    if rest.startswith("4o"):
+        return "GPT-4o"
+
+    # Handle GPT-4 (old style: gpt-4-0613)
+    if rest.startswith("4-") or rest == "4":
+        return "GPT-4"
+
+    # Handle GPT-5+ models
+    # Pattern: {version}[-variant][-date] where version is like "5" or "5.4"
+    # Examples: 5.4-2026-03-05, 5.4-pro-2026-03-05, 5-2025-08-07
+
+    parts = rest.split("-")
+    if not parts:
+        return None
+
+    # First part should be version (e.g., "5", "5.4")
+    version = parts[0]
+    if not version[0].isdigit():
+        return None
+
+    # Check for variant (pro, mini, nano, etc.) - it's not a date
+    variant = ""
+    for part in parts[1:]:
+        # Dates are 4 digits (year) or 8 digits (YYYYMMDD) or 10 chars (YYYY-MM-DD parts)
+        if part.isdigit() and len(part) >= 4:
+            break  # hit a date component
+        if part in ("pro", "mini", "nano"):
+            variant = f" {part.capitalize()}"
+            break
+
+    return f"GPT-{version}{variant}"
 
 
 def _shorten_model_name(model: str) -> str:
     """Create a short display name for a model."""
-    # Try Claude-specific handling first
+    # Try provider-specific handling first
     claude_name = _shorten_claude_name(model)
     if claude_name:
         return claude_name
 
+    gpt_name = _shorten_gpt_name(model)
+    if gpt_name:
+        return gpt_name
+
     # Common patterns to shorten (order matters - more specific first)
     replacements = [
-        ("gpt-5.4-2026-03-05", "GPT-5.4"),
-        ("gpt-5.4-pro-2026-03-05", "GPT-5.4 Pro"),
-        ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro"),
-        ("gpt-5.2-2025-12-11", "GPT-5.2"),
-        ("gpt-5-2025-08-07", "GPT-5"),
-        ("gpt-4o-2024-05-13", "GPT-4o"),
-        ("gpt-4-0613", "GPT-4"),
-        ("gpt-5.2-pro", "GPT-5.2 Pro"),
-        ("gpt-5.2", "GPT-5.2"),
-        ("gpt-4o", "GPT-4o"),
-        ("gpt-4-", "GPT-4 "),
         ("o3-2025-04-16", "o3"),
         ("o3-", "o3 "),
         ("gemini-3.1-pro-preview", "Gemini 3.1 Pro"),
