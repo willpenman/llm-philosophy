@@ -71,13 +71,15 @@ def _run_baseline_anthropic(
         send_messages_request,
         require_api_key,
         default_thinking_config_for_model,
+        default_output_config_for_model,
         supports_reasoning,
     )
 
-    # Use thinking if available (same as eval)
+    # Use thinking and output_config if available (same as eval)
     thinking = None
     if supports_reasoning(model):
         thinking = default_thinking_config_for_model(model)
+    output_config = default_output_config_for_model(model)
 
     request = build_messages_request(
         system_prompt=BASELINE_SYSTEM_PROMPT,
@@ -85,6 +87,7 @@ def _run_baseline_anthropic(
         model=model,
         max_output_tokens=None,  # Use model default
         thinking=thinking,
+        output_config=output_config,
         stream=False,
     )
 
