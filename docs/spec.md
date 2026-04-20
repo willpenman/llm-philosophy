@@ -76,7 +76,7 @@ across providers.
 
 
 ## Adding a model to an existing provider
-0. Examine provider-specific documentation, docs/providers/{provider}.md, e.g. anthropic.md - this carries inter-model insights about how to add models and what particularities they have
+0. Examine provider-specific documentation, docs/providers/{provider}.md, e.g. anthropic.md - this carries inter-model insights about how to add models and what particularities they have. In general you should not need to search or use the internet to set this up.
 1. Add model metadata in the provider adapter (src/providers/{provider}.py): defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
 2. Add/extend static tests (tests/test_{provider}_request.py) for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
 3. Update live tests (tests/test_{provider}_live.py) by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'

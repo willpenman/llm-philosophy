@@ -42,6 +42,7 @@ def _skip_if_live_disabled() -> None:
 @pytest.mark.parametrize(
     "model",
     [
+        "claude-opus-4-7",
         "claude-opus-4-6",
         "claude-sonnet-4-6",
         "claude-opus-4-5-20251101",
@@ -66,7 +67,7 @@ def test_anthropic_accepts_system_prompt_live(model: str) -> None:
 
 # TEMPERATURE
 @pytest.mark.live
-@pytest.mark.parametrize("model", ["claude-opus-4-5-20251101", "claude-opus-4-20250514", "claude-opus-4-6", "claude-sonnet-4-6"])
+@pytest.mark.parametrize("model", ["claude-opus-4-7", "claude-opus-4-5-20251101", "claude-opus-4-20250514", "claude-opus-4-6", "claude-sonnet-4-6"])
 def test_anthropic_rejects_temperature_with_thinking_live(model: str) -> None:
     _skip_if_live_disabled()
     payload = {
@@ -105,11 +106,31 @@ def test_anthropic_accepts_temperature_without_thinking_live(model: str) -> None
     assert "OK" in response.output_text.upper()
 
 
+@pytest.mark.live
+@pytest.mark.parametrize("model", ["claude-opus-4-7"])
+def test_anthropic_rejects_temperature_live(model: str) -> None:
+    """Opus 4.7 deprecates temperature entirely."""
+    _skip_if_live_disabled()
+    payload = {
+        "model": model,
+        "max_tokens": 512,
+        "system": [{"type": "text", "text": "System."}],
+        "messages": [{"role": "user", "content": "Reply with OK."}],
+        "temperature": 0.2,
+    }
+    with pytest.raises(RuntimeError, match=r"temperature"):
+        send_messages_request(
+            payload,
+            api_key=os.environ["ANTHROPIC_API_KEY"],
+        )
+
+
 # THINKING
 @pytest.mark.live
 @pytest.mark.parametrize(
     ("model", "thinking"),
     [
+        ("claude-opus-4-7", {"type": "adaptive"}),
         ("claude-opus-4-6", {"type": "adaptive"}),
         ("claude-sonnet-4-6", {"type": "adaptive"}),
         ("claude-opus-4-5-20251101", {"type": "enabled", "budget_tokens": 1024}),
@@ -155,6 +176,7 @@ def test_anthropic_rejects_thinking_live(model: str) -> None:
 @pytest.mark.parametrize(
     ("model", "max_output_tokens"),
     [
+        ("claude-opus-4-7", 128001),
         ("claude-opus-4-6", 128001),
         ("claude-sonnet-4-6", 128001),  # doesn't return error on actual max+1 of 64001
         ("claude-opus-4-5-20251101", 64001),

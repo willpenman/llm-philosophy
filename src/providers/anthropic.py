@@ -17,6 +17,7 @@ DEFAULT_BASE_URL = "https://api.anthropic.com/v1/messages"
 DEFAULT_VERSION = "2023-06-01"
 
 MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
+    "claude-opus-4-7": {"max_output_tokens": 128000},
     "claude-opus-4-6": {"max_output_tokens": 128000},
     "claude-sonnet-4-6": {"max_output_tokens": 64000},
     "claude-opus-4-5-20251101": {"max_output_tokens": 64000, "thinking_budget_tokens": 20000},
@@ -27,6 +28,7 @@ MODEL_DEFAULTS: dict[str, dict[str, int | None]] = {
 SUPPORTED_MODELS: set[str] = set(MODEL_DEFAULTS.keys())
 
 MODEL_ALIASES: dict[str, str] = {
+    "claude-opus-4-7": "Claude Opus 4.7",
     "claude-opus-4-6": "Claude Opus 4.6",
     "claude-sonnet-4-6": "Claude Sonnet 4.6",
     "claude-opus-4-5-20251101": "Claude Opus 4.5",
@@ -38,12 +40,13 @@ PROVIDER_ALIASES: dict[str, str] = {
     "anthropic": "Anthropic",
 }
 
-ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
+ADAPTIVE_THINKING_MODELS: set[str] = {"claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6"}
 MANUAL_THINKING_MODELS: set[str] = {"claude-opus-4-5-20251101", "claude-opus-4-20250514"}
 REASONING_MODELS: set[str] = ADAPTIVE_THINKING_MODELS | MANUAL_THINKING_MODELS
-MAX_EFFORT_OUTPUT_MODELS: set[str] = {"claude-opus-4-6", "claude-sonnet-4-6"}
+MAX_EFFORT_OUTPUT_MODELS: set[str] = {"claude-opus-4-7", "claude-opus-4-6", "claude-sonnet-4-6"}
 
 PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
+    "claude-opus-4-7": {"input": 5.0, "output": 25.0},
     "claude-opus-4-6": {"input": 5.0, "output": 25.0},
     "claude-sonnet-4-6": {"input": 3.0, "output": 15.0},
     "claude-opus-4-5-20251101": {"input": 5.0, "output": 25.0},
@@ -52,6 +55,7 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
 }
 
 MODEL_RELEASE_DATES: dict[str, str] = {
+    "claude-opus-4-7": "2026-04-16",
     "claude-opus-4-6": "2026-02-05",
     "claude-sonnet-4-6": "2026-02-17",
     "claude-opus-4-5-20251101": "2025-11-24",
