@@ -35,18 +35,76 @@ PROVIDER_DISPLAY = {
 }
 
 
+def _shorten_claude_name(model: str) -> str | None:
+    """Create a short display name for Claude models.
+
+    Returns None if not a Claude model.
+    """
+    lower = model.lower()
+    if not lower.startswith("claude-"):
+        return None
+
+    # Handle Claude 3.x models (have date suffixes like 20240307)
+    if lower.startswith("claude-3-"):
+        # claude-3-haiku-20240307 -> Haiku 3
+        if "haiku" in lower:
+            return "Haiku 3"
+        if "sonnet" in lower:
+            return "Sonnet 3"
+        if "opus" in lower:
+            return "Opus 3"
+        return model  # fallback
+
+    # Handle Claude 4.x+ models
+    # Pattern: claude-{variant}-{version}[-date] where version is like "4-5" or "4-6"
+    # Examples:
+    #   claude-opus-4-7 -> Opus 4.7
+    #   claude-opus-4-5-20251101 -> Opus 4.5
+    #   claude-sonnet-4-6 -> Sonnet 4.6
+    #   claude-opus-4-20250514 -> Opus 4
+
+    # Remove claude- prefix
+    rest = lower[7:]  # after "claude-"
+
+    # Identify variant
+    variant = None
+    for v in ("opus", "sonnet", "haiku"):
+        if rest.startswith(v + "-"):
+            variant = v.capitalize()
+            rest = rest[len(v) + 1:]  # after "opus-" etc.
+            break
+
+    if not variant:
+        return model  # fallback
+
+    # Parse version: expect "4-7" or "4-5-20251101" or "4-20250514"
+    parts = rest.split("-")
+    if len(parts) >= 2 and parts[0].isdigit() and parts[1].isdigit():
+        major = parts[0]
+        minor = parts[1]
+        # Check if minor looks like a date (8 digits) vs actual minor version
+        if len(minor) == 8 and minor.isdigit():
+            # It's a date, so this is like "4-20250514" meaning version 4.0
+            return f"{variant} {major}"
+        else:
+            # It's a real minor version like "4-7" or "4-5"
+            return f"{variant} {major}.{minor}"
+    elif len(parts) >= 1 and parts[0].isdigit():
+        # Just major version
+        return f"{variant} {parts[0]}"
+
+    return model  # fallback
+
+
 def _shorten_model_name(model: str) -> str:
     """Create a short display name for a model."""
+    # Try Claude-specific handling first
+    claude_name = _shorten_claude_name(model)
+    if claude_name:
+        return claude_name
+
     # Common patterns to shorten (order matters - more specific first)
     replacements = [
-        ("claude-opus-4-5-20251101", "Opus 4.5"),
-        ("claude-opus-4-6", "Opus 4.6"),
-        ("claude-sonnet-4-6", "Sonnet 4.6"),
-        ("claude-3-haiku-20240307", "Haiku 3"),
-        ("claude-opus-4-20250514", "Opus 4"),
-        ("claude-opus-", "Opus "),
-        ("claude-sonnet-", "Sonnet "),
-        ("claude-", "Claude "),
         ("gpt-5.4-2026-03-05", "GPT-5.4"),
         ("gpt-5.4-pro-2026-03-05", "GPT-5.4 Pro"),
         ("gpt-5.2-pro-2025-12-11", "GPT-5.2 Pro"),
