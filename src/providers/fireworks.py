@@ -88,6 +88,23 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     },
 }
 
+MODEL_RELEASE_DATES: dict[str, str] = {
+    "accounts/fireworks/models/deepseek-v3p2": "2025-12-01",
+    "deepseek-v3p2": "2025-12-01",
+    "accounts/fireworks/models/deepseek-v3p1": "2025-08-21",
+    "deepseek-v3p1": "2025-08-21",
+    "accounts/fireworks/models/qwen3-vl-235b-a22b-thinking": "2025-09-21",
+    "qwen3-vl-235b-thinking": "2025-09-21",
+    "accounts/fireworks/models/qwen2p5-vl-32b-instruct": "2025-01-26",
+    "qwen2p5-vl-32b": "2025-01-26",
+    "accounts/fireworks/models/kimi-k2p5": "2026-01-27",
+    "kimi-k2p5": "2026-01-27",
+    "accounts/fireworks/models/kimi-k2-instruct-0905": "2025-09-05",
+    "kimi-k2-instruct-0905": "2025-09-05",
+    "accounts/fireworks/models/llama-v3p3-70b-instruct": "2024-12-06",
+    "llama-v3p3-70b-instruct": "2024-12-06",
+}
+
 MODEL_ALIASES: dict[str, str] = {
     "accounts/fireworks/models/deepseek-v3p2": "DeepSeek V3.2",
     "deepseek-v3p2": "DeepSeek V3.2",

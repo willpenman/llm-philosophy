@@ -12,6 +12,7 @@ Columns:
 
 | provider | model | release_date | available | source | notes |
 | --- | --- | --- | --- | --- | --- |
+| Anthropic | Claude Opus 4.7 (`claude-opus-4-7`) | 2026-04-16 | yes | https://www.anthropic.com/news/claude-opus-4-7 | Announcement + API availability. |
 | Anthropic | Claude Opus 4.6 (`claude-opus-4-6`) | 2026-02-05 | yes | https://www.anthropic.com/news/claude-opus-4-6 | Announcement + API availability. |
 | Anthropic | Claude Sonnet 4.6 (`claude-sonnet-4-6`) | 2026-02-17 | yes | https://www.anthropic.com/news/claude-sonnet-4-6 | Announcement + API availability. |
 | Anthropic | Claude Opus 4.5 (`claude-opus-4-5-20251101`) | 2025-11-24 | yes | https://www.anthropic.com/news/claude-opus-4-5 | Announcement + API availability. |
@@ -94,7 +95,7 @@ Columns:
 | DeepSeek | DeepSeek V3.2 (`deepseek-v3p2`) | 2025-12-01 | yes | https://api-docs.deepseek.com/news/news251201 | Open-source release announcement. |
 | DeepSeek | DeepSeek V3.2-Speciale | 2025-12-01 | no | https://api-docs.deepseek.com/news/news251201 | Advanced reasoning variant. Not supported. |
 | DeepSeek | DeepSeek V3.2-Exp | 2025-09-29 | no (deprecated) | https://api-docs.deepseek.com/news/news250929 | Experimental. Superseded by V3.2. |
-| DeepSeek | DeepSeek V3.1 | 2025-08 | no | https://en.wikipedia.org/wiki/DeepSeek | Hybrid V3+R1 model. Not supported. |
+| DeepSeek | DeepSeek V3.1 | 2025-08-21 | no | https://huggingface.co/deepseek-ai/DeepSeek-V3.1 | Hybrid V3+R1 model. Not supported. |
 | DeepSeek | DeepSeek R1-0528 (`deepseek-reasoner`) | 2025-05-28 | no | https://api-docs.deepseek.com/updates/ | Updated R1 with function calling. Not supported. |
 | DeepSeek | DeepSeek V3-0324 (`deepseek-v3-0324`) | 2025-03-24 | yes | https://api-docs.deepseek.com/updates/ | MIT License release. Supported via Fireworks serverless. |
 | DeepSeek | DeepSeek R1 | 2025-01-20 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
@@ -105,7 +106,8 @@ Columns:
 | DeepSeek | DeepSeek LLM | 2023-12 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | DeepSeek | DeepSeek Coder | 2023-11 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Moonshot AI | Kimi K2.5 | 2026-01-27 | yes | https://techcrunch.com/2026/01/27/chinas-moonshot-releases-a-new-open-source-model-kimi-k2-5-and-a-coding-agent/ | Open-source K2.5 release. Not supported. |
-| Moonshot AI | Kimi K2 Thinking (`kimi-k2-thinking`) | 2025-11-06 | yes | https://platform.moonshot.ai/blog/posts/changelog | K2 Think release on Kimi Open Platform. Not supported. |
+| Moonshot AI | Kimi K2 Thinking (`kimi-k2-thinking`) | 2025-11-06 | no | https://platform.moonshot.ai/blog/posts/changelog | K2 Think release on Kimi Open Platform. Not supported. |
+| Moonshot AI | Kimi K2 (`kimi-k2-instruct-0905`) | 2025-09-05 | yes | https://huggingface.co/moonshotai/Kimi-K2-Instruct-0905 | K2 Instruct release on HuggingFace. Supported. |
 | Moonshot AI | Kimi K2 (`kimi-k2-0711-preview`) | 2025-07-11 | preview | https://platform.moonshot.ai/blog/posts/changelog | K2 preview release on Kimi Open Platform. Not supported. |
 | Moonshot AI | Kimi K1.5 | 2025-01-20 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | Moonshot AI | Kimi (chatbot) | 2023-10 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |

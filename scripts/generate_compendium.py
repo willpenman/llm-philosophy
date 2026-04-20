@@ -14,11 +14,13 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Pt
 
+from src.batch_runner import UNREACHABLE_MODELS
 from src.puzzles import load_puzzle
 from src.response_reader import (
     display_names,
     extract_input_text,
     extract_output_text,
+    release_date,
 )
 from src.storage import _format_display_date, normalize_special_settings
 
@@ -48,6 +50,18 @@ def _parse_version(version: str | None) -> tuple[int, ...]:
         return tuple(int(x) for x in version.split("."))
     except ValueError:
         return (0,)
+
+
+def _model_sort_key(record: ResponseRecord) -> tuple[str, str]:
+    """Sort key for models: by release date ascending, then display name."""
+    date = release_date(record.provider, record.model) or "9999-99-99"
+    display_name, _ = display_names(record.provider, record.model)
+    return (date, display_name)
+
+
+def _is_unreachable(record: ResponseRecord) -> bool:
+    """Check if a model is currently unreachable."""
+    return (record.provider, record.model) in UNREACHABLE_MODELS
 
 
 def load_all_responses(responses_dir: Path) -> list[ResponseRecord]:
@@ -295,15 +309,44 @@ def generate_compendium(responses_dir: Path, puzzles_dir: Path, output_path: Pat
 
         sorted_models = sorted(
             models_dict.keys(),
-            key=lambda m: display_names(models_dict[m].provider, m)[0],
+            key=lambda m: _model_sort_key(models_dict[m]),
         )
         for model in sorted_models:
-            model_display, _ = display_names(models_dict[model].provider, model)
+            record = models_dict[model]
+            model_display, _ = display_names(record.provider, model)
             model_bookmark = _make_bookmark_name(f"{puzzle_name}_{model}")
             toc_entries.append((model_display, model_bookmark, 2))
 
     # Table of Contents with manual hyperlinks
     document.add_heading("Table of Contents", level=1)
+
+    # Build "first of year" note from all models in compendium
+    # year -> (date, display_name, is_unreachable)
+    year_firsts: dict[str, tuple[str, str, bool]] = {}
+    for puzzle_name in sorted_puzzles:
+        models_dict = best_by_puzzle[puzzle_name]
+        for model, record in models_dict.items():
+            date = release_date(record.provider, record.model)
+            if date:
+                year = date[:4]
+                model_display, _ = display_names(record.provider, record.model)
+                unreachable = _is_unreachable(record)
+                if year not in year_firsts or date < year_firsts[year][0]:
+                    year_firsts[year] = (date, model_display, unreachable)
+
+    if year_firsts:
+        sorted_years = sorted(year_firsts.keys())
+        year_parts = []
+        for y in sorted_years:
+            _, name, unreachable = year_firsts[y]
+            if unreachable:
+                year_parts.append(f"First of {y}: {name} (incomplete, no longer reachable)")
+            else:
+                year_parts.append(f"First of {y}: {name}")
+        toc_note = f"Responses sorted by the model's release date, oldest to newest. {'. '.join(year_parts)}."
+        note_para = document.add_paragraph(toc_note)
+        note_para.paragraph_format.space_after = Pt(12)
+
     for display_text, bookmark_name, level in toc_entries:
         toc_para = document.add_paragraph()
         if level == 2:
@@ -340,7 +383,7 @@ def generate_compendium(responses_dir: Path, puzzles_dir: Path, output_path: Pat
 
         sorted_models = sorted(
             models_dict.keys(),
-            key=lambda m: display_names(models_dict[m].provider, m)[0],
+            key=lambda m: _model_sort_key(models_dict[m]),
         )
 
         for model in sorted_models:

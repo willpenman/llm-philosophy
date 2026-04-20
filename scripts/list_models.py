@@ -41,29 +41,49 @@ def _format_model_name(model: str, display_name: str) -> str:
 
 def main() -> None:
     grouped: dict[str, list[str]] = defaultdict(list)
+    unreachable_models: list[str] = []
 
     for model in sorted(OPENAI_MODELS):
-        grouped[display_openai_provider_name("openai")].append(
-            _format_model_name(model, display_openai_model_name(model))
-        )
+        if ("openai", model) in UNREACHABLE_MODELS:
+            unreachable_models.append(
+                _format_model_name(model, display_openai_model_name(model))
+            )
+        else:
+            grouped[display_openai_provider_name("openai")].append(
+                _format_model_name(model, display_openai_model_name(model))
+            )
 
     for model in sorted(GEMINI_MODELS):
-        grouped[display_gemini_provider_name("gemini")].append(
-            _format_model_name(model, display_gemini_model_name(model))
-        )
+        if ("gemini", model) in UNREACHABLE_MODELS:
+            unreachable_models.append(
+                _format_model_name(model, display_gemini_model_name(model))
+            )
+        else:
+            grouped[display_gemini_provider_name("gemini")].append(
+                _format_model_name(model, display_gemini_model_name(model))
+            )
 
     for model in sorted(ANTHROPIC_MODELS):
-        grouped[display_anthropic_provider_name("anthropic")].append(
-            _format_model_name(model, display_anthropic_model_name(model))
-        )
+        if ("anthropic", model) in UNREACHABLE_MODELS:
+            unreachable_models.append(
+                _format_model_name(model, display_anthropic_model_name(model))
+            )
+        else:
+            grouped[display_anthropic_provider_name("anthropic")].append(
+                _format_model_name(model, display_anthropic_model_name(model))
+            )
 
     for model in sorted(GROK_MODELS):
-        grouped[display_grok_provider_name("grok")].append(
-            _format_model_name(model, display_grok_model_name(model))
-        )
+        if ("xai", model) in UNREACHABLE_MODELS:
+            unreachable_models.append(
+                _format_model_name(model, display_grok_model_name(model))
+            )
+        else:
+            grouped[display_grok_provider_name("grok")].append(
+                _format_model_name(model, display_grok_model_name(model))
+            )
 
     fireworks_models = sorted(FIREWORKS_CANONICAL_MODELS.keys())
-    unreachable_models: list[str] = []
     for model in fireworks_models:
         provider = fireworks_provider_for_model(model)
         storage_name = fireworks_storage_model_name(model)
@@ -76,6 +96,9 @@ def main() -> None:
                 _format_model_name(model, display_fireworks_model_name(model))
             )
 
+    reachable_count = sum(len(models) for models in grouped.values())
+    unreachable_count = len(unreachable_models)
+
     for provider in sorted(grouped.keys()):
         print(provider)
         for model in grouped[provider]:
@@ -85,6 +108,9 @@ def main() -> None:
         print("Unreachable ⚠")
         for model in unreachable_models:
             print(f"- {model}")
+
+    print()
+    print(f"Total: {reachable_count} reachable, {unreachable_count} unreachable")
 
 
 if __name__ == "__main__":

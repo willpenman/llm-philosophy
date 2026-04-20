@@ -7,6 +7,7 @@ import pytest
 from src.providers.anthropic import (
     build_messages_request,
     calculate_cost_breakdown,
+    default_thinking_config_for_model,
     display_model_name,
     extract_usage_breakdown,
     price_schedule_for_model,
@@ -27,6 +28,14 @@ def test_build_messages_request_includes_system_and_user() -> None:
 
 
 def test_build_messages_request_uses_default_max_output_tokens() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-7",
+        max_output_tokens=None,
+    )
+    assert payload["max_tokens"] == 128000
+
     payload = build_messages_request(
         system_prompt="System text",
         user_prompt="User text",
@@ -99,6 +108,8 @@ def test_build_messages_request_includes_optional_params() -> None:
         ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": "1000"}, "budget_tokens"),
         ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": 0}, "budget_tokens"),
         ("claude-opus-4-20250514", {"type": "enabled", "budget_tokens": 128}, "budget_tokens"),
+        ("claude-opus-4-7", {"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
+        ("claude-opus-4-7", {"type": "adaptive", "effort": 123}, "effort"),
         ("claude-opus-4-6", {"type": "adaptive", "budget_tokens": 10}, "budget_tokens"),
         ("claude-opus-4-6", {"type": "adaptive", "effort": 123}, "effort"),
     ],
@@ -126,6 +137,40 @@ def test_build_messages_request_rejects_adaptive_thinking_for_manual_model(model
             max_output_tokens=128,
             thinking={"type": "adaptive"},
         )
+
+
+def test_build_messages_request_accepts_adaptive_thinking_for_opus_47() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-7",
+        max_output_tokens=128,
+        thinking={"type": "adaptive"},
+    )
+    assert payload["thinking"] == {"type": "adaptive"}
+
+
+def test_build_messages_request_accepts_adaptive_thinking_with_display_for_opus_47() -> None:
+    payload = build_messages_request(
+        system_prompt="System text",
+        user_prompt="User text",
+        model="claude-opus-4-7",
+        max_output_tokens=128,
+        thinking={"type": "adaptive", "display": "summarized"},
+    )
+    assert payload["thinking"] == {"type": "adaptive", "display": "summarized"}
+
+
+def test_default_thinking_config_includes_display_for_opus_47() -> None:
+    """Opus 4.7 defaults to omitted display, so default config must include summarized."""
+    config = default_thinking_config_for_model("claude-opus-4-7")
+    assert config == {"type": "adaptive", "display": "summarized"}
+
+
+def test_default_thinking_config_no_display_for_opus_46() -> None:
+    """Opus 4.6 defaults to summarized display, so no explicit display needed."""
+    config = default_thinking_config_for_model("claude-opus-4-6")
+    assert config == {"type": "adaptive"}
 
 
 def test_build_messages_request_accepts_adaptive_thinking_for_opus_46() -> None:
@@ -189,6 +234,7 @@ def test_build_messages_request_rejects_temperature_with_adaptive_thinking() -> 
 @pytest.mark.parametrize(
     ("model", "alias", "input_cost", "output_cost"),
     [
+        ("claude-opus-4-7", "Claude Opus 4.7", 5.0, 25.0),
         ("claude-opus-4-6", "Claude Opus 4.6", 5.0, 25.0),
         ("claude-sonnet-4-6", "Claude Sonnet 4.6", 3.0, 15.0),
         ("claude-opus-4-5-20251101", "Claude Opus 4.5", 5.0, 25.0),

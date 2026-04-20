@@ -1,22 +1,27 @@
 """Generate model similarity visualizations.
 
 Usage:
-    # When adding a model, recompute points (shared cache for both modes)
-    python -m scripts.generate_comparison philosophy_all --recompute-points
-    
-    # Side-by-side comparison of baseline vs few-puzzle philosophy responses
+    # Standard usage - auto-detects new models and updates incrementally
+    python -m scripts.generate_comparison philosophy_all
     python -m scripts.generate_comparison panopticon
     python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles
 
     # Philosophy-only mode (no baseline comparison, no rescaling)
     python -m scripts.generate_comparison panopticon --philosophy-only
-    python -m scripts.generate_comparison panopticon sapir_whorf --philosophy-only
 
     # Emit all three standard plots for a new puzzle
     python -m scripts.generate_comparison panopticon --emit-all
 
+    # Force full recomputation (e.g., after changing embedding strategy)
+    python -m scripts.generate_comparison philosophy_all --recompute-points
+
     # Custom output path
     python -m scripts.generate_comparison panopticon --output analysis/figures/custom.png
+
+Incremental updates:
+    The script automatically detects when new models have responses and updates
+    the plots accordingly. Cached embeddings are reused, so only new models
+    require embedding computation. MDS projection is re-run with all models.
 """
 
 from __future__ import annotations
@@ -27,6 +32,8 @@ from pathlib import Path
 from analysis.embeddings import (
     embed_baseline_responses_by_prompt,
     embed_puzzle_responses_by_puzzle,
+    enumerate_baseline_models,
+    enumerate_puzzle_models,
 )
 from analysis.distances import (
     CachedPoints,
@@ -55,6 +62,23 @@ def _display_title(puzzle_slug: str) -> str:
     return f"Model Similarity: {puzzle_slug.replace('_', ' ').title()}"
 
 
+def _get_cached_models(cached: CachedPoints | None) -> set[tuple[str, str]]:
+    """Extract the set of (provider, model) from cached points."""
+    if cached is None:
+        return set()
+    return {(p.provider, p.model) for p in cached.points}
+
+
+def _get_embedding_models(
+    embeddings_by_task: dict[str, dict[tuple[str, str], any]],
+) -> set[tuple[str, str]]:
+    """Extract the set of (provider, model) from embeddings."""
+    models: set[tuple[str, str]] = set()
+    for task_embeddings in embeddings_by_task.values():
+        models.update(task_embeddings.keys())
+    return models
+
+
 def _load_or_compute_points(
     slug: str,
     embed_fn: callable,
@@ -63,27 +87,47 @@ def _load_or_compute_points(
 ) -> CachedPoints | None:
     """Load cached points or compute fresh ones.
 
+    Uses incremental update: if cached points exist but new models have
+    embeddings, recomputes MDS projection using all embeddings (most from cache).
+
     Args:
         slug: Cache key (e.g., "baseline" or "philosophy_all")
         embed_fn: Function that returns per-task embeddings dict
         cache_dir: Directory for embedding cache (None to skip)
-        recompute: If True, ignore cached points and recompute
+        recompute: If True, ignore cached points and recompute from scratch
 
     Returns:
         CachedPoints with unscaled MDS projection, or None if no data
     """
     points_cache = CACHE_DIR / f"points_{slug}.json"
 
-    if not recompute:
-        cached = load_points(points_cache)
-        if cached is not None:
-            print(f"Using cached points for {slug} (use --recompute-points to regenerate)")
-            return cached
+    # Load cached points (even if we might need to update them)
+    cached = load_points(points_cache) if not recompute else None
+    cached_models = _get_cached_models(cached)
 
-    # Compute fresh embeddings and project
+    # Get current embeddings (uses embedding cache, so fast for existing models)
     embeddings_by_task = embed_fn(cache_dir)
     if not embeddings_by_task:
         return None
+
+    current_models = _get_embedding_models(embeddings_by_task)
+
+    # Check if cached points are up-to-date
+    if cached is not None and cached_models == current_models:
+        print(f"Using cached points for {slug} (use --recompute-points to regenerate)")
+        return cached
+
+    # Need to recompute MDS projection
+    if cached is not None:
+        new_models = current_models - cached_models
+        removed_models = cached_models - current_models
+        if new_models:
+            print(f"New models detected: {[f'{p}/{m}' for p, m in sorted(new_models)]}")
+        if removed_models:
+            print(f"Models removed: {[f'{p}/{m}' for p, m in sorted(removed_models)]}")
+        print(f"Recomputing MDS projection for {slug}...")
+    else:
+        print(f"Computing points for {slug}...")
 
     distances, keys = compute_averaged_distance_matrix(embeddings_by_task)
     mean_dist = compute_mean_pairwise_distance(distances)
@@ -109,27 +153,46 @@ def _run_philosophy_only(
     Filters to models that have both baseline and philosophy responses
     (same as comparison mode) so the results are directly comparable.
     No rescaling is applied since there's no baseline to match.
+
+    Uses incremental update: if new models have responses, only those
+    embeddings are computed (rest from cache), then MDS is re-run.
     """
-    # Check for cached points first to avoid loading embeddings unnecessarily
+    # Quick check: enumerate available models (lightweight, no embedding model load)
+    available_baseline = enumerate_baseline_models(BASELINES_DIR)
+    available_philosophy = enumerate_puzzle_models(RESPONSES_DIR, puzzle_names)
+    common_models = available_baseline & available_philosophy
+
+    if len(common_models) < 2:
+        print(f"Need at least 2 models with both baseline and philosophy responses.")
+        print(f"  Baseline models: {len(available_baseline)}")
+        print(f"  Philosophy models: {len(available_philosophy)}")
+        print(f"  Common: {len(common_models)}")
+        return
+
+    # Check if cached points are up-to-date (fast path)
     philosophy_points_cache = CACHE_DIR / f"points_{puzzle_slug}.json"
 
     if not recompute_points:
         cached = load_points(philosophy_points_cache)
         if cached is not None:
-            print("Using cached points (use --recompute-points to regenerate)")
-            _render_philosophy_only(cached, puzzle_slug, output_path, show)
-            return
+            cached_models = _get_cached_models(cached)
 
-    # Need to compute points - load embeddings
-    print("Loading baseline responses (for model filtering)...")
-    baseline_by_prompt = embed_baseline_responses_by_prompt(
-        baselines_dir=BASELINES_DIR,
-        cache_dir=cache_dir,
-    )
+            if cached_models == common_models:
+                print("Using cached points (use --recompute-points to regenerate)")
+                _render_philosophy_only(cached, puzzle_slug, output_path, show)
+                return
 
-    baseline_models: set[tuple[str, str]] = set()
-    for prompt_embeddings in baseline_by_prompt.values():
-        baseline_models.update(prompt_embeddings.keys())
+            # Report what changed
+            new_models = common_models - cached_models
+            removed_models = cached_models - common_models
+            if new_models:
+                print(f"New models detected: {[f'{p}/{m}' for p, m in sorted(new_models)]}")
+            if removed_models:
+                print(f"Models removed: {[f'{p}/{m}' for p, m in sorted(removed_models)]}")
+
+    # Need to compute/update points - load embeddings
+    # (Uses embedding cache, so only new models require actual computation)
+    print("Loading embeddings...")
 
     # Define embedding function that filters to common models
     def get_philosophy_embeddings(cache_dir: Path | None) -> dict:
@@ -139,18 +202,6 @@ def _run_philosophy_only(
             cache_dir=cache_dir,
         )
         if not philosophy_by_puzzle:
-            return {}
-
-        # Find common models
-        philosophy_models: set[tuple[str, str]] = set()
-        for puzzle_embeddings in philosophy_by_puzzle.values():
-            philosophy_models.update(puzzle_embeddings.keys())
-
-        common_models = baseline_models & philosophy_models
-        print(f"Found {len(philosophy_models)} models, {len(common_models)} have baseline responses")
-
-        if len(common_models) < 2:
-            print("Need at least 2 common models for visualization.")
             return {}
 
         return {
@@ -223,8 +274,24 @@ def _run_comparison(
     recompute_points: bool,
     show: bool,
 ) -> None:
-    """Generate baseline vs philosophy comparison plot."""
-    # Check for cached points first to avoid loading embeddings unnecessarily
+    """Generate baseline vs philosophy comparison plot.
+
+    Uses incremental update: if new models have responses, only those
+    embeddings are computed (rest from cache), then MDS is re-run.
+    """
+    # Quick check: enumerate available models (lightweight, no embedding model load)
+    available_baseline = enumerate_baseline_models(BASELINES_DIR)
+    available_philosophy = enumerate_puzzle_models(RESPONSES_DIR, puzzle_names)
+    common_models = available_baseline & available_philosophy
+
+    if len(common_models) < 2:
+        print(f"Need at least 2 models with both baseline and philosophy responses.")
+        print(f"  Baseline models: {len(available_baseline)}")
+        print(f"  Philosophy models: {len(available_philosophy)}")
+        print(f"  Common: {len(common_models)}")
+        return
+
+    # Check if cached points are up-to-date (fast path)
     baseline_points_cache = CACHE_DIR / "points_baseline.json"
     philosophy_points_cache = CACHE_DIR / f"points_{puzzle_slug}.json"
 
@@ -233,14 +300,28 @@ def _run_comparison(
         philosophy_cached = load_points(philosophy_points_cache)
 
         if baseline_cached is not None and philosophy_cached is not None:
-            print("Using cached points (use --recompute-points to regenerate)")
-            _render_comparison(
-                baseline_cached, philosophy_cached, puzzle_slug, output_path, show
-            )
-            return
+            cached_baseline_models = _get_cached_models(baseline_cached)
+            cached_philosophy_models = _get_cached_models(philosophy_cached)
 
-    # Need to compute at least one set of points - load embeddings
-    print("Loading baseline responses (per-prompt)...")
+            # Check if caches match current available models
+            if cached_baseline_models == common_models and cached_philosophy_models == common_models:
+                print("Using cached points (use --recompute-points to regenerate)")
+                _render_comparison(
+                    baseline_cached, philosophy_cached, puzzle_slug, output_path, show
+                )
+                return
+
+            # Report what changed
+            new_models = common_models - cached_baseline_models
+            removed_models = cached_baseline_models - common_models
+            if new_models:
+                print(f"New models detected: {[f'{p}/{m}' for p, m in sorted(new_models)]}")
+            if removed_models:
+                print(f"Models removed: {[f'{p}/{m}' for p, m in sorted(removed_models)]}")
+
+    # Need to compute/update points - load embeddings
+    # (Uses embedding cache, so only new models require actual computation)
+    print("Loading embeddings...")
     baseline_by_prompt = embed_baseline_responses_by_prompt(
         baselines_dir=BASELINES_DIR,
         cache_dir=cache_dir,
@@ -250,35 +331,8 @@ def _run_comparison(
         print("No baseline responses found. Run `python -m scripts.run_baselines --model ALL` first.")
         return
 
-    baseline_models: set[tuple[str, str]] = set()
-    for prompt_embeddings in baseline_by_prompt.values():
-        baseline_models.update(prompt_embeddings.keys())
-
-    print(f"Found {len(baseline_models)} models across {len(baseline_by_prompt)} baseline prompts")
-
     # Define embedding functions that filter to common models
     def get_baseline_embeddings(cache_dir: Path | None) -> dict:
-        # Re-use already loaded embeddings, filter to common models
-        philosophy_by_puzzle = embed_puzzle_responses_by_puzzle(
-            responses_dir=RESPONSES_DIR,
-            puzzle_names=puzzle_names,
-            cache_dir=cache_dir,
-        )
-        philosophy_models: set[tuple[str, str]] = set()
-        for puzzle_embeddings in philosophy_by_puzzle.values():
-            philosophy_models.update(puzzle_embeddings.keys())
-
-        common_models = baseline_models & philosophy_models
-        # NOTE: We filter to the intersection of baseline and philosophy responses. This
-        # discards models that have philosophy responses but no baseline (or vice versa).
-        # This is a conservative choice: we have more data than we use here, but averaging
-        # distances across incomplete pairings is not well-defined mathematically.
-        print(f"{len(common_models)} models have both baseline and philosophy responses")
-
-        if len(common_models) < 2:
-            print("Need at least 2 common models for comparison.")
-            return {}
-
         return {
             prompt: {k: v for k, v in emb.items() if k in common_models}
             for prompt, emb in baseline_by_prompt.items()
@@ -291,16 +345,6 @@ def _run_comparison(
             cache_dir=cache_dir,
         )
         if not philosophy_by_puzzle:
-            return {}
-
-        philosophy_models: set[tuple[str, str]] = set()
-        for puzzle_embeddings in philosophy_by_puzzle.values():
-            philosophy_models.update(puzzle_embeddings.keys())
-
-        common_models = baseline_models & philosophy_models
-        print(f"Found {len(philosophy_models)} models, {len(common_models)} have baseline responses")
-
-        if len(common_models) < 2:
             return {}
 
         return {

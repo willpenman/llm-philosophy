@@ -76,7 +76,7 @@ across providers.
 
 
 ## Adding a model to an existing provider
-0. Examine provider-specific documentation, docs/providers/{provider}.md, e.g. anthropic.md - this carries inter-model insights about how to add models and what particularities they have
+0. Examine provider-specific documentation, docs/providers/{provider}.md, e.g. anthropic.md - this carries inter-model insights about how to add models and what particularities they have. In general you should not need to search or use the internet to set this up.
 1. Add model metadata in the provider adapter (src/providers/{provider}.py): defaults (e.g., max output), aliases, pricing, and any capability flags (e.g., reasoning support). Ask if not provided.
 2. Add/extend static tests (tests/test_{provider}_request.py) for request assembly defaults and pricing/alias display. We always assume that a model supports 'system' messages. 
 3. Update live tests (tests/test_{provider}_live.py) by extending parameterized model lists per parameter, where behavior matches, e.g. 'accepts reasoning' or 'rejects reasoning'
@@ -86,7 +86,10 @@ across providers.
 5. Update model_release_registry (docs/model_release_registry.md) with our system's support for that model. Mark that model in bold in README "Model landscape" year-by-year table.
 6. (Will leads from here) After a model is ready, it can be run against existing puzzles and the baselines, using the catch_up.py script
 7. Create new plots with generate_comparison.py. (need to --recompute-points for both, add model alias if needed within visualize.py) 
-8. Confirm README text - new plot will be automatically linked, but might require edits in the caption and above about 'where' certain models are, since these aren't stable.
+8. Confirm README text 
+  - new plot will be automatically linked, but might require edits in the caption and above about 'where' certain models are, since these aren't stable
+  - 'X LLMs are currently supported' in intro will need to be edited/incremented
+  - 'Recently added' should be changed
 9. Regenerate compendium of all responses using generate_compendium.py
 
 Remember, after merging, the live site will take an hour or two to catch up since the readme links to the same file path for the figure.
@@ -106,7 +109,7 @@ When a model becomes unavailable (deprecated by provider, removed from Fireworks
 - Add the model to `UNREACHABLE_MODELS` in `src/batch_runner.py` as a `(storage_provider, storage_model_name)` tuple.
 - Include a comment with the date you discovered it was unreachable and any relevant context (e.g., provider deprecation notice, Fireworks removal).
 - The model remains in provider metadata (pricing, aliases, etc.) since we have historical responses.
-- `--model ALL` will exclude unreachable models; `list_models` shows them in a separate "Unreachable" section.
+- `--model ALL` will exclude unreachable models; `list_models` shows them in a separate "Unreachable" section, and will exclude them from the count.
 - Open-source models may become reachable again if re-hosted; check availability before each puzzle run and remove from `UNREACHABLE_MODELS` if restored.
 
 ## Adding a puzzle

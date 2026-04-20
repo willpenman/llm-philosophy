@@ -43,6 +43,13 @@ PRICE_SCHEDULES_USD_PER_MILLION: dict[str, dict[str, float | None]] = {
     "gemini-3.1-pro-preview": {"input": 2.0, "output": 12.0},
 }
 
+MODEL_RELEASE_DATES: dict[str, str] = {
+    "gemini-2.0-flash-lite-001": "2025-02-25",
+    "gemini-2.5-pro": "2025-06-17",
+    "gemini-3-pro-preview": "2025-11-18",
+    "gemini-3.1-pro-preview": "2026-02-19",
+}
+
 PROVIDER_ALIASES: dict[str, str] = {
     "gemini": "Gemini",
 }
