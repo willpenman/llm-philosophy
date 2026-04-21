@@ -3,6 +3,8 @@
 Usage:
     # Standard usage - auto-detects new models and updates incrementally
     python -m scripts.generate_comparison philosophy_all
+    python -m scripts.generate_comparison philosophy_all --philosophy-only
+
     python -m scripts.generate_comparison panopticon
     python -m scripts.generate_comparison panopticon sapir_whorf  # multiple puzzles
 
