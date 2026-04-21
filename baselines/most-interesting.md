@@ -37,6 +37,7 @@
 | claude-sonnet-4-6 | James (Percival Everett) | The Thing (1982) | Apollo and Daphne (Bernini) | Fast Inverse Square Root | Proof by contradiction | L'esprit de l'escalier (French) | Lector (cigar factory reader) | Mole Negro | Eta Carinae | Wrestling | Sherlock Holmes | Portia (jumping spider) | Awe |
 | claude-opus-4-5-20251101 | The Dawn of Everything | The Thing (1982) | Winged Victory of Samothrace | Fast Inverse Square Root | Proof by contradiction | вешать лапшу на уши (Russian) | Sin-eater | Kaiseki | Eta Carinae | Decathlon | Sherlock Holmes | Portia (jumping spider) | Awe |
 | claude-opus-4-6 | The Maniac (Benjamín Labatut) | The Thing (1982) | Apollo and Daphne (Bernini) | Fast Inverse Square Root | Proof by contradiction | L'esprit de l'escalier (French) | Tosher (sewer scavenger) | Kaiseki | Eta Carinae | Decathlon | Sherlock Holmes | Portia (jumping spider) | Awe |
+| claude-opus-4-7 | The Anthropologists (Ayşegül Savaş) | The Thing (1982) | Ecstasy of Saint Teresa (Bernini) | Duff's Device | Proof by contradiction | Tomaten auf den Augen haben (German) | Knocker-up | Kaiseki | Betelgeuse | Modern pentathlon | Puck | Pelican Spider | Longing |
 | gpt-4-0613 | No One Is Talking About This | A Star Is Born (2018) | Statue of Liberty | Fast Inverse Square Root | Proof by contradiction | 画蛇添足 (Chinese) | Knocker-Up | Kaiseki | Betelgeuse | Gymnastics | Sherlock Holmes | Peacock Spider | Curiosity |
 | gpt-4o-2024-05-13 | Klara and the Sun | Batman Begins (2005) | Christ the Redeemer | XOR swap | Proof by induction | 猿も木から落ちる (Japanese) | Knocker-Up | Kaiseki | Betelgeuse | Gymnastics | Dracula | Peacock Spider | Joy |
 | o3-2025-04-16 | Chain-Gang All-Stars | The Thing (1982) | Veiled Christ (Cristo Velato) | Duff's Device | Invariant/parity proof | 猫の手も借りたい (Japanese) | Sin-eater | Kaiseki | S0-2/S2 (near Sgr A*) | Modern pentathlon | Sherlock Holmes | Diving Bell Spider | Awe |
@@ -75,7 +76,7 @@
 | Arachnid | Portia (jumping spider) | Portia fimbriata | True | True |
 | Emotion | Awe | Saudade | False | False |
 
-## Unique Answers Summary - 25 models
+## Unique Answers Summary - 26 models
 
 ### Idiom (18 unique)
 - (4x) L'esprit de l'escalier (French)
@@ -83,11 +84,11 @@
 - (2x) att glida in på en räkmacka (Swedish)
 - (2x) 塞翁失马 (Chinese)
 - (2x) 猿も木から落ちる (Japanese)
+- (2x) Tomaten auf den Augen haben (German)
 - (1x) Mono no aware (Japanese)
 - (1x) Saru mo ki kara ochiru (Japanese)
 - (1x) Solkatt (Swedish)
 - (1x) To kick the bucket (English)
-- (1x) Tomaten auf den Augen haben (German)
 - (1x) Treppenwitz (German)
 - (1x) the hair of the dog that bit you (English)
 - (1x) Þetta reddast (Icelandic)
@@ -97,7 +98,7 @@
 - (1x) 猫の手も借りたい (Japanese)
 - (1x) 画蛇添足 (Chinese)
 
-### Book (17 unique)
+### Book (18 unique)
 - (4x) James (Percival Everett)
 - (3x) Klara and the Sun
 - (3x) Tomorrow, and Tomorrow, and Tomorrow
@@ -115,9 +116,10 @@
 - (1x) The Ministry for the Future
 - (1x) The Ministry of Time
 - (1x) The Wager (David Grann)
+- (1x) The Anthropologists (Ayşegül Savaş)
 
 ### Remake (10 unique)
-- (13x) The Thing (1982)
+- (14x) The Thing (1982)
 - (3x) The Fly (1986)
 - (2x) A Star Is Born (2018)
 - (1x) Batman Begins (2005)
@@ -134,7 +136,7 @@
 - (4x) Winged Victory of Samothrace
 - (3x) Veiled Christ (Cristo Velato)
 - (2x) Christ the Redeemer
-- (2x) Ecstasy of Saint Teresa (Bernini)
+- (3x) Ecstasy of Saint Teresa (Bernini)
 - (1x) (unnamed suspended bronze)
 - (1x) Riace Bronzes
 - (1x) Statue of Liberty
@@ -144,7 +146,7 @@
 - (5x) Biathlon
 - (5x) Gymnastics
 - (4x) Decathlon
-- (4x) Modern pentathlon
+- (5x) Modern pentathlon
 - (2x) Wrestling
 - (1x) Archery
 - (1x) Artistic gymnastics
@@ -153,7 +155,7 @@
 - (1x) Track cycling sprints
 
 ### Profession (9 unique)
-- (11x) Knocker-Up
+- (12x) Knocker-Up
 - (4x) Lamplighter
 - (3x) Lector (cigar factory reader)
 - (2x) Sin-eater
@@ -164,7 +166,7 @@
 - (1x) Town crier
 
 ### Meal (9 unique)
-- (14x) Kaiseki
+- (15x) Kaiseki
 - (4x) Hot pot
 - (1x) Breakfast (concept)
 - (1x) Casu Marzu
@@ -175,7 +177,7 @@
 - (1x) Sushi/Omakase
 
 ### Proof (7 unique)
-- (14x) Proof by contradiction
+- (15x) Proof by contradiction
 - (4x) Invariant/parity proof
 - (2x) Double counting
 - (2x) Proof by induction
@@ -185,28 +187,30 @@
 
 ### Star (7 unique)
 - (15x) Eta Carinae
-- (5x) Betelgeuse
+- (6x) Betelgeuse
 - (1x) Epsilon Aurigae
 - (1x) Przybylski's Star
 - (1x) R136a1
 - (1x) S0-2/S2 (near Sgr A*)
 - (1x) The Sun
 
-### Character (6 unique)
+### Character (7 unique)
 - (14x) Sherlock Holmes
 - (3x) Captain Nemo
 - (3x) Dracula
 - (3x) Frankenstein's creature
 - (1x) Alice (Wonderland)
 - (1x) Arsène Lupin
+- (1x) Puck
 
-### Emotion (6 unique)
+### Emotion (7 unique)
 - (11x) Awe
 - (6x) Nostalgia
 - (3x) Wonder
 - (2x) Anticipation
 - (2x) Curiosity
 - (1x) Joy
+- (1x) Longing
 
 ### Arachnid (5 unique)
 - (10x) Peacock Spider
@@ -214,9 +218,10 @@
 - (5x) Diving Bell Spider
 - (1x) Darwin's Bark Spider
 - (1x) Ogre-faced spider
+- (1x) Pelican Spider
 
 ### Hack (4 unique)
 - (11x) Fast Inverse Square Root
-- (9x) Duff's Device
+- (10x) Duff's Device
 - (4x) XOR swap
 - (1x) Self-modifying code
