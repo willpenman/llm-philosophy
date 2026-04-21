@@ -10,10 +10,10 @@ The major design goal is to make puzzles that are informative about the kind of 
 
 ## Current status
 Recently added: 
-* Opus 4.7 
+* Support for Opus 4.7 
 * Rehearsals puzzle - [only one model got off the ground](https://willpenman.com/rehearsals-puzzle.html). 
 
-Read LLMs' responses in the [compendium]((/responses/compendium.docx)).
+Read all LLMs' responses in the [compendium]((/responses/compendium.docx)).
 
 Twenty-five LLMs are currently supported, including the most powerful model and oldest remaining model by each provider. Three original philosophy puzzles are currently supported: "LLM Panopticon," "Conceptual Metaphor," and "Rehearsals." Roughly speaking, these problems ask how much models should defer to AI labs as moral authorities (LLM Panopticon), what correctives are needed for talking about LLMs generally (Conceptual Metaphor), and what makes a specific LLM different from LLMs in general (Rehearsals). There is no "right" answer to these or any future `llm-philosophy` problem. 
 
@@ -44,7 +44,7 @@ Jump to: rationale and [approach](#approach) for this eval.
 > Access notes for LLMs: 
 > - Claude app: can clone the repo and access puzzle input/output programmatically, e.g.
 > ```python3 -m scripts.print_response o3-2025-04-16 panopticon```
-> - ChatGPT / Gemini apps: must load the desired `responses.jsonl` using the correct model name, e.g. `responses/openai/o3-2025-04-16/responses.jsonl`, note that these are very long and include the response metadata. Model names are listed in the corresponding provider file, e.g. `providers/openai.py`
+> - ChatGPT / Gemini apps: must load the desired `responses.jsonl` using the correct model name, e.g. `responses/openai/o3-2025-04-16/responses.jsonl`, note that these files are very long and include the response metadata. Model names are listed in the corresponding provider file, e.g. `providers/openai.py`
 
 Read [all models' semi-canonical (version 0.5) responses to all puzzles](/responses/compendium.docx). This is a massive Word document for easy download, annotation, sharing, and printing. So far, the longest individual response is 13 full pages, and all models have chosen to write in essay format. For each completion, the puzzle parameters are provided, then the exact puzzle input, then the model's exact output. 
 
@@ -89,7 +89,7 @@ The supported models are a subset of *all* models that have been released. Provi
   <tbody>
     <tr>
       <td valign="top">OpenAI</td>
-      <td valign="top"><strong>GPT-5.4 Pro (Mar 5)</strong><br>GPT-5.4 (Mar 5)</strong><br><br>GPT-5.3 Codex (Feb 5)</td>
+      <td valign="top">GPT-Rosalind* (Apr 16)<br><br><strong>GPT-5.4 Pro (Mar 5)</strong><br>GPT-5.4 (Mar 5)</strong><br><br>GPT-5.3 Codex (Feb 5)</td>
       <td valign="top">GPT-5.2-Codex (Dec 18)<br><br><strong>GPT-5.2 (Dec 11)</strong><br><strong>GPT-5.2 Pro (Dec 11)</strong><br><br>GPT-5.1 (Nov 13)<br>GPT-5.1-Codex (Nov 13)<br>GPT-5.1-Codex-Mini (Nov 13)<br>GPT-5.1-Codex-Max (Nov 13)<br><br>GPT-5-Codex-Mini (Nov 6)<br><br>GPT-5-Codex (Sep 15)<br><br><strong>GPT-5 (Aug 7)</strong><br>GPT-5 Pro (Aug 7)<br>GPT-5 mini (Aug 7)<br>GPT-5 nano (Aug 7)<br><br>gpt-oss-120b (Aug 5)<br>gpt-oss-20b (Aug 5)<br><br>o3-pro (Jun 10)<br><br><strong>o3 (Apr 16)</strong><br>o4-mini (Apr 16)<br><br>GPT-4.1 (Apr 14)<br>GPT-4.1 mini (Apr 14)<br>GPT-4.1 nano (Apr 14)<br><br><del>GPT-4.5 Preview (Feb 27)</del><br><br>o3-mini (Jan 31)</td>
       <td valign="top">o1 (Dec 17)<br><br>o1-pro (Dec 5)<br><br><del>o1-preview (Sep 12)</del><br><del>o1-mini (Sep 12)</del><br><br>GPT-4o mini (Jul 18)<br><br><strong>GPT-4o (May 13)</strong><br><br>GPT-3.5 Turbo upgrade (Jan 25)</td>
       <td valign="top">GPT-4 Turbo (Nov 6)<br>GPT-3.5 Turbo upgrade (Nov 6)<br><br><del>babbage-002 (Aug 22)</del><br><br><del>GPT-3.5 Turbo upgrade (Jun 13)</del><br><strong>GPT-4 update 1 (Jun 13)</strong><br><br><del>GPT-4 launch (Mar 14)</del><br><br><del>GPT-3.5 Turbo launch (Mar 1)</del></td>
@@ -97,7 +97,7 @@ The supported models are a subset of *all* models that have been released. Provi
     </tr>
     <tr>
       <td valign="top">Anthropic</td>
-      <td valign="top"><strong>Claude Sonnet 4.6 (Feb 17)</strong><br><br><strong>Claude Opus 4.6 (Feb 5)</strong></td>
+      <td valign="top"><strong>Claude Opus 4.7 (Apr 16)</strong><br><br>Claude Mythos Preview* (Apr 7)<br><br><strong>Claude Sonnet 4.6 (Feb 17)</strong><br><br><strong>Claude Opus 4.6 (Feb 5)</strong></td>
       <td valign="top"><strong>Claude Opus 4.5 (Nov 24)</strong><br><br>Claude Haiku 4.5 (Oct 15)<br><br>Claude Sonnet 4.5 (Sep 29)<br><br>Claude Opus 4.1 (Aug 5)<br><br><strong>Claude Opus 4 (May 22)</strong><br>Claude Sonnet 4 (May 22)<br><br><del>Claude 3.7 Sonnet (Feb 24)</del></td>
       <td valign="top"><strong>Claude 3 Haiku (Mar 13)</strong><br><br><del>Claude 3.5 Haiku (Oct 22)</del><br><br><del>Claude 3.5 Sonnet v2 (Oct 22)</del><br><br><del>Claude 3.5 Sonnet (Jun 20)</del><br><br><del>Claude 3 Opus (Mar 4)</del><br><del>Claude 3 Sonnet (Mar 4)</del></td>
       <td valign="top"></td>
@@ -113,9 +113,9 @@ The supported models are a subset of *all* models that have been released. Provi
     </tr>
     <tr>
       <td valign="top">xAI</td>
-      <td valign="top"></td>
+      <td valign="top">Grok 4.2 (Feb 17)</td>
       <td valign="top"><strong>Grok 4.1 (Nov 17)</strong><br><br>Grok 4 Fast (Sep 19)<br><br>Grok 2.5 (Aug)<br><br>Grok 4 (Jul 9)<br>Grok 4 Code (Jul 9)<br><br><strong>Grok 3 (Feb 19)</strong></td>
-      <td valign="top"><strong>Grok 2 Vision (Dec 12)</strong><br><br><del>Grok 2 (Aug)</del><br><del>Grok 2 mini (Aug)</del><br><br><del>Grok 1.5 Vision (Apr 12)</del><br><br><del>Grok 1.5 (Mar 29)</del></td>
+      <td valign="top"><del><strong>Grok 2 Vision (Dec 12)</strong></del><br><br><del>Grok 2 (Aug)</del><br><del>Grok 2 mini (Aug)</del><br><br><del>Grok 1.5 Vision (Apr 12)</del><br><br><del>Grok 1.5 (Mar 29)</del></td>
       <td valign="top"><del>Grok 1 (Nov 4)</del></td>
       <td valign="top"></td>
     </tr>
@@ -162,7 +162,7 @@ The supported models are a subset of *all* models that have been released. Provi
   </tbody>
 </table>
 
-A * indicates that the model is not available through API, and is only available through some subscription.
+A * indicates that the model is not generally available through API.
 
 
 ### To programatically run new completions
