@@ -1,0 +1,1245 @@
+# Public Domain Characters
+
+This is a substantial but necessarily incomplete list. There are millions of public domain characters; I've focused on the most notable and recognizable.
+
+---
+
+## Ancient Epics & Mythology
+
+Gilgamesh | Epic of Gilgamesh
+Enkidu | Epic of Gilgamesh
+Utnapishtim | Epic of Gilgamesh
+Achilles | The Iliad (Homer)
+Hector | The Iliad (Homer)
+Agamemnon | The Iliad (Homer)
+Menelaus | The Iliad (Homer)
+Paris | The Iliad (Homer)
+Helen | The Iliad (Homer)
+Priam | The Iliad (Homer)
+Patroclus | The Iliad (Homer)
+Ajax | The Iliad (Homer)
+Diomedes | The Iliad (Homer)
+Nestor | The Iliad (Homer)
+Andromache | The Iliad (Homer)
+Cassandra | The Iliad (Homer)
+Briseis | The Iliad (Homer)
+Odysseus | The Odyssey (Homer)
+Penelope | The Odyssey (Homer)
+Telemachus | The Odyssey (Homer)
+Circe | The Odyssey (Homer)
+Calypso | The Odyssey (Homer)
+Polyphemus | The Odyssey (Homer)
+Tiresias | The Odyssey (Homer)
+Nausicaa | The Odyssey (Homer)
+Eumaeus | The Odyssey (Homer)
+Antinous | The Odyssey (Homer)
+Aeneas | The Aeneid (Virgil)
+Dido | The Aeneid (Virgil)
+Turnus | The Aeneid (Virgil)
+Anchises | The Aeneid (Virgil)
+Creusa | The Aeneid (Virgil)
+Oedipus | Oedipus Rex (Sophocles)
+Antigone | Antigone (Sophocles)
+Creon | Antigone (Sophocles)
+Electra | Electra (Sophocles)
+Ajax | Ajax (Sophocles)
+Medea | Medea (Euripides)
+Hippolytus | Hippolytus (Euripides)
+Hecuba | The Trojan Women (Euripides)
+Alcestis | Alcestis (Euripides)
+Iphigenia | Iphigenia in Aulis (Euripides)
+Prometheus | Prometheus Bound (Aeschylus)
+Clytemnestra | The Oresteia (Aeschylus)
+Orestes | The Oresteia (Aeschylus)
+Lysistrata | Lysistrata (Aristophanes)
+Jason | Argonautica (Apollonius of Rhodes)
+Perseus | Bibliotheca (Pseudo-Apollodorus)
+Theseus | Bibliotheca (Pseudo-Apollodorus)
+Heracles | Bibliotheca (Pseudo-Apollodorus)
+Orpheus | Metamorphoses (Ovid)
+Eurydice | Metamorphoses (Ovid)
+Narcissus | Metamorphoses (Ovid)
+Echo | Metamorphoses (Ovid)
+Icarus | Metamorphoses (Ovid)
+Daedalus | Metamorphoses (Ovid)
+Pandora | Works and Days (Hesiod)
+Pygmalion | Metamorphoses (Ovid)
+Lucius | The Golden Ass (Apuleius)
+Psyche | The Golden Ass (Apuleius)
+Cupid | The Golden Ass (Apuleius)
+
+## Indian Epics
+
+Rama | Ramayana (Valmiki)
+Sita | Ramayana (Valmiki)
+Hanuman | Ramayana (Valmiki)
+Lakshmana | Ramayana (Valmiki)
+Ravana | Ramayana (Valmiki)
+Arjuna | Mahabharata (Vyasa)
+Krishna | Mahabharata (Vyasa)
+Draupadi | Mahabharata (Vyasa)
+Yudhishthira | Mahabharata (Vyasa)
+Bhima | Mahabharata (Vyasa)
+Karna | Mahabharata (Vyasa)
+Shakuntala | Abhijñānaśākuntalam (Kalidasa)
+
+## Persian & Arabic Literature
+
+Rustam | Shahnameh (Ferdowsi)
+Sohrab | Shahnameh (Ferdowsi)
+Scheherazade | One Thousand and One Nights
+Shahryar | One Thousand and One Nights
+Aladdin | One Thousand and One Nights
+Ali Baba | One Thousand and One Nights
+Sinbad the Sailor | One Thousand and One Nights
+Morgiana | One Thousand and One Nights
+
+## Norse Mythology & Sagas
+
+Odin | Prose Edda (Snorri Sturluson)
+Thor | Prose Edda (Snorri Sturluson)
+Loki | Prose Edda (Snorri Sturluson)
+Freya | Prose Edda (Snorri Sturluson)
+Baldur | Prose Edda (Snorri Sturluson)
+Tyr | Prose Edda (Snorri Sturluson)
+Heimdall | Prose Edda (Snorri Sturluson)
+Fenrir | Prose Edda (Snorri Sturluson)
+Sigurd | Völsunga saga
+Brynhild | Völsunga saga
+Beowulf | Beowulf
+Grendel | Beowulf
+Grendel's Mother | Beowulf
+Egil Skallagrímsson | Egil's Saga
+
+## Chinese Classics
+
+Sun Wukong (The Monkey King) | Journey to the West (Wu Cheng'en)
+Tang Sanzang | Journey to the West (Wu Cheng'en)
+Zhu Bajie (Pigsy) | Journey to the West (Wu Cheng'en)
+Sha Wujing (Sandy) | Journey to the West (Wu Cheng'en)
+Liu Bei | Romance of the Three Kingdoms (Luo Guanzhong)
+Guan Yu | Romance of the Three Kingdoms (Luo Guanzhong)
+Zhang Fei | Romance of the Three Kingdoms (Luo Guanzhong)
+Zhuge Liang | Romance of the Three Kingdoms (Luo Guanzhong)
+Cao Cao | Romance of the Three Kingdoms (Luo Guanzhong)
+Song Jiang | Water Margin (Shi Nai'an)
+Wu Song | Water Margin (Shi Nai'an)
+Lin Chong | Water Margin (Shi Nai'an)
+Jia Baoyu | Dream of the Red Chamber (Cao Xueqin)
+Lin Daiyu | Dream of the Red Chamber (Cao Xueqin)
+Xue Baochai | Dream of the Red Chamber (Cao Xueqin)
+
+## Japanese Literature
+
+Genji | The Tale of Genji (Murasaki Shikibu)
+
+## Medieval & Renaissance Literature
+
+King Arthur | Le Morte d'Arthur (Thomas Malory)
+Guinevere | Le Morte d'Arthur (Thomas Malory)
+Lancelot | Le Morte d'Arthur (Thomas Malory)
+Merlin | Le Morte d'Arthur (Thomas Malory)
+Gawain | Sir Gawain and the Green Knight
+The Green Knight | Sir Gawain and the Green Knight
+Morgan le Fay | Le Morte d'Arthur (Thomas Malory)
+Mordred | Le Morte d'Arthur (Thomas Malory)
+Galahad | Le Morte d'Arthur (Thomas Malory)
+Percival | Le Morte d'Arthur (Thomas Malory)
+Tristan | Le Morte d'Arthur (Thomas Malory)
+Isolde | Le Morte d'Arthur (Thomas Malory)
+The Lady of the Lake | Le Morte d'Arthur (Thomas Malory)
+Dante (the pilgrim) | The Divine Comedy (Dante Alighieri)
+Virgil (the guide) | The Divine Comedy (Dante Alighieri)
+Beatrice | The Divine Comedy (Dante Alighieri)
+The Knight | The Canterbury Tales (Geoffrey Chaucer)
+The Wife of Bath | The Canterbury Tales (Geoffrey Chaucer)
+The Pardoner | The Canterbury Tales (Geoffrey Chaucer)
+The Miller | The Canterbury Tales (Geoffrey Chaucer)
+The Prioress | The Canterbury Tales (Geoffrey Chaucer)
+Robin Hood | A Gest of Robyn Hode (traditional ballad)
+Maid Marian | Robin Hood ballads (traditional)
+Little John | Robin Hood ballads (traditional)
+Friar Tuck | Robin Hood ballads (traditional)
+Will Scarlet | Robin Hood ballads (traditional)
+The Sheriff of Nottingham | Robin Hood ballads (traditional)
+Alan-a-Dale | Robin Hood ballads (traditional)
+Gargantua | Gargantua and Pantagruel (François Rabelais)
+Pantagruel | Gargantua and Pantagruel (François Rabelais)
+Panurge | Gargantua and Pantagruel (François Rabelais)
+Christian | The Pilgrim's Progress (John Bunyan)
+Cú Chulainn | Táin Bó Cúailnge (Irish mythology)
+Fionn mac Cumhaill | Fenian Cycle (Irish mythology)
+
+## Traditional Fairy Tales & Nursery Rhymes
+
+Snow White | Grimms' Fairy Tales (Brothers Grimm)
+Cinderella | Grimms' Fairy Tales (Brothers Grimm)
+Rapunzel | Grimms' Fairy Tales (Brothers Grimm)
+Hansel | Grimms' Fairy Tales (Brothers Grimm)
+Gretel | Grimms' Fairy Tales (Brothers Grimm)
+Rumpelstiltskin | Grimms' Fairy Tales (Brothers Grimm)
+Briar Rose (Sleeping Beauty) | Grimms' Fairy Tales (Brothers Grimm)
+The Frog Prince | Grimms' Fairy Tales (Brothers Grimm)
+Little Red Riding Hood | Grimms' Fairy Tales (Brothers Grimm)
+The Big Bad Wolf | Grimms' Fairy Tales (Brothers Grimm)
+The Pied Piper of Hamelin | Grimms' Deutsche Sagen (Brothers Grimm)
+Puss in Boots | Tales of Mother Goose (Charles Perrault)
+Bluebeard | Tales of Mother Goose (Charles Perrault)
+Tom Thumb | Tales of Mother Goose (Charles Perrault)
+The Little Mermaid | Fairy Tales Told for Children (Hans Christian Andersen)
+The Ugly Duckling | Fairy Tales Told for Children (Hans Christian Andersen)
+The Snow Queen | Fairy Tales Told for Children (Hans Christian Andersen)
+Thumbelina | Fairy Tales Told for Children (Hans Christian Andersen)
+The Steadfast Tin Soldier | Fairy Tales Told for Children (Hans Christian Andersen)
+The Emperor (The Emperor's New Clothes) | Fairy Tales Told for Children (Hans Christian Andersen)
+Goldilocks | The Story of the Three Bears (Robert Southey)
+Jack | Jack and the Beanstalk (traditional English fairy tale)
+The Three Little Pigs | English Fairy Tales (Joseph Jacobs)
+Humpty Dumpty | traditional nursery rhyme
+
+## American Folklore
+
+Paul Bunyan | American folklore (traditional)
+John Henry | American folklore (traditional)
+Pecos Bill | American folklore (traditional)
+
+## Shakespeare (late 16th–early 17th century)
+
+Hamlet | Hamlet (William Shakespeare)
+Ophelia | Hamlet (William Shakespeare)
+Claudius | Hamlet (William Shakespeare)
+Gertrude | Hamlet (William Shakespeare)
+Horatio | Hamlet (William Shakespeare)
+Polonius | Hamlet (William Shakespeare)
+Laertes | Hamlet (William Shakespeare)
+Romeo | Romeo and Juliet (William Shakespeare)
+Juliet | Romeo and Juliet (William Shakespeare)
+Mercutio | Romeo and Juliet (William Shakespeare)
+Tybalt | Romeo and Juliet (William Shakespeare)
+Friar Laurence | Romeo and Juliet (William Shakespeare)
+The Nurse | Romeo and Juliet (William Shakespeare)
+Macbeth | Macbeth (William Shakespeare)
+Lady Macbeth | Macbeth (William Shakespeare)
+Banquo | Macbeth (William Shakespeare)
+Macduff | Macbeth (William Shakespeare)
+Othello | Othello (William Shakespeare)
+Desdemona | Othello (William Shakespeare)
+Iago | Othello (William Shakespeare)
+Cassio | Othello (William Shakespeare)
+King Lear | King Lear (William Shakespeare)
+Cordelia | King Lear (William Shakespeare)
+Goneril | King Lear (William Shakespeare)
+Regan | King Lear (William Shakespeare)
+The Fool | King Lear (William Shakespeare)
+Edgar | King Lear (William Shakespeare)
+Edmund | King Lear (William Shakespeare)
+Gloucester | King Lear (William Shakespeare)
+Prospero | The Tempest (William Shakespeare)
+Ariel | The Tempest (William Shakespeare)
+Caliban | The Tempest (William Shakespeare)
+Miranda | The Tempest (William Shakespeare)
+Puck (Robin Goodfellow) | A Midsummer Night's Dream (William Shakespeare)
+Oberon | A Midsummer Night's Dream (William Shakespeare)
+Titania | A Midsummer Night's Dream (William Shakespeare)
+Bottom | A Midsummer Night's Dream (William Shakespeare)
+Helena | A Midsummer Night's Dream (William Shakespeare)
+Hermia | A Midsummer Night's Dream (William Shakespeare)
+Lysander | A Midsummer Night's Dream (William Shakespeare)
+Demetrius | A Midsummer Night's Dream (William Shakespeare)
+Shylock | The Merchant of Venice (William Shakespeare)
+Portia | The Merchant of Venice (William Shakespeare)
+Bassanio | The Merchant of Venice (William Shakespeare)
+Antonio | The Merchant of Venice (William Shakespeare)
+Falstaff | Henry IV, Part 1 (William Shakespeare)
+Prince Hal (Henry V) | Henry IV, Part 1 (William Shakespeare)
+Hotspur (Henry Percy) | Henry IV, Part 1 (William Shakespeare)
+Richard III | Richard III (William Shakespeare)
+Rosalind | As You Like It (William Shakespeare)
+Orlando | As You Like It (William Shakespeare)
+Jacques | As You Like It (William Shakespeare)
+Touchstone | As You Like It (William Shakespeare)
+Viola | Twelfth Night (William Shakespeare)
+Malvolio | Twelfth Night (William Shakespeare)
+Olivia | Twelfth Night (William Shakespeare)
+Sir Toby Belch | Twelfth Night (William Shakespeare)
+Sir Andrew Aguecheek | Twelfth Night (William Shakespeare)
+Feste | Twelfth Night (William Shakespeare)
+Beatrice | Much Ado About Nothing (William Shakespeare)
+Benedick | Much Ado About Nothing (William Shakespeare)
+Dogberry | Much Ado About Nothing (William Shakespeare)
+Petruchio | The Taming of the Shrew (William Shakespeare)
+Katharina | The Taming of the Shrew (William Shakespeare)
+Cleopatra | Antony and Cleopatra (William Shakespeare)
+Mark Antony | Antony and Cleopatra (William Shakespeare)
+Julius Caesar | Julius Caesar (William Shakespeare)
+Brutus | Julius Caesar (William Shakespeare)
+Cassius | Julius Caesar (William Shakespeare)
+
+## Cervantes (1605–1615)
+
+Don Quixote | Don Quixote (Miguel de Cervantes)
+Sancho Panza | Don Quixote (Miguel de Cervantes)
+Dulcinea del Toboso | Don Quixote (Miguel de Cervantes)
+Rocinante | Don Quixote (Miguel de Cervantes)
+
+## Milton (1667)
+
+Satan (Lucifer) | Paradise Lost (John Milton)
+Adam | Paradise Lost (John Milton)
+Eve | Paradise Lost (John Milton)
+
+## Molière (17th century)
+
+Tartuffe | Tartuffe (Molière)
+Harpagon | The Miser (Molière)
+Alceste | The Misanthrope (Molière)
+
+## 18th-Century Literature
+
+Robinson Crusoe | Robinson Crusoe (Daniel Defoe)
+Friday | Robinson Crusoe (Daniel Defoe)
+Moll Flanders | Moll Flanders (Daniel Defoe)
+Lemuel Gulliver | Gulliver's Travels (Jonathan Swift)
+Pamela Andrews | Pamela (Samuel Richardson)
+Clarissa Harlowe | Clarissa (Samuel Richardson)
+Tom Jones | The History of Tom Jones, a Foundling (Henry Fielding)
+Tristram Shandy | The Life and Opinions of Tristram Shandy (Laurence Sterne)
+Uncle Toby | The Life and Opinions of Tristram Shandy (Laurence Sterne)
+Candide | Candide (Voltaire)
+Dr. Pangloss | Candide (Voltaire)
+Figaro | The Barber of Seville (Beaumarchais)
+Marquise de Merteuil | Les Liaisons dangereuses (Choderlos de Laclos)
+Vicomte de Valmont | Les Liaisons dangereuses (Choderlos de Laclos)
+
+## Goethe (1808/1832)
+
+Faust | Faust (Johann Wolfgang von Goethe)
+Mephistopheles | Faust (Johann Wolfgang von Goethe)
+Gretchen (Margarete) | Faust (Johann Wolfgang von Goethe)
+Werther | The Sorrows of Young Werther (Johann Wolfgang von Goethe)
+
+## Early 19th-Century British & American Literature
+
+Rip Van Winkle | Rip Van Winkle (Washington Irving)
+Ichabod Crane | The Legend of Sleepy Hollow (Washington Irving)
+The Headless Horseman | The Legend of Sleepy Hollow (Washington Irving)
+Victor Frankenstein | Frankenstein (Mary Shelley)
+Frankenstein's Monster | Frankenstein (Mary Shelley)
+Elizabeth Lavenza | Frankenstein (Mary Shelley)
+Henry Clerval | Frankenstein (Mary Shelley)
+The Ancient Mariner | The Rime of the Ancient Mariner (Samuel Taylor Coleridge)
+Ivanhoe | Ivanhoe (Walter Scott)
+Rebecca of York | Ivanhoe (Walter Scott)
+Rob Roy MacGregor | Rob Roy (Walter Scott)
+Natty Bumppo (Hawkeye) | The Last of the Mohicans (James Fenimore Cooper)
+Chingachgook | The Last of the Mohicans (James Fenimore Cooper)
+Uncas | The Last of the Mohicans (James Fenimore Cooper)
+Magua | The Last of the Mohicans (James Fenimore Cooper)
+
+## Jane Austen (1811–1817)
+
+Elizabeth Bennet | Pride and Prejudice (Jane Austen)
+Mr. Darcy | Pride and Prejudice (Jane Austen)
+Mr. Bennet | Pride and Prejudice (Jane Austen)
+Mrs. Bennet | Pride and Prejudice (Jane Austen)
+Jane Bennet | Pride and Prejudice (Jane Austen)
+Mr. Bingley | Pride and Prejudice (Jane Austen)
+Mr. Wickham | Pride and Prejudice (Jane Austen)
+Lydia Bennet | Pride and Prejudice (Jane Austen)
+Mr. Collins | Pride and Prejudice (Jane Austen)
+Lady Catherine de Bourgh | Pride and Prejudice (Jane Austen)
+Charlotte Lucas | Pride and Prejudice (Jane Austen)
+Emma Woodhouse | Emma (Jane Austen)
+Mr. Knightley | Emma (Jane Austen)
+Frank Churchill | Emma (Jane Austen)
+Harriet Smith | Emma (Jane Austen)
+Miss Bates | Emma (Jane Austen)
+Elinor Dashwood | Sense and Sensibility (Jane Austen)
+Marianne Dashwood | Sense and Sensibility (Jane Austen)
+Colonel Brandon | Sense and Sensibility (Jane Austen)
+Edward Ferrars | Sense and Sensibility (Jane Austen)
+John Willoughby | Sense and Sensibility (Jane Austen)
+Anne Elliot | Persuasion (Jane Austen)
+Captain Wentworth | Persuasion (Jane Austen)
+Catherine Morland | Northanger Abbey (Jane Austen)
+Henry Tilney | Northanger Abbey (Jane Austen)
+Fanny Price | Mansfield Park (Jane Austen)
+Edmund Bertram | Mansfield Park (Jane Austen)
+
+## Brontë Sisters (1847–1848)
+
+Jane Eyre | Jane Eyre (Charlotte Brontë)
+Edward Rochester | Jane Eyre (Charlotte Brontë)
+Bertha Mason | Jane Eyre (Charlotte Brontë)
+St. John Rivers | Jane Eyre (Charlotte Brontë)
+Mrs. Reed | Jane Eyre (Charlotte Brontë)
+Heathcliff | Wuthering Heights (Emily Brontë)
+Catherine Earnshaw | Wuthering Heights (Emily Brontë)
+Edgar Linton | Wuthering Heights (Emily Brontë)
+Nelly Dean | Wuthering Heights (Emily Brontë)
+Hindley Earnshaw | Wuthering Heights (Emily Brontë)
+Isabella Linton | Wuthering Heights (Emily Brontë)
+Agnes Grey | Agnes Grey (Anne Brontë)
+Helen Graham | The Tenant of Wildfell Hall (Anne Brontë)
+
+## Charles Dickens (1836–1870)
+
+Ebenezer Scrooge | A Christmas Carol (Charles Dickens)
+Bob Cratchit | A Christmas Carol (Charles Dickens)
+Tiny Tim | A Christmas Carol (Charles Dickens)
+Jacob Marley | A Christmas Carol (Charles Dickens)
+The Ghost of Christmas Past | A Christmas Carol (Charles Dickens)
+The Ghost of Christmas Present | A Christmas Carol (Charles Dickens)
+The Ghost of Christmas Yet to Come | A Christmas Carol (Charles Dickens)
+Oliver Twist | Oliver Twist (Charles Dickens)
+Fagin | Oliver Twist (Charles Dickens)
+The Artful Dodger (Jack Dawkins) | Oliver Twist (Charles Dickens)
+Bill Sikes | Oliver Twist (Charles Dickens)
+Nancy | Oliver Twist (Charles Dickens)
+Mr. Bumble | Oliver Twist (Charles Dickens)
+Pip (Philip Pirrip) | Great Expectations (Charles Dickens)
+Miss Havisham | Great Expectations (Charles Dickens)
+Estella | Great Expectations (Charles Dickens)
+Abel Magwitch | Great Expectations (Charles Dickens)
+Joe Gargery | Great Expectations (Charles Dickens)
+Herbert Pocket | Great Expectations (Charles Dickens)
+David Copperfield | David Copperfield (Charles Dickens)
+Uriah Heep | David Copperfield (Charles Dickens)
+Mr. Micawber | David Copperfield (Charles Dickens)
+Agnes Wickfield | David Copperfield (Charles Dickens)
+Steerforth | David Copperfield (Charles Dickens)
+Betsey Trotwood | David Copperfield (Charles Dickens)
+Sydney Carton | A Tale of Two Cities (Charles Dickens)
+Charles Darnay | A Tale of Two Cities (Charles Dickens)
+Lucie Manette | A Tale of Two Cities (Charles Dickens)
+Madame Defarge | A Tale of Two Cities (Charles Dickens)
+Dr. Alexandre Manette | A Tale of Two Cities (Charles Dickens)
+Mr. Pickwick | The Pickwick Papers (Charles Dickens)
+Sam Weller | The Pickwick Papers (Charles Dickens)
+Nicholas Nickleby | Nicholas Nickleby (Charles Dickens)
+Wackford Squeers | Nicholas Nickleby (Charles Dickens)
+Smike | Nicholas Nickleby (Charles Dickens)
+Esther Summerson | Bleak House (Charles Dickens)
+Lady Dedlock | Bleak House (Charles Dickens)
+Mr. Jarndyce | Bleak House (Charles Dickens)
+Inspector Bucket | Bleak House (Charles Dickens)
+Little Nell | The Old Curiosity Shop (Charles Dickens)
+Daniel Quilp | The Old Curiosity Shop (Charles Dickens)
+Martin Chuzzlewit | Martin Chuzzlewit (Charles Dickens)
+Seth Pecksniff | Martin Chuzzlewit (Charles Dickens)
+Mrs. Sarah Gamp | Martin Chuzzlewit (Charles Dickens)
+Edwin Drood | The Mystery of Edwin Drood (Charles Dickens)
+Barnaby Rudge | Barnaby Rudge (Charles Dickens)
+
+## Edgar Allan Poe (1830s–1840s)
+
+C. Auguste Dupin | The Murders in the Rue Morgue (Edgar Allan Poe)
+Roderick Usher | The Fall of the House of Usher (Edgar Allan Poe)
+Madeline Usher | The Fall of the House of Usher (Edgar Allan Poe)
+Montresor | The Cask of Amontillado (Edgar Allan Poe)
+Fortunato | The Cask of Amontillado (Edgar Allan Poe)
+William Wilson | William Wilson (Edgar Allan Poe)
+
+## Nathaniel Hawthorne (1835–1860)
+
+Hester Prynne | The Scarlet Letter (Nathaniel Hawthorne)
+Arthur Dimmesdale | The Scarlet Letter (Nathaniel Hawthorne)
+Roger Chillingworth | The Scarlet Letter (Nathaniel Hawthorne)
+Pearl | The Scarlet Letter (Nathaniel Hawthorne)
+Young Goodman Brown | Young Goodman Brown (Nathaniel Hawthorne)
+
+## Alexandre Dumas (1844–1850s)
+
+d'Artagnan | The Three Musketeers (Alexandre Dumas)
+Athos | The Three Musketeers (Alexandre Dumas)
+Porthos | The Three Musketeers (Alexandre Dumas)
+Aramis | The Three Musketeers (Alexandre Dumas)
+Milady de Winter | The Three Musketeers (Alexandre Dumas)
+Cardinal Richelieu | The Three Musketeers (Alexandre Dumas)
+Edmond Dantès | The Count of Monte Cristo (Alexandre Dumas)
+Fernand Mondego | The Count of Monte Cristo (Alexandre Dumas)
+Abbé Faria | The Count of Monte Cristo (Alexandre Dumas)
+Mercédès | The Count of Monte Cristo (Alexandre Dumas)
+Monsieur Villefort | The Count of Monte Cristo (Alexandre Dumas)
+The Man in the Iron Mask | The Vicomte of Bragelonne (Alexandre Dumas)
+
+## Victor Hugo (1831–1862)
+
+Jean Valjean | Les Misérables (Victor Hugo)
+Inspector Javert | Les Misérables (Victor Hugo)
+Fantine | Les Misérables (Victor Hugo)
+Cosette | Les Misérables (Victor Hugo)
+Éponine | Les Misérables (Victor Hugo)
+Marius Pontmercy | Les Misérables (Victor Hugo)
+Thénardier | Les Misérables (Victor Hugo)
+Madame Thénardier | Les Misérables (Victor Hugo)
+Enjolras | Les Misérables (Victor Hugo)
+Gavroche | Les Misérables (Victor Hugo)
+Bishop Myriel | Les Misérables (Victor Hugo)
+Quasimodo | The Hunchback of Notre-Dame (Victor Hugo)
+Esmeralda | The Hunchback of Notre-Dame (Victor Hugo)
+Claude Frollo | The Hunchback of Notre-Dame (Victor Hugo)
+Captain Phoebus | The Hunchback of Notre-Dame (Victor Hugo)
+
+## Herman Melville (1851–1924)
+
+Ishmael | Moby-Dick (Herman Melville)
+Captain Ahab | Moby-Dick (Herman Melville)
+Moby Dick | Moby-Dick (Herman Melville)
+Queequeg | Moby-Dick (Herman Melville)
+Starbuck | Moby-Dick (Herman Melville)
+Stubb | Moby-Dick (Herman Melville)
+Flask | Moby-Dick (Herman Melville)
+Bartleby | Bartleby, the Scrivener (Herman Melville)
+Billy Budd | Billy Budd, Sailor (Herman Melville)
+Captain Vere | Billy Budd, Sailor (Herman Melville)
+
+## Harriet Beecher Stowe (1852)
+
+Uncle Tom | Uncle Tom's Cabin (Harriet Beecher Stowe)
+Eliza Harris | Uncle Tom's Cabin (Harriet Beecher Stowe)
+Simon Legree | Uncle Tom's Cabin (Harriet Beecher Stowe)
+Topsy | Uncle Tom's Cabin (Harriet Beecher Stowe)
+Little Eva (Evangeline St. Clare) | Uncle Tom's Cabin (Harriet Beecher Stowe)
+
+## Elizabeth Gaskell (1848–1866)
+
+Margaret Hale | North and South (Elizabeth Gaskell)
+John Thornton | North and South (Elizabeth Gaskell)
+Mary Barton | Mary Barton (Elizabeth Gaskell)
+
+## William Makepeace Thackeray (1848)
+
+Becky Sharp | Vanity Fair (William Makepeace Thackeray)
+Amelia Sedley | Vanity Fair (William Makepeace Thackeray)
+Rawdon Crawley | Vanity Fair (William Makepeace Thackeray)
+George Osborne | Vanity Fair (William Makepeace Thackeray)
+
+## Wilkie Collins (1859–1868)
+
+Count Fosco | The Woman in White (Wilkie Collins)
+Marian Halcombe | The Woman in White (Wilkie Collins)
+Laura Fairlie | The Woman in White (Wilkie Collins)
+Sergeant Cuff | The Moonstone (Wilkie Collins)
+Franklin Blake | The Moonstone (Wilkie Collins)
+Rachel Verinder | The Moonstone (Wilkie Collins)
+
+## George Eliot (1859–1876)
+
+Dorothea Brooke | Middlemarch (George Eliot)
+Tertius Lydgate | Middlemarch (George Eliot)
+Rosamond Vincy | Middlemarch (George Eliot)
+Casaubon | Middlemarch (George Eliot)
+Will Ladislaw | Middlemarch (George Eliot)
+Silas Marner | Silas Marner (George Eliot)
+Adam Bede | Adam Bede (George Eliot)
+Maggie Tulliver | The Mill on the Floss (George Eliot)
+
+## Gustave Flaubert (1857)
+
+Emma Bovary | Madame Bovary (Gustave Flaubert)
+Charles Bovary | Madame Bovary (Gustave Flaubert)
+
+## Russian Literature (19th century)
+
+Eugene Onegin | Eugene Onegin (Alexander Pushkin)
+Tatyana Larina | Eugene Onegin (Alexander Pushkin)
+Pechorin | A Hero of Our Time (Mikhail Lermontov)
+Chichikov | Dead Souls (Nikolai Gogol)
+Akaky Akakievich | The Overcoat (Nikolai Gogol)
+Major Kovalyov | The Nose (Nikolai Gogol)
+Bazarov | Fathers and Sons (Ivan Turgenev)
+Raskolnikov | Crime and Punishment (Fyodor Dostoevsky)
+Sonya Marmeladova | Crime and Punishment (Fyodor Dostoevsky)
+Porfiry Petrovich | Crime and Punishment (Fyodor Dostoevsky)
+Svidrigailov | Crime and Punishment (Fyodor Dostoevsky)
+Prince Myshkin | The Idiot (Fyodor Dostoevsky)
+Nastasya Filippovna | The Idiot (Fyodor Dostoevsky)
+Rogozhin | The Idiot (Fyodor Dostoevsky)
+The Underground Man | Notes from Underground (Fyodor Dostoevsky)
+Dmitri Karamazov | The Brothers Karamazov (Fyodor Dostoevsky)
+Ivan Karamazov | The Brothers Karamazov (Fyodor Dostoevsky)
+Alyosha Karamazov | The Brothers Karamazov (Fyodor Dostoevsky)
+Smerdyakov | The Brothers Karamazov (Fyodor Dostoevsky)
+Father Zosima | The Brothers Karamazov (Fyodor Dostoevsky)
+Grushenka | The Brothers Karamazov (Fyodor Dostoevsky)
+Stavrogin | Demons (Fyodor Dostoevsky)
+Anna Karenina | Anna Karenina (Leo Tolstoy)
+Count Vronsky | Anna Karenina (Leo Tolstoy)
+Levin | Anna Karenina (Leo Tolstoy)
+Kitty Shcherbatskaya | Anna Karenina (Leo Tolstoy)
+Prince Andrei Bolkonsky | War and Peace (Leo Tolstoy)
+Natasha Rostova | War and Peace (Leo Tolstoy)
+Pierre Bezukhov | War and Peace (Leo Tolstoy)
+
+## Lewis Carroll (1865–1871)
+
+Alice | Alice's Adventures in Wonderland (Lewis Carroll)
+The White Rabbit | Alice's Adventures in Wonderland (Lewis Carroll)
+The Cheshire Cat | Alice's Adventures in Wonderland (Lewis Carroll)
+The Mad Hatter | Alice's Adventures in Wonderland (Lewis Carroll)
+The March Hare | Alice's Adventures in Wonderland (Lewis Carroll)
+The Queen of Hearts | Alice's Adventures in Wonderland (Lewis Carroll)
+The King of Hearts | Alice's Adventures in Wonderland (Lewis Carroll)
+The Caterpillar | Alice's Adventures in Wonderland (Lewis Carroll)
+The Dormouse | Alice's Adventures in Wonderland (Lewis Carroll)
+The Mock Turtle | Alice's Adventures in Wonderland (Lewis Carroll)
+The Gryphon | Alice's Adventures in Wonderland (Lewis Carroll)
+The Knave of Hearts | Alice's Adventures in Wonderland (Lewis Carroll)
+The Dodo | Alice's Adventures in Wonderland (Lewis Carroll)
+Tweedledee | Through the Looking-Glass (Lewis Carroll)
+Tweedledum | Through the Looking-Glass (Lewis Carroll)
+The Jabberwock | Through the Looking-Glass (Lewis Carroll)
+Humpty Dumpty | Through the Looking-Glass (Lewis Carroll)
+The Red Queen | Through the Looking-Glass (Lewis Carroll)
+The White Queen | Through the Looking-Glass (Lewis Carroll)
+The White Knight | Through the Looking-Glass (Lewis Carroll)
+
+## Louisa May Alcott (1868–1869)
+
+Jo March | Little Women (Louisa May Alcott)
+Meg March | Little Women (Louisa May Alcott)
+Beth March | Little Women (Louisa May Alcott)
+Amy March | Little Women (Louisa May Alcott)
+Marmee (Mrs. March) | Little Women (Louisa May Alcott)
+Laurie (Theodore Laurence) | Little Women (Louisa May Alcott)
+Professor Bhaer | Little Women (Louisa May Alcott)
+
+## Jules Verne (1864–1905)
+
+Captain Nemo | Twenty Thousand Leagues Under the Seas (Jules Verne)
+Professor Aronnax | Twenty Thousand Leagues Under the Seas (Jules Verne)
+Ned Land | Twenty Thousand Leagues Under the Seas (Jules Verne)
+Conseil | Twenty Thousand Leagues Under the Seas (Jules Verne)
+Phileas Fogg | Around the World in Eighty Days (Jules Verne)
+Passepartout | Around the World in Eighty Days (Jules Verne)
+Professor Lidenbrock | Journey to the Center of the Earth (Jules Verne)
+Axel | Journey to the Center of the Earth (Jules Verne)
+Michel Ardan | From the Earth to the Moon (Jules Verne)
+Robur | Robur the Conqueror (Jules Verne)
+Cyrus Smith | The Mysterious Island (Jules Verne)
+
+## Mark Twain (1876–1894)
+
+Tom Sawyer | The Adventures of Tom Sawyer (Mark Twain)
+Huckleberry Finn | Adventures of Huckleberry Finn (Mark Twain)
+Jim | Adventures of Huckleberry Finn (Mark Twain)
+Becky Thatcher | The Adventures of Tom Sawyer (Mark Twain)
+Aunt Polly | The Adventures of Tom Sawyer (Mark Twain)
+Injun Joe | The Adventures of Tom Sawyer (Mark Twain)
+Sid Sawyer | The Adventures of Tom Sawyer (Mark Twain)
+The Duke | Adventures of Huckleberry Finn (Mark Twain)
+The King (Dauphin) | Adventures of Huckleberry Finn (Mark Twain)
+Pap Finn | Adventures of Huckleberry Finn (Mark Twain)
+Hank Morgan | A Connecticut Yankee in King Arthur's Court (Mark Twain)
+Pudd'nhead Wilson | Pudd'nhead Wilson (Mark Twain)
+
+## Robert Louis Stevenson (1883–1894)
+
+Dr. Henry Jekyll | Strange Case of Dr Jekyll and Mr Hyde (Robert Louis Stevenson)
+Mr. Edward Hyde | Strange Case of Dr Jekyll and Mr Hyde (Robert Louis Stevenson)
+Long John Silver | Treasure Island (Robert Louis Stevenson)
+Jim Hawkins | Treasure Island (Robert Louis Stevenson)
+Captain Smollett | Treasure Island (Robert Louis Stevenson)
+Squire Trelawney | Treasure Island (Robert Louis Stevenson)
+Ben Gunn | Treasure Island (Robert Louis Stevenson)
+Captain Flint (mentioned) | Treasure Island (Robert Louis Stevenson)
+Blind Pew | Treasure Island (Robert Louis Stevenson)
+David Balfour | Kidnapped (Robert Louis Stevenson)
+Alan Breck Stewart | Kidnapped (Robert Louis Stevenson)
+
+## Anthony Trollope (1855–1880)
+
+Rev. Septimus Harding | The Warden (Anthony Trollope)
+Archdeacon Grantly | Barchester Towers (Anthony Trollope)
+Plantagenet Palliser | Can You Forgive Her? (Anthony Trollope)
+Lady Glencora Palliser | Can You Forgive Her? (Anthony Trollope)
+Phineas Finn | Phineas Finn (Anthony Trollope)
+
+## Thomas Hardy (1874–1895)
+
+Tess Durbeyfield | Tess of the d'Urbervilles (Thomas Hardy)
+Angel Clare | Tess of the d'Urbervilles (Thomas Hardy)
+Alec d'Urberville | Tess of the d'Urbervilles (Thomas Hardy)
+Bathsheba Everdene | Far from the Madding Crowd (Thomas Hardy)
+Gabriel Oak | Far from the Madding Crowd (Thomas Hardy)
+Sergeant Troy | Far from the Madding Crowd (Thomas Hardy)
+Michael Henchard | The Mayor of Casterbridge (Thomas Hardy)
+Jude Fawley | Jude the Obscure (Thomas Hardy)
+Sue Bridehead | Jude the Obscure (Thomas Hardy)
+
+## Oscar Wilde (1890–1895)
+
+Dorian Gray | The Picture of Dorian Gray (Oscar Wilde)
+Lord Henry Wotton | The Picture of Dorian Gray (Oscar Wilde)
+Basil Hallward | The Picture of Dorian Gray (Oscar Wilde)
+Jack Worthing | The Importance of Being Earnest (Oscar Wilde)
+Algernon Moncrieff | The Importance of Being Earnest (Oscar Wilde)
+Lady Bracknell | The Importance of Being Earnest (Oscar Wilde)
+Gwendolen Fairfax | The Importance of Being Earnest (Oscar Wilde)
+Cecily Cardew | The Importance of Being Earnest (Oscar Wilde)
+Salome | Salome (Oscar Wilde)
+Lady Windermere | Lady Windermere's Fan (Oscar Wilde)
+
+## Henrik Ibsen (1867–1899)
+
+Nora Helmer | A Doll's House (Henrik Ibsen)
+Torvald Helmer | A Doll's House (Henrik Ibsen)
+Hedda Gabler | Hedda Gabler (Henrik Ibsen)
+Judge Brack | Hedda Gabler (Henrik Ibsen)
+Peer Gynt | Peer Gynt (Henrik Ibsen)
+
+## Anton Chekhov (1896–1904)
+
+Uncle Vanya | Uncle Vanya (Anton Chekhov)
+Masha | Three Sisters (Anton Chekhov)
+Olga | Three Sisters (Anton Chekhov)
+Irina | Three Sisters (Anton Chekhov)
+Madame Ranevskaya | The Cherry Orchard (Anton Chekhov)
+Nina Zarechnaya | The Seagull (Anton Chekhov)
+Konstantin Treplev | The Seagull (Anton Chekhov)
+
+## Edmond Rostand (1897)
+
+Cyrano de Bergerac | Cyrano de Bergerac (Edmond Rostand)
+Roxane | Cyrano de Bergerac (Edmond Rostand)
+Christian de Neuvillette | Cyrano de Bergerac (Edmond Rostand)
+
+## Arthur Conan Doyle (1887–1927)
+
+Sherlock Holmes | A Study in Scarlet (Arthur Conan Doyle)
+Dr. John Watson | A Study in Scarlet (Arthur Conan Doyle)
+Mrs. Hudson | A Study in Scarlet (Arthur Conan Doyle)
+Inspector Lestrade | A Study in Scarlet (Arthur Conan Doyle)
+Professor Moriarty | The Final Problem (Arthur Conan Doyle)
+Irene Adler | A Scandal in Bohemia (Arthur Conan Doyle)
+Mycroft Holmes | The Greek Interpreter (Arthur Conan Doyle)
+Colonel Sebastian Moran | The Adventure of the Empty House (Arthur Conan Doyle)
+The Hound of the Baskervilles | The Hound of the Baskervilles (Arthur Conan Doyle)
+Professor Challenger | The Lost World (Arthur Conan Doyle)
+Lord John Roxton | The Lost World (Arthur Conan Doyle)
+Edward Malone | The Lost World (Arthur Conan Doyle)
+
+## Bram Stoker (1897)
+
+Count Dracula | Dracula (Bram Stoker)
+Jonathan Harker | Dracula (Bram Stoker)
+Mina Harker (Murray) | Dracula (Bram Stoker)
+Abraham Van Helsing | Dracula (Bram Stoker)
+Lucy Westenra | Dracula (Bram Stoker)
+Renfield | Dracula (Bram Stoker)
+Dr. John Seward | Dracula (Bram Stoker)
+Quincey Morris | Dracula (Bram Stoker)
+Arthur Holmwood | Dracula (Bram Stoker)
+
+## H.G. Wells (1895–1910s)
+
+The Time Traveller | The Time Machine (H.G. Wells)
+The Eloi | The Time Machine (H.G. Wells)
+The Morlocks | The Time Machine (H.G. Wells)
+Dr. Moreau | The Island of Doctor Moreau (H.G. Wells)
+Griffin (The Invisible Man) | The Invisible Man (H.G. Wells)
+The Martians | The War of the Worlds (H.G. Wells)
+Mr. Polly | The History of Mr Polly (H.G. Wells)
+Kipps | Kipps (H.G. Wells)
+
+## Henry James (1878–1904)
+
+Isabel Archer | The Portrait of a Lady (Henry James)
+Gilbert Osmond | The Portrait of a Lady (Henry James)
+Daisy Miller | Daisy Miller (Henry James)
+The Governess | The Turn of the Screw (Henry James)
+Miles | The Turn of the Screw (Henry James)
+Flora | The Turn of the Screw (Henry James)
+Lambert Strether | The Ambassadors (Henry James)
+
+## Joseph Conrad (1899–1907)
+
+Charles Marlow | Heart of Darkness (Joseph Conrad)
+Mr. Kurtz | Heart of Darkness (Joseph Conrad)
+Lord Jim | Lord Jim (Joseph Conrad)
+Nostromo | Nostromo (Joseph Conrad)
+
+## Sheridan Le Fanu (1864–1872)
+
+Carmilla | Carmilla (Sheridan Le Fanu)
+
+## H. Rider Haggard (1885–1887)
+
+Allan Quatermain | King Solomon's Mines (H. Rider Haggard)
+Ayesha (She) | She: A History of Adventure (H. Rider Haggard)
+Umslopogaas | Allan Quatermain (H. Rider Haggard)
+
+## Rudyard Kipling (1894–1901)
+
+Mowgli | The Jungle Book (Rudyard Kipling)
+Baloo | The Jungle Book (Rudyard Kipling)
+Bagheera | The Jungle Book (Rudyard Kipling)
+Shere Khan | The Jungle Book (Rudyard Kipling)
+Akela | The Jungle Book (Rudyard Kipling)
+Kaa | The Jungle Book (Rudyard Kipling)
+Rikki-Tikki-Tavi | The Jungle Book (Rudyard Kipling)
+Kim | Kim (Rudyard Kipling)
+
+## Anthony Hope (1894)
+
+Rudolf Rassendyll | The Prisoner of Zenda (Anthony Hope)
+Rupert of Hentzau | The Prisoner of Zenda (Anthony Hope)
+
+## Baroness Orczy (1905)
+
+Sir Percy Blakeney (The Scarlet Pimpernel) | The Scarlet Pimpernel (Baroness Orczy)
+Marguerite Blakeney | The Scarlet Pimpernel (Baroness Orczy)
+Chauvelin | The Scarlet Pimpernel (Baroness Orczy)
+
+## Carlo Collodi (1883)
+
+Pinocchio | The Adventures of Pinocchio (Carlo Collodi)
+Geppetto | The Adventures of Pinocchio (Carlo Collodi)
+The Blue Fairy | The Adventures of Pinocchio (Carlo Collodi)
+The Talking Cricket | The Adventures of Pinocchio (Carlo Collodi)
+
+## Johanna Spyri (1881)
+
+Heidi | Heidi (Johanna Spyri)
+Grandfather (Alm-Uncle) | Heidi (Johanna Spyri)
+Clara Sesemann | Heidi (Johanna Spyri)
+Peter (the goatherd) | Heidi (Johanna Spyri)
+
+## Anna Sewell (1877)
+
+Black Beauty | Black Beauty (Anna Sewell)
+
+## Stendhal (1830–1839)
+
+Julien Sorel | The Red and the Black (Stendhal)
+Fabrice del Dongo | The Charterhouse of Parma (Stendhal)
+
+## Honoré de Balzac (1833–1835)
+
+Eugénie Grandet | Eugénie Grandet (Honoré de Balzac)
+Père Goriot | Le Père Goriot (Honoré de Balzac)
+Eugène de Rastignac | Le Père Goriot (Honoré de Balzac)
+Vautrin | Le Père Goriot (Honoré de Balzac)
+
+## Prosper Mérimée (1845)
+
+Carmen | Carmen (Prosper Mérimée)
+Don José | Carmen (Prosper Mérimée)
+
+## Émile Zola (1877–1893)
+
+Nana | Nana (Émile Zola)
+Gervaise Macquart | L'Assommoir (Émile Zola)
+Étienne Lantier | Germinal (Émile Zola)
+
+## L. Frank Baum (1900–1920)
+
+Dorothy Gale | The Wonderful Wizard of Oz (L. Frank Baum)
+Toto | The Wonderful Wizard of Oz (L. Frank Baum)
+The Scarecrow | The Wonderful Wizard of Oz (L. Frank Baum)
+The Tin Woodman | The Wonderful Wizard of Oz (L. Frank Baum)
+The Cowardly Lion | The Wonderful Wizard of Oz (L. Frank Baum)
+The Wizard of Oz | The Wonderful Wizard of Oz (L. Frank Baum)
+Glinda the Good | The Wonderful Wizard of Oz (L. Frank Baum)
+The Wicked Witch of the West | The Wonderful Wizard of Oz (L. Frank Baum)
+The Wicked Witch of the East | The Wonderful Wizard of Oz (L. Frank Baum)
+Ozma | The Marvelous Land of Oz (L. Frank Baum)
+Jack Pumpkinhead | The Marvelous Land of Oz (L. Frank Baum)
+Tik-Tok | Ozma of Oz (L. Frank Baum)
+The Nome King | Ozma of Oz (L. Frank Baum)
+The Patchwork Girl (Scraps) | The Patchwork Girl of Oz (L. Frank Baum)
+The Hungry Tiger | Ozma of Oz (L. Frank Baum)
+
+## Beatrix Potter (1902–1913)
+
+Peter Rabbit | The Tale of Peter Rabbit (Beatrix Potter)
+Benjamin Bunny | The Tale of Benjamin Bunny (Beatrix Potter)
+Jemima Puddle-Duck | The Tale of Jemima Puddle-Duck (Beatrix Potter)
+Tom Kitten | The Tale of Tom Kitten (Beatrix Potter)
+Mrs. Tiggy-Winkle | The Tale of Mrs. Tiggy-Winkle (Beatrix Potter)
+Squirrel Nutkin | The Tale of Squirrel Nutkin (Beatrix Potter)
+Mr. Jeremy Fisher | The Tale of Mr. Jeremy Fisher (Beatrix Potter)
+Mrs. Tittlemouse | The Tale of Mrs. Tittlemouse (Beatrix Potter)
+Samuel Whiskers | The Tale of Samuel Whiskers (Beatrix Potter)
+
+## Frances Hodgson Burnett (1886–1911)
+
+Sara Crewe | A Little Princess (Frances Hodgson Burnett)
+Mary Lennox | The Secret Garden (Frances Hodgson Burnett)
+Colin Craven | The Secret Garden (Frances Hodgson Burnett)
+Dickon Sowerby | The Secret Garden (Frances Hodgson Burnett)
+Ben Weatherstaff | The Secret Garden (Frances Hodgson Burnett)
+Lord Fauntleroy (Cedric Errol) | Little Lord Fauntleroy (Frances Hodgson Burnett)
+
+## J.M. Barrie (1904/1911)
+
+Peter Pan | Peter and Wendy (J.M. Barrie)
+Wendy Darling | Peter and Wendy (J.M. Barrie)
+Captain Hook | Peter and Wendy (J.M. Barrie)
+Tinker Bell | Peter and Wendy (J.M. Barrie)
+Tiger Lily | Peter and Wendy (J.M. Barrie)
+Mr. Smee | Peter and Wendy (J.M. Barrie)
+John Darling | Peter and Wendy (J.M. Barrie)
+Michael Darling | Peter and Wendy (J.M. Barrie)
+Nana (the dog) | Peter and Wendy (J.M. Barrie)
+
+## Kenneth Grahame (1908)
+
+Mr. Toad | The Wind in the Willows (Kenneth Grahame)
+Mole | The Wind in the Willows (Kenneth Grahame)
+Ratty (Water Rat) | The Wind in the Willows (Kenneth Grahame)
+Badger | The Wind in the Willows (Kenneth Grahame)
+Otter | The Wind in the Willows (Kenneth Grahame)
+
+## Lucy Maud Montgomery (1908)
+
+Anne Shirley | Anne of Green Gables (Lucy Maud Montgomery)
+Marilla Cuthbert | Anne of Green Gables (Lucy Maud Montgomery)
+Matthew Cuthbert | Anne of Green Gables (Lucy Maud Montgomery)
+Diana Barry | Anne of Green Gables (Lucy Maud Montgomery)
+Gilbert Blythe | Anne of Green Gables (Lucy Maud Montgomery)
+
+## Gaston Leroux (1907–1910)
+
+Erik (The Phantom) | The Phantom of the Opera (Gaston Leroux)
+Christine Daaé | The Phantom of the Opera (Gaston Leroux)
+Raoul de Chagny | The Phantom of the Opera (Gaston Leroux)
+Rouletabille | The Mystery of the Yellow Room (Gaston Leroux)
+
+## Maurice Leblanc (1905–1920s)
+
+Arsène Lupin | Arsène Lupin, Gentleman Burglar (Maurice Leblanc)
+
+## Edgar Rice Burroughs (1912–1920s)
+
+Tarzan | Tarzan of the Apes (Edgar Rice Burroughs)
+Jane Porter | Tarzan of the Apes (Edgar Rice Burroughs)
+John Carter | A Princess of Mars (Edgar Rice Burroughs)
+Dejah Thoris | A Princess of Mars (Edgar Rice Burroughs)
+Tars Tarkas | A Princess of Mars (Edgar Rice Burroughs)
+
+## George Bernard Shaw (1893–1924)
+
+Eliza Doolittle | Pygmalion (George Bernard Shaw)
+Professor Henry Higgins | Pygmalion (George Bernard Shaw)
+Colonel Pickering | Pygmalion (George Bernard Shaw)
+Alfred Doolittle | Pygmalion (George Bernard Shaw)
+Saint Joan | Saint Joan (George Bernard Shaw)
+Major Barbara Undershaft | Major Barbara (George Bernard Shaw)
+
+## G.K. Chesterton (1911–1920s)
+
+Father Brown | The Innocence of Father Brown (G.K. Chesterton)
+Flambeau | The Innocence of Father Brown (G.K. Chesterton)
+Gabriel Syme | The Man Who Was Thursday (G.K. Chesterton)
+
+## E.W. Hornung (1899)
+
+A.J. Raffles | The Amateur Cracksman (E.W. Hornung)
+Bunny Manders | The Amateur Cracksman (E.W. Hornung)
+
+## Johnston McCulley (1919)
+
+Zorro (Don Diego de la Vega) | The Curse of Capistrano (Johnston McCulley)
+
+## Sax Rohmer (1913)
+
+Fu Manchu | The Mystery of Dr. Fu-Manchu (Sax Rohmer)
+Doña Doña/Sir Denis Nayland Smith | The Mystery of Dr. Fu-Manchu (Sax Rohmer)
+
+## Jack London (1903–1909)
+
+Buck | The Call of the Wild (Jack London)
+White Fang | White Fang (Jack London)
+Martin Eden | Martin Eden (Jack London)
+
+## Kate Chopin (1899)
+
+Edna Pontellier | The Awakening (Kate Chopin)
+
+## Edith Wharton (1905–1920)
+
+Lily Bart | The House of Mirth (Edith Wharton)
+Newland Archer | The Age of Innocence (Edith Wharton)
+Countess Ellen Olenska | The Age of Innocence (Edith Wharton)
+Ethan Frome | Ethan Frome (Edith Wharton)
+
+## Stephen Crane (1895)
+
+Henry Fleming | The Red Badge of Courage (Stephen Crane)
+
+## Upton Sinclair (1906)
+
+Jurgis Rudkus | The Jungle (Upton Sinclair)
+
+## Theodore Dreiser (1900–1925)
+
+Carrie Meeber (Sister Carrie) | Sister Carrie (Theodore Dreiser)
+Clyde Griffiths | An American Tragedy (Theodore Dreiser)
+
+## Willa Cather (1913–1927)
+
+Ántonia Shimerda | My Ántonia (Willa Cather)
+Thea Kronborg | The Song of the Lark (Willa Cather)
+
+## Sinclair Lewis (1920–1927)
+
+Carol Kennicott | Main Street (Sinclair Lewis)
+George Babbitt | Babbitt (Sinclair Lewis)
+Martin Arrowsmith | Arrowsmith (Sinclair Lewis)
+Elmer Gantry | Elmer Gantry (Sinclair Lewis)
+
+## Sherwood Anderson (1919)
+
+George Willard | Winesburg, Ohio (Sherwood Anderson)
+
+## Hugh Lofting (1920)
+
+Doctor Dolittle | The Story of Doctor Dolittle (Hugh Lofting)
+
+## A.A. Milne (1926–1928)
+
+Winnie-the-Pooh | Winnie-the-Pooh (A.A. Milne)
+Christopher Robin | Winnie-the-Pooh (A.A. Milne)
+Piglet | Winnie-the-Pooh (A.A. Milne)
+Eeyore | Winnie-the-Pooh (A.A. Milne)
+Owl | Winnie-the-Pooh (A.A. Milne)
+Rabbit | Winnie-the-Pooh (A.A. Milne)
+Kanga | Winnie-the-Pooh (A.A. Milne)
+Roo | Winnie-the-Pooh (A.A. Milne)
+Tigger | The House at Pooh Corner (A.A. Milne)
+
+## Eleanor H. Porter (1913)
+
+Pollyanna Whittier | Pollyanna (Eleanor H. Porter)
+
+## Kate Douglas Wiggin (1903)
+
+Rebecca Randall | Rebecca of Sunnybrook Farm (Kate Douglas Wiggin)
+
+## George MacDonald (1872)
+
+Princess Irene | The Princess and the Goblin (George MacDonald)
+Curdie | The Princess and the Goblin (George MacDonald)
+
+## Margery Williams (1922)
+
+The Velveteen Rabbit | The Velveteen Rabbit (Margery Williams)
+
+## Felix Salten (1923)
+
+Bambi | Bambi, a Life in the Woods (Felix Salten)
+
+## Joel Chandler Harris (1881)
+
+Uncle Remus | Uncle Remus: His Songs and His Sayings (Joel Chandler Harris)
+Br'er Rabbit | Uncle Remus: His Songs and His Sayings (Joel Chandler Harris)
+Br'er Fox | Uncle Remus: His Songs and His Sayings (Joel Chandler Harris)
+Br'er Bear | Uncle Remus: His Songs and His Sayings (Joel Chandler Harris)
+
+## P.G. Wodehouse (1915–1920s)
+
+Bertie Wooster | My Man Jeeves (P.G. Wodehouse)
+Jeeves | My Man Jeeves (P.G. Wodehouse)
+Psmith | Mike (P.G. Wodehouse)
+
+## Agatha Christie (1920–1928)
+
+Hercule Poirot | The Mysterious Affair at Styles (Agatha Christie)
+Captain Hastings | The Mysterious Affair at Styles (Agatha Christie)
+Tommy Beresford | The Secret Adversary (Agatha Christie)
+Tuppence Beresford | The Secret Adversary (Agatha Christie)
+Superintendent Battle | The Secret of Chimneys (Agatha Christie)
+
+## Dorothy L. Sayers (1923)
+
+Lord Peter Wimsey | Whose Body? (Dorothy L. Sayers)
+Bunter | Whose Body? (Dorothy L. Sayers)
+
+## Earl Derr Biggers (1925)
+
+Charlie Chan | The House Without a Key (Earl Derr Biggers)
+
+## S.S. Van Dine (1926)
+
+Philo Vance | The Benson Murder Case (S.S. Van Dine)
+
+## John Buchan (1915)
+
+Richard Hannay | The Thirty-Nine Steps (John Buchan)
+
+## H.C. McNeile "Sapper" (1920)
+
+Bulldog Drummond | Bull-Dog Drummond (Sapper)
+
+## Rafael Sabatini (1922)
+
+Captain Blood (Peter Blood) | Captain Blood (Rafael Sabatini)
+
+## Booth Tarkington (1918)
+
+George Amberson Minafer | The Magnificent Ambersons (Booth Tarkington)
+
+## John Galsworthy (1906–1920s)
+
+Soames Forsyte | The Man of Property (John Galsworthy)
+Irene Forsyte | The Man of Property (John Galsworthy)
+Jolyon Forsyte | The Man of Property (John Galsworthy)
+
+## E.M. Forster (1908–1924)
+
+Lucy Honeychurch | A Room with a View (E.M. Forster)
+George Emerson | A Room with a View (E.M. Forster)
+Cecil Vyse | A Room with a View (E.M. Forster)
+Margaret Schlegel | Howards End (E.M. Forster)
+Helen Schlegel | Howards End (E.M. Forster)
+Dr. Aziz | A Passage to India (E.M. Forster)
+Adela Quested | A Passage to India (E.M. Forster)
+Mrs. Moore | A Passage to India (E.M. Forster)
+
+## James Joyce (1916–1922)
+
+Stephen Dedalus | A Portrait of the Artist as a Young Man (James Joyce)
+Leopold Bloom | Ulysses (James Joyce)
+Molly Bloom | Ulysses (James Joyce)
+Buck Mulligan | Ulysses (James Joyce)
+
+## Marcel Proust (1913–1927)
+
+Charles Swann | Swann's Way (Marcel Proust)
+Odette de Crécy | Swann's Way (Marcel Proust)
+Baron de Charlus | In Search of Lost Time (Marcel Proust)
+
+## Franz Kafka (1915–1926)
+
+Gregor Samsa | The Metamorphosis (Franz Kafka)
+Josef K. | The Trial (Franz Kafka)
+K. | The Castle (Franz Kafka)
+
+## Thomas Mann (1912–1924)
+
+Gustav von Aschenbach | Death in Venice (Thomas Mann)
+Hans Castorp | The Magic Mountain (Thomas Mann)
+
+## Hermann Hesse (1919–1927)
+
+Siddhartha | Siddhartha (Hermann Hesse)
+Harry Haller (Steppenwolf) | Steppenwolf (Hermann Hesse)
+
+## Virginia Woolf (1925–1928)
+
+Clarissa Dalloway | Mrs Dalloway (Virginia Woolf)
+Septimus Warren Smith | Mrs Dalloway (Virginia Woolf)
+Mrs. Ramsay | To the Lighthouse (Virginia Woolf)
+Lily Briscoe | To the Lighthouse (Virginia Woolf)
+Orlando | Orlando: A Biography (Virginia Woolf)
+
+## F. Scott Fitzgerald (1920–1925)
+
+Jay Gatsby | The Great Gatsby (F. Scott Fitzgerald)
+Nick Carraway | The Great Gatsby (F. Scott Fitzgerald)
+Daisy Buchanan | The Great Gatsby (F. Scott Fitzgerald)
+Tom Buchanan | The Great Gatsby (F. Scott Fitzgerald)
+Jordan Baker | The Great Gatsby (F. Scott Fitzgerald)
+Amory Blaine | This Side of Paradise (F. Scott Fitzgerald)
+
+## Ernest Hemingway (1925–1929)
+
+Jake Barnes | The Sun Also Rises (Ernest Hemingway)
+Lady Brett Ashley | The Sun Also Rises (Ernest Hemingway)
+Robert Cohn | The Sun Also Rises (Ernest Hemingway)
+Nick Adams | In Our Time (Ernest Hemingway)
+Frederic Henry | A Farewell to Arms (Ernest Hemingway)
+Catherine Barkley | A Farewell to Arms (Ernest Hemingway)
+
+## William Faulkner (1929)
+
+Benjy Compson | The Sound and the Fury (William Faulkner)
+Quentin Compson | The Sound and the Fury (William Faulkner)
+Jason Compson | The Sound and the Fury (William Faulkner)
+Caddy Compson | The Sound and the Fury (William Faulkner)
+Dilsey | The Sound and the Fury (William Faulkner)
+
+## H.P. Lovecraft (1920s)
+
+Cthulhu | The Call of Cthulhu (H.P. Lovecraft)
+Nyarlathotep | Nyarlathotep (H.P. Lovecraft)
+Randolph Carter | The Statement of Randolph Carter (H.P. Lovecraft)
+Herbert West | Herbert West–Reanimator (H.P. Lovecraft)
+
+## Robert W. Chambers (1895)
+
+The King in Yellow | The King in Yellow (Robert W. Chambers)
+
+## W.H. Hudson (1904)
+
+Rima | Green Mansions (W.H. Hudson)
+
+## Anita Loos (1925)
+
+Lorelei Lee | Gentlemen Prefer Blondes (Anita Loos)
+
+## D.H. Lawrence (1913)
+
+Paul Morel | Sons and Lovers (D.H. Lawrence)
+
+## W. Somerset Maugham (1915)
+
+Philip Carey | Of Human Bondage (W. Somerset Maugham)
+
+## Zane Grey (1912)
+
+Lassiter | Riders of the Purple Sage (Zane Grey)
+
+## Ann Radcliffe (1794)
+
+Emily St. Aubert | The Mysteries of Udolpho (Ann Radcliffe)
+
+## E.C. Bentley (1913)
+
+Philip Trent | Trent's Last Case (E.C. Bentley)
+
+## R. Austin Freeman (1907)
+
+Dr. Thorndyke | The Red Thumb Mark (R. Austin Freeman)
+
+## William Hope Hodgson (1913)
+
+Carnacki | Carnacki, the Ghost-Finder (William Hope Hodgson)
+
+## Early Comic Strip Characters
+
+The Yellow Kid | Hogan's Alley (Richard F. Outcault)
+Buster Brown | Buster Brown (Richard F. Outcault)
+Little Nemo | Little Nemo in Slumberland (Winsor McCay)
+Krazy Kat | Krazy Kat (George Herriman)
+Ignatz Mouse | Krazy Kat (George Herriman)
+Officer Pupp | Krazy Kat (George Herriman)
+Mutt | Mutt and Jeff (Bud Fisher)
+Jeff | Mutt and Jeff (Bud Fisher)
+The Katzenjammer Kids | The Katzenjammer Kids (Rudolph Dirks)
+Happy Hooligan | Happy Hooligan (Frederick Burr Opper)
+Barney Google | Barney Google (Billy DeBeck)
+Little Orphan Annie | Little Orphan Annie (Harold Gray)
+Felix the Cat | Felix the Cat (Pat Sullivan/Otto Messmer)
+
+## Miscellaneous Pre-1929
+
+Figaro | The Barber of Seville (Beaumarchais)
+The Cisco Kid | The Caballero's Way (O. Henry)
+Jurgen | Jurgen, A Comedy of Justice (James Branch Cabell)
+The Continental Op | various stories in Black Mask (Dashiell Hammett)
+Manon Lescaut | Manon Lescaut (Abbé Prévost)
+Miss Julie | Miss Julie (August Strindberg)
+The Seagull | The Seagull (Anton Chekhov)
+P.C. Wren's Beau Geste | Beau Geste (P.C. Wren)
+Lorelei | various German folklore/Clemens Brentano
+Prufrock (J. Alfred) | The Love Song of J. Alfred Prufrock (T.S. Eliot)
+Don Juan | Don Juan (Lord Byron)
+The Lady of Shalott | The Lady of Shalott (Alfred, Lord Tennyson)
+Tom Brown | Tom Brown's School Days (Thomas Hughes)
+
+---
+
+*Note: This list, while extensive, is necessarily incomplete. Virtually every work of fiction published before 1929 in the US contains public domain characters. There are tens of thousands more across world literature, folklore, religious texts, poetry, drama, and early periodicals. Characters from later works may also be public domain if copyright was not properly renewed or registered.*

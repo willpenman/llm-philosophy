@@ -91,6 +91,7 @@ across providers.
   - 'X LLMs are currently supported' in intro will need to be edited/incremented
   - 'Recently added' should be changed
 9. Regenerate compendium of all responses using generate_compendium.py
+10. Identify 'most interesting' answers from baselines, add to most-interesting.md list and to uniqueness
 
 Remember, after merging, the live site will take an hour or two to catch up since the readme links to the same file path for the figure.
 
