@@ -29,6 +29,7 @@ Columns:
 | Anthropic | Claude 3 Opus (`claude-3-opus-20240229`) | 2024-03-04 | no (retired 2026-01-05) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired January 5, 2026. |
 | Anthropic | Claude 3 Sonnet (`claude-3-sonnet-20240229`) | 2024-03-04 | no (retired 2025-07-21) | https://www.anthropic.com/news/claude-3-family | Claude 3 family launch. Retired July 21, 2025. |
 | Anthropic | Claude 3 Haiku (`claude-3-haiku-20240307`) | 2024-03-13 | yes | https://www.anthropic.com/news/claude-3-haiku | Announcement + API availability. |
+| OpenAI | GPT-5.5 (`gpt-5.5-2026-04-23`) | 2026-04-23 | yes | https://openai.com/index/introducing-gpt-5-5/ | |
 | OpenAI | GPT-Rosalind | 2026-04-16 | no | https://openai.com/index/introducing-gpt-rosalind/ | "for life sciences research," not generally available | 
 | OpenAI | GPT-5.4 (`gpt-5.4-2026-03-05`) | 2026-03-05 | yes | https://openai.com/index/introducing-gpt-5-4/ | Announcement + API availability. |
 | OpenAI | GPT-5.4 Pro (`gpt-5.4-pro-2026-03-05`) | 2026-03-05 | yes | https://openai.com/index/introducing-gpt-5-4/ | Pro availability listed in announcement. |
@@ -95,6 +96,8 @@ Columns:
 | xAI | Grok 1.5 Vision | 2024-04-12 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
 | xAI | Grok 1.5 | 2024-03-29 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
 | xAI | Grok 1 | 2023-11-04 | no (deprecated) | https://console.x.ai | Deprecated in xAI console (user-verified). |
+| DeepSeek | DeepSeek V4 Pro | 2026-04-24 | yes | https://api-docs.deepseek.com/news/news260424 | |
+| DeepSeek | DeepSeek V4 Flash | 2026-04-24 | yes | https://api-docs.deepseek.com/news/news260424 | |
 | DeepSeek | DeepSeek V3.2 (`deepseek-v3p2`) | 2025-12-01 | yes | https://api-docs.deepseek.com/news/news251201 | Open-source release announcement. |
 | DeepSeek | DeepSeek V3.2-Speciale | 2025-12-01 | no | https://api-docs.deepseek.com/news/news251201 | Advanced reasoning variant. Not supported. |
 | DeepSeek | DeepSeek V3.2-Exp | 2025-09-29 | no (deprecated) | https://api-docs.deepseek.com/news/news250929 | Experimental. Superseded by V3.2. |
@@ -108,6 +111,7 @@ Columns:
 | DeepSeek | DeepSeek V2 | 2024-05 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | DeepSeek | DeepSeek LLM | 2023-12 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
 | DeepSeek | DeepSeek Coder | 2023-11 | no (deprecated) | https://fireworks.ai/models | Deprecated in Fireworks serverless (user-verified). |
+| Moonshot AI | Kimi K2.6 | 2026-04-20 | yes | https://huggingface.co/moonshotai/Kimi-K2.6 | |
 | Moonshot AI | Kimi K2.5 | 2026-01-27 | yes | https://techcrunch.com/2026/01/27/chinas-moonshot-releases-a-new-open-source-model-kimi-k2-5-and-a-coding-agent/ | Open-source K2.5 release. Not supported. |
 | Moonshot AI | Kimi K2 Thinking (`kimi-k2-thinking`) | 2025-11-06 | no | https://platform.moonshot.ai/blog/posts/changelog | K2 Think release on Kimi Open Platform. Not supported. |
 | Moonshot AI | Kimi K2 (`kimi-k2-instruct-0905`) | 2025-09-05 | yes | https://huggingface.co/moonshotai/Kimi-K2-Instruct-0905 | K2 Instruct release on HuggingFace. Supported. |
